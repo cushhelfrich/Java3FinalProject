@@ -1,4 +1,4 @@
-package Java3FinalProject;
+package java3finalproject;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -60,9 +60,9 @@ public class DBConnector {
         
         // Local connection info goes here
         connection = DriverManager.getConnection (
-                "jdbc:mysql://localhost:3306/mydb",
-                "root",
-                "!986$@ckbu+"
+                "jdbc:mysql://localhost/projectdb",
+                "champlain",
+                "Fin8lPr0ject"
         );
         
        return connection; 
@@ -78,7 +78,7 @@ public class DBConnector {
         {
              stmt = connection.createStatement();
              // Modify these parameters according to group discussion
-             rs = stmt.executeQuery("SELECT email, pw_hash, salt FROM test_encryption WHERE email = '" + user + "'");
+             rs = stmt.executeQuery("SELECT email, password, salt FROM user WHERE email = '" + user + "'");
         }
         catch (SQLException ex)
         {

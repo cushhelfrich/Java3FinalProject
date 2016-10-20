@@ -1,4 +1,4 @@
-package Java3FinalProject;
+package java3finalproject;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

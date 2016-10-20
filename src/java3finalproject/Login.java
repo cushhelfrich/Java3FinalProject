@@ -36,12 +36,15 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 //Begin Class Login
-//*********************Wayne**************************************
+//*********************Wayne Riley**************************************
 public class Login extends Application {
 
     //instantiate subclass
     Dashboard db = new Dashboard();
     CreateUser createUser = new CreateUser();
+    
+    //[Char, 10/19] deleted
+    
     private final Encryptor encrypt = new Encryptor();
     private final Label lblMessage = new Label();
     private final TextField txtUserName = new TextField();
@@ -137,20 +140,20 @@ public class Login extends Application {
         primaryStage.show();
     }
     
-    //[Char note to self] Sanitize inputs!
+        // Sanitize inputs!
     private void processLogin(String user, String pw)
     {    
         Connection connection;
-        DBConnector dBase = new DBConnector();
+        DBConnector db = new DBConnector();
         lblMessage.setText("");
         
         // Connect to DB
         try
         {
-            connection = dBase.makeConnection();            
+            connection = db.makeConnection();            
 
             // Query User table for user, pw, and salt where user = user
-            ResultSet rs = dBase.retrieveSaltedPW(user);
+            ResultSet rs = db.retrieveSaltedPW(user);
             
             rs.last();
             int rsSize = rs.getRow();
@@ -164,7 +167,7 @@ public class Login extends Application {
             {
                 // These parameters will have to be modified, in accordance with group decisions
                 String salt = rs.getString("salt");
-                String pw_hash = rs.getString("pw_hash");
+                String pw_hash = rs.getString("password");
                 
                 byte[] byteSalt = Base64.getDecoder().decode(salt);
                 
