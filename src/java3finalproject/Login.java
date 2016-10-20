@@ -12,6 +12,10 @@ package java3finalproject;
  * https://www.javacodegeeks.com/2012/06/in-this-tutorial-i-will-design-nice.html
  */
 //Imports
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Base64;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -38,12 +42,10 @@ public class Login extends Application {
     //instantiate subclass
     Dashboard db = new Dashboard();
     CreateUser createUser = new CreateUser();
-    
-    
-
-    String user = "Java";
-    String pw = "password";
-    String checkUser, checkPw;
+    private final Encryptor encrypt = new Encryptor();
+    private final Label lblMessage = new Label();
+    private final TextField txtUserName = new TextField();
+    private final PasswordField pf = new PasswordField();
 
     @Override
     public void start(Stage primaryStage) {
@@ -63,11 +65,8 @@ public class Login extends Application {
 
         //Implementing Nodes for GridPane
         Label lblUserName = new Label("Username");
-        final TextField txtUserName = new TextField();
         Label lblPassword = new Label("Password");
-        final PasswordField pf = new PasswordField();
         Button btnLogin = new Button("Login");
-        final Label lblMessage = new Label();
 
         //CUSH
         Button btnCreateUser = new Button("Create User");
@@ -115,17 +114,7 @@ public class Login extends Application {
         //Action for btnLogin
         btnLogin.setOnAction(
                 (ActionEvent e) -> {
-                    checkUser = txtUserName.getText();
-                    checkPw = pf.getText();
-                    if (checkUser.equals(user) && checkPw.equals(pw)) {
-                        db.mainScreen();
-                        primaryStage.close();
-                    } else {
-                        lblMessage.setText("Incorrect user or pw.");
-                        lblMessage.setTextFill(Color.RED);
-                    }
-                    txtUserName.setText("");
-                    pf.setText("");
+                    processLogin(txtUserName.getText(), pf.getText());
                 });
         
         //[Cush]Action for btnCreateUser
@@ -147,4 +136,59 @@ public class Login extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+    
+    //[Char note to self] Sanitize inputs!
+    private void processLogin(String user, String pw)
+    {    
+        Connection connection;
+        DBConnector dBase = new DBConnector();
+        lblMessage.setText("");
+        
+        // Connect to DB
+        try
+        {
+            connection = dBase.makeConnection();            
+
+            // Query User table for user, pw, and salt where user = user
+            ResultSet rs = dBase.retrieveSaltedPW(user);
+            
+            rs.last();
+            int rsSize = rs.getRow();
+            
+            if(rsSize == 0)
+            {
+                lblMessage.setText("No account exists for this user.");
+                lblMessage.setTextFill(Color.RED);
+            }
+            else // Record returned
+            {
+                // These parameters will have to be modified, in accordance with group decisions
+                String salt = rs.getString("salt");
+                String pw_hash = rs.getString("pw_hash");
+                
+                byte[] byteSalt = Base64.getDecoder().decode(salt);
+                
+                if(encrypt.isExpectedPassword(pw, pw_hash, byteSalt))
+                {
+                    System.out.println("The dash will display");
+                }
+                
+                else
+                {
+                    lblMessage.setText("Incorrect user or password");
+                    lblMessage.setTextFill(Color.RED);
+                }
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.out.println("Failed to connect to db");
+                    
+        }
+        
+          txtUserName.setText("");
+          pf.setText("");
+    }
+
 } //End Class Login
