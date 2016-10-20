@@ -32,7 +32,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 //Begin Class Login
-//*********************Wayne**************************************
+//*********************Wayne Riley**************************************
 public class Login extends Application {
 
     //instantiate subclass
