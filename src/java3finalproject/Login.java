@@ -40,7 +40,7 @@ import javafx.stage.Stage;
 public class Login extends Application {
 
     //instantiate subclass
-    Dashboard db = new Dashboard();
+    Dashboard dashboard = new Dashboard();
     CreateUser createUser = new CreateUser();
     
     //[Char, 10/19] deleted
@@ -117,7 +117,10 @@ public class Login extends Application {
         //Action for btnLogin
         btnLogin.setOnAction(
                 (ActionEvent e) -> {
-                    processLogin(txtUserName.getText(), pf.getText());
+                    if(processLogin(txtUserName.getText(), pf.getText()))
+                    {
+                        primaryStage.close();
+                    }
                 });
         
         //[Cush]Action for btnCreateUser
@@ -141,8 +144,9 @@ public class Login extends Application {
     }
     
         // Sanitize inputs!
-    private void processLogin(String user, String pw)
+    private boolean processLogin(String user, String pw)
     {    
+        boolean bool = false;
         Connection connection;
         DBConnector db = new DBConnector();
         lblMessage.setText("");
@@ -173,7 +177,8 @@ public class Login extends Application {
                 
                 if(encrypt.isExpectedPassword(pw, pw_hash, byteSalt))
                 {
-                    System.out.println("The dash will display");
+                    dashboard.mainScreen();
+                    bool = true;
                 }
                 
                 else
@@ -192,6 +197,8 @@ public class Login extends Application {
         
           txtUserName.setText("");
           pf.setText("");
+          
+          return bool;
     }
 
 } //End Class Login
