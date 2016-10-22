@@ -107,6 +107,7 @@ public class Add {
         btnConfirm.setOnAction((ActionEvent e) -> {
             addScene.close();
             //!!!!!!!!!!!!!!!!!business logic insertion here!!!!!!!!!!!!!!!
+           Account newAct = new Account(actName,usrName,pw);
             System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + ws + " into database");
             Dashboard.clearHandler();//calls Static method in main
         });//end confirm event handler
