@@ -1,15 +1,10 @@
 package java3finalproject;
 
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.DriverManager;
-import java.sql.DriverPropertyInfo;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
-import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  *
@@ -17,57 +12,39 @@ import java.util.logging.Logger;
  */
 public class DBConnector {
     private Connection connection;
-
-        public Connection makeConnection() throws SQLException {
-        
-        
-        Driver driver = new Driver() {
-            @Override
-            public Connection connect(String url, Properties info) throws SQLException {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private String dbUser = "champlain";
+    private String dbPassword = "Fin8lPr0ject";
+    private String dbPath = "jdbc:mysql://localhost/projectdb";
+    
+    public DBConnector()
+    {
+            try {
+                // Load the JDBC driver
+                Class.forName("com.mysql.jdbc.Driver");
+                
+                // Establish connection to database
+                connection = DriverManager.getConnection (
+                    dbPath,
+                    dbUser,
+                    dbPassword
+                );
             }
-
-            @Override
-            public boolean acceptsURL(String url) throws SQLException {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            catch (ClassNotFoundException | SQLException ex)
+            {
+                System.out.println("A connection to the database could not be established. "
+                        + "Error message: " + ex.getMessage());
             }
-
-            @Override
-            public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) throws SQLException {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public int getMajorVersion() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public int getMinorVersion() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public boolean jdbcCompliant() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        };
-        
-        // Local connection info goes here
-        connection = DriverManager.getConnection (
-                "jdbc:mysql://localhost/projectdb",
-                "champlain",
-                "Fin8lPr0ject"
-        );
-        
-       return connection; 
     }
-        
+    
+    public Connection getConnection()
+    {
+        return connection;
+    }
+    
+    public ResultSet retrieveRecordPS(String query)
+    {
+                
+    }
     public ResultSet retrieveSaltedPW(String user) throws SQLException
     {
         boolean b = false;
