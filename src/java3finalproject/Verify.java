@@ -19,14 +19,14 @@ public class Verify {
      * @param n
      * @return flag
      */
-    public static boolean checkPriEmail(String n) {
+    public static boolean checkEmail(String n) {
         boolean flag = true;
         if (!n.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+"
                 + "(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
 
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("WARNING");
-            alert.setHeaderText("Primary Email Format Error");
+            alert.setHeaderText("Email Format Error");
             alert.setContentText("Email should be in this format\n"
                     + "text@text.com\nPlease try again.");
             alert.showAndWait();

@@ -150,15 +150,6 @@ public class CreateUser {
         //Set last label to good width for all labels in GridPane (0, #)
         lblPassword.setPrefWidth(75);
 
-        //Reduce the height so they aren't so big
-        /*taInsertionSort.setPrefRowCount(5);
-        taBubbleSort.setPrefRowCount(5);
-        taMergeSort.setPrefRowCount(5);
-        taQuickSort.setPrefRowCount(5);
-        taHeapSort.setPrefRowCount(5);
-        taBucketSort.setPrefRowCount(5);
-        taRadixSort.setPrefRowCount(5);*/
-
         return gpEntries;
         
     }
@@ -180,32 +171,42 @@ public class CreateUser {
         hbBottom.getChildren().addAll(btnConfirmUser,btnEditUser);
 
         //Handlers
-        btnConfirmUser.setOnAction(new ConfirmHandler()); //Handler for confirm
-        btnEditUser.setOnAction(new EditHandler()); //Handler for edit
+        btnConfirmUser.setOnAction(new EnterHandler()); //Handler for confirm
+        
        
 
         return hbBottom;
 
     } //End hbButtons
 
-    class ConfirmHandler implements EventHandler<ActionEvent> {
+    class EnterHandler implements EventHandler<ActionEvent> {
         
        @Override
         public void handle(ActionEvent e) {
             
-            
+            boolean checks = true;
+            if (checks != false) {
+                
+                if (!Verify.checkEmail(tfEmail.getText())) {
+                    tfEmail.clear();
+                    tfEmail.requestFocus();
+                    
+                }
+                    
+            }
+            if (checks) {
+                confirmStage();
+            }
             
         }
     }
     
-    class EditHandler implements EventHandler<ActionEvent> {
+    public void confirmStage(){
         
-       @Override
-        public void handle(ActionEvent e) {
-            
-            
-            
-        }
+        Stage confirmStage = new Stage();
+        BorderPane confirmBorder = new BorderPane();
+       
+        
     }
     
 } //End Subclass CreateUser
