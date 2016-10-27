@@ -42,7 +42,8 @@ public class Login extends Application {
     //instantiate subclass
     Dashboard dashboard = new Dashboard();
     CreateUser createUser = new CreateUser();
-    DBConnector db = new DBConnector();
+    
+    //[Char, 10/19] deleted
     
     private final Encryptor encrypt = new Encryptor();
     private final Label lblMessage = new Label();
@@ -146,14 +147,15 @@ public class Login extends Application {
     private boolean processLogin(String user, String pw)
     {    
         boolean bool = false;
+        Connection connection;
+        DBConnector db = new DBConnector();
         lblMessage.setText("");
         
         // Connect to DB
         try
-        {       
-            String isUser = "SELECT email, password, salt FROM user WHERE email = '" + user + "'";
-            
-            ResultSet rs = db.retrieveRecordPS(isUser);
+        {
+            connection = db.makeConnection();            
+
             // Query User table for user, pw, and salt where user = user
             ResultSet rs = db.retrieveSaltedPW(user);
             
