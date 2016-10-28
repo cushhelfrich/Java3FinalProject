@@ -67,7 +67,7 @@ public class CreateUser {
 
         //Setup Stage
         createUserStage.setTitle("Create User"); //Set the title of the Stage
-        myScene.getStylesheets().add(getClass().getClassLoader().getResource("CreateUser.css").toExternalForm());
+        myScene.getStylesheets().add(getClass().getClassLoader().getResource("createuser.css").toExternalForm());
         createUserStage.setScene(myScene);  //Add Scene to Stage
         
         createUserStage.show(); //Show Stage
