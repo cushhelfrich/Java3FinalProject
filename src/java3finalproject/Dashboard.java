@@ -101,15 +101,14 @@ public class Dashboard {
         scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
         dbScene.setScene(scene);
         dbScene.show();
-        
-        account(accountName.getText());
+
+        account();
     }
-    
-    
 
     /**
      * VBox for textarea
-     * @return 
+     *
+     * @return
      */
     private VBox getvBox() {
         /*Set vBox attributes */
@@ -193,18 +192,17 @@ public class Dashboard {
     }
 
     /**
-     * Calls dbConnector for connection 
-     * calls dbConnector for query returns account name
-     * Prints account names in Textarea.
+     * Calls dbConnector for connection calls dbConnector for query returns
+     * account name Prints account names in Textarea.
      *
      * @throws SQLException
      */
-    private void account(String acctName) throws SQLException {
+    private void account() throws SQLException {
 
-        db.makeConnection();        
+        db.makeConnection();
         //calls account to load accounts in textArea
-        ResultSet rs = db.act(acctName);
-        
+        ResultSet rs = db.act();
+
         while (rs.next()) {
             accountView.appendText(rs.getString(1) + "\n");//append text area;
         }

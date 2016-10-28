@@ -91,12 +91,10 @@ public class DBConnector {
      * Queries account table and returns to dashboard and printed in Textarea.
      *
      * @param actName
-     * @param userName
-     * @param passWord
      * @return 
      * @throws SQLException
      */
-    public ResultSet act(String actName) throws SQLException {
+    public ResultSet act() throws SQLException {
 
         Statement stmt;
         ResultSet rs = null;
