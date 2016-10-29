@@ -153,9 +153,7 @@ public class Login extends Application {
         // Connect to DB
         try
         {    
-            System.out.println("Fail");
             stmt = db.getConnection().createStatement();
-            System.out.println("No connection");
             
             String isUser = "SELECT * FROM user WHERE username = '" + user + "'";
             
@@ -173,7 +171,6 @@ public class Login extends Application {
             }
             else // Record returned
             {
-                // These parameters will have to be modified, in accordance with group decisions
                 String salt = rs.getString("salt");
                 String pw_hash = rs.getString("password");
                 
@@ -183,12 +180,11 @@ public class Login extends Application {
                     String first = rs.getString("first_name");
                     String last = rs.getString("last_name");
                     String created = rs.getString("created");
-                    String updated = rs.getString("last_updated");
+                    String updated = rs.getString("last_update");
                     
                     currUser = new User(email, user, pw_hash, salt, first, last, created, updated);
-                    
-                    dashboard.mainScreen(currUser);
                     bool = true;
+                    dashboard.mainScreen(currUser);
                 }
                 
                 else
