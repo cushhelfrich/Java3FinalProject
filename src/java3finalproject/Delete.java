@@ -110,7 +110,7 @@ class Delete {
         //New stage
         Scene scene = new Scene(bp, 255, 180);
         scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
-        deleteScene.setTitle("Confirm Information");
+        deleteScene.setTitle("Delete Information");
         deleteScene.setScene(scene);
         deleteScene.show();
     }
