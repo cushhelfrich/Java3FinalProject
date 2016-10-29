@@ -12,10 +12,9 @@ package java3finalproject;
  * https://www.javacodegeeks.com/2012/06/in-this-tutorial-i-will-design-nice.html
  */
 //Imports
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Base64;
+import java.sql.Statement;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -42,12 +41,14 @@ public class Login extends Application {
     //instantiate subclass
     Dashboard dashboard = new Dashboard();
     CreateUser createUser = new CreateUser();
+    DBConnector db = new DBConnector();
 
     //[Char, 10/19] deleted
     private final Encryptor encrypt = new Encryptor();
     private final Label lblMessage = new Label();
     private final TextField txtUserName = new TextField();
     private final PasswordField pf = new PasswordField();
+    User currUser;
 
     @Override
     public void start(Stage primaryStage) {
@@ -141,51 +142,72 @@ public class Login extends Application {
         primaryStage.show();
     }
 
-    // Sanitize inputs!
-    private boolean processLogin(String user, String pw) {
-        boolean bool = false;       
-        DBConnector db = new DBConnector();
+        // Sanitize inputs!
+    private boolean processLogin(String user, String pw)
+    {    
+        boolean bool = false;
         lblMessage.setText("");
-
+        
+        Statement stmt;
+        
         // Connect to DB
-        try {
-           db.makeConnection();
-
+        try
+        {    
+            System.out.println("Fail");
+            stmt = db.getConnection().createStatement();
+            System.out.println("No connection");
+            
+            String isUser = "SELECT * FROM user WHERE username = '" + user + "'";
+            
             // Query User table for user, pw, and salt where user = user
-            ResultSet rs = db.retrieveSaltedPW(user);
-
+            ResultSet rs = db.retrieveRecords(isUser);
+            
+            // Move the cursor to the end of the ResultSet
             rs.last();
             int rsSize = rs.getRow();
-
-            if (rsSize == 0) {
+            
+            if(rsSize == 0) // Query returned 0 results
+            {
                 lblMessage.setText("No account exists for this user.");
                 lblMessage.setTextFill(Color.RED);
-            } else // Record returned
+            }
+            else // Record returned
             {
                 // These parameters will have to be modified, in accordance with group decisions
                 String salt = rs.getString("salt");
                 String pw_hash = rs.getString("password");
-
-                byte[] byteSalt = Base64.getDecoder().decode(salt);
-
-                if (encrypt.isExpectedPassword(pw, pw_hash, byteSalt)) {
-                    dashboard.mainScreen();
+                
+                if(encrypt.isExpectedPassword(pw, pw_hash, salt))
+                {
+                    String email = rs.getString("email");
+                    String first = rs.getString("first_name");
+                    String last = rs.getString("last_name");
+                    String created = rs.getString("created");
+                    String updated = rs.getString("last_updated");
+                    
+                    currUser = new User(email, user, pw_hash, salt, first, last, created, updated);
+                    
+                    dashboard.mainScreen(currUser);
                     bool = true;
-                } else {
+                }
+                
+                else
+                {
                     lblMessage.setText("Incorrect user or password");
                     lblMessage.setTextFill(Color.RED);
                 }
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             e.printStackTrace();
             System.out.println("Failed to connect to db");
-
-        }
-
-        txtUserName.setText("");
-        pf.setText("");
-
-        return bool;
+                    
+        }        
+          txtUserName.setText("");
+          pf.setText("");
+          
+          return bool;
     }
 
 } //End Class Login

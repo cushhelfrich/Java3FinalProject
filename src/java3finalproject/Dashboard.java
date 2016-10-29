@@ -53,7 +53,7 @@ public class Dashboard {
      * Main dashboard - User can view accounts or add, modify and delete
      * accounts
      */
-    public void mainScreen() throws SQLException {
+    public void mainScreen(User currUser) throws SQLException {
 
         //Borderpane to hold Gridpane, HBOX (holds buttons)
         BorderPane bp = new BorderPane();
@@ -199,7 +199,6 @@ public class Dashboard {
      */
     private void account() throws SQLException {
 
-        db.makeConnection();
         //calls account to load accounts in textArea
         ResultSet rs = db.act();
 

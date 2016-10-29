@@ -1,91 +1,108 @@
 package java3finalproject;
 
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.DriverManager;
-import java.sql.DriverPropertyInfo;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
-import java.util.Properties;
-import java.util.logging.Logger;
 
-/**
- *
- * @author charl
+/** 
+ * @Course: SDEV 450 ~ Enterprise Java Programming
+ * @Author Name: Charlotte Hirschberger
+ * @Created Date: October 16, 2016
+ * @Last update: October 28, 2016
+ * @Description: This class is responsible for initiating and returning the 
+ *      connection to a database and executing queries received in String parameters.
  */
+
 public class DBConnector {
-
     private Connection connection;
-
-    public Connection makeConnection() throws SQLException {
-
-        Driver driver = new Driver() {
-            @Override
-            public Connection connect(String url, Properties info) throws SQLException {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private String dbUser = "champlain";
+    private String dbPassword = "Fin8lPr0ject";
+    private String dbPath = "jdbc:mysql://localhost/projectdb";
+    
+    /**
+     * Constructor automatically attempts to establish connection using database
+     * credentials from member variables
+     */
+    public DBConnector()
+    {
+            try {
+                // Load the JDBC driver
+                Class.forName("com.mysql.jdbc.Driver");
+                
+                // Establish connection to database
+                connection = DriverManager.getConnection (
+                    dbPath,
+                    dbUser,
+                    dbPassword
+                );
             }
-
-            @Override
-            public boolean acceptsURL(String url) throws SQLException {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            catch (ClassNotFoundException | SQLException ex)
+            {
+                System.out.println("A connection to the database could not be established. "
+                        + "Error message: " + ex.getMessage());
             }
-
-            @Override
-            public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) throws SQLException {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public int getMajorVersion() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public int getMinorVersion() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public boolean jdbcCompliant() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        };
-
-        // Local connection info goes here
-        connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost/projectdb",
-                "champlain",
-                "Fin8lPr0ject"
-        );
-
+    }
+    
+    public Connection getConnection()
+    {
         return connection;
     }
-
-    public ResultSet retrieveSaltedPW(String user) throws SQLException {
-        boolean b = false;
-        Statement stmt;
-        ResultSet rs = null;
-
-        try {
+    
+    /**
+     * General method for executing SQL queries, for use with SELECT statements     * 
+     * @param query SQL statement in a string
+     * @return 
+     */
+    public ResultSet retrieveRecords(String query)
+    {
+       Statement stmt; 
+       ResultSet rs = null;
+       
+       try
+       {
             stmt = connection.createStatement();
-            // Modify these parameters according to group discussion
-            rs = stmt.executeQuery("SELECT email, password, salt FROM user WHERE email = '" + user + "'");
-        } catch (SQLException ex) {
-            // handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+           
+            rs = stmt.executeQuery(query);
+       }
+       
+       catch(Exception ex)
+        {
+            System.out.println("A problem occurred while accessing records. "
+                    + "Error message: " + ex.getMessage());
         }
-
-        return rs;
+       
+       return rs;
     }
+    
+    /**
+     * Accepts an SQL statement in a string and returns an integer, representing
+     * the number of rows affected by the query. 0 indicates a query that
+     * affects 0 results.
+     * @param query delete, update, or insert
+     * @return 
+     */
+    public int modifyRecords(String query)
+    {
+        Statement stmt;
+        int rowsAffected = 0;
+        
+        try
+        {
+            stmt = connection.createStatement();
+            
+            rowsAffected = stmt.executeUpdate(query);
+        } 
+       catch(Exception ex)
+        {
+            System.out.println("A problem occurred while accessing records. "
+                    + "Error message: " + ex.getMessage());
+        }
+        
+       return rowsAffected; 
+    }
+    
     //**************************wayne*************************************8
     /**
      * Queries account table and returns to dashboard and printed in Textarea.
