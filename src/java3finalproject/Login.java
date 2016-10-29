@@ -12,10 +12,9 @@ package java3finalproject;
  * https://www.javacodegeeks.com/2012/06/in-this-tutorial-i-will-design-nice.html
  */
 //Imports
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Base64;
+import java.sql.Statement;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -43,11 +42,13 @@ public class Login extends Application {
     Dashboard dashboard = new Dashboard();
     CreateUser createUser = new CreateUser();
     DBConnector db = new DBConnector();
-    
+
+    //[Char, 10/19] deleted
     private final Encryptor encrypt = new Encryptor();
     private final Label lblMessage = new Label();
     private final TextField txtUserName = new TextField();
     private final PasswordField pf = new PasswordField();
+    User currUser;
 
     @Override
     public void start(Stage primaryStage) {
@@ -108,7 +109,7 @@ public class Login extends Application {
         //Add ID's to Nodes
         bp.setId("bp");
         gridPane.setId("root");
-        btnLogin.setId("btnLogin");
+        btnLogin.setId("btn");
         btnCreateUser.setId("btnCreateUser"); //CUSH
         btnResetPassword.setId("btnResetPassword"); //CUSH
         text.setId("text");
@@ -116,20 +117,19 @@ public class Login extends Application {
         //Action for btnLogin
         btnLogin.setOnAction(
                 (ActionEvent e) -> {
-                    if(processLogin(txtUserName.getText(), pf.getText()))
-                    {
+                    if (processLogin(txtUserName.getText(), pf.getText())) {
                         primaryStage.close();
                     }
                 });
-        
+
         //[Cush]Action for btnCreateUser
-       btnCreateUser.setOnAction(
+        btnCreateUser.setOnAction(
                 (ActionEvent e) -> {
-                    
+
                     createUser.createUser();
-                    
+
                 });
-    
+
         //Add HBox and GridPane layout to BorderPane Layout
         bp.setTop(hb);
         bp.setCenter(gridPane);
@@ -141,42 +141,50 @@ public class Login extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    
+
         // Sanitize inputs!
     private boolean processLogin(String user, String pw)
     {    
         boolean bool = false;
         lblMessage.setText("");
         
+        Statement stmt;
+        
         // Connect to DB
         try
-        {       
-            String isUser = "SELECT email, password, salt FROM user WHERE email = '" + user + "'";
+        {    
+            stmt = db.getConnection().createStatement();
             
-            ResultSet rs = db.retrieveRecordPS(isUser);
+            String isUser = "SELECT * FROM user WHERE username = '" + user + "'";
+            
             // Query User table for user, pw, and salt where user = user
-            ResultSet rs = db.retrieveSaltedPW(user);
+            ResultSet rs = db.retrieveRecords(isUser);
             
+            // Move the cursor to the end of the ResultSet
             rs.last();
             int rsSize = rs.getRow();
             
-            if(rsSize == 0)
+            if(rsSize == 0) // Query returned 0 results
             {
                 lblMessage.setText("No account exists for this user.");
                 lblMessage.setTextFill(Color.RED);
             }
             else // Record returned
             {
-                // These parameters will have to be modified, in accordance with group decisions
                 String salt = rs.getString("salt");
                 String pw_hash = rs.getString("password");
                 
-                byte[] byteSalt = Base64.getDecoder().decode(salt);
-                
-                if(encrypt.isExpectedPassword(pw, pw_hash, byteSalt))
+                if(encrypt.isExpectedPassword(pw, pw_hash, salt))
                 {
-                    dashboard.mainScreen();
+                    String email = rs.getString("email");
+                    String first = rs.getString("first_name");
+                    String last = rs.getString("last_name");
+                    String created = rs.getString("created");
+                    String updated = rs.getString("last_update");
+                    
+                    currUser = new User(email, user, pw_hash, salt, first, last, created, updated);
                     bool = true;
+                    dashboard.mainScreen(currUser);
                 }
                 
                 else
@@ -191,8 +199,7 @@ public class Login extends Application {
             e.printStackTrace();
             System.out.println("Failed to connect to db");
                     
-        }
-        
+        }        
           txtUserName.setText("");
           pf.setText("");
           

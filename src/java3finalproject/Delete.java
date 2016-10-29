@@ -2,11 +2,11 @@ package java3finalproject;
 
 /**
  * @Course: SDEV 450 ~ Java Programming III
- * @Author Name: Wayne Riley
+ * @Author Name: Riley Laptop
  * @Assignment Name: java3finalproject
- * @Date: Oct 17, 2016
- * @Subclass Add Description: Content (Account, Username, password)
- * passed from dashboard textfields and inserted into database.
+ * @Date: Oct 26, 2016
+ * @Subclass Delete Description: Variable passed from Dashbooard account
+ * textfiled to delete account
  */
 //Imports
 import javafx.event.ActionEvent;
@@ -18,33 +18,31 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-//Begin Subclass Add
+//Begin Subclass Delete
 //***********************Wayne***************************
-public class Add {
+class Delete {
 
     //declarations
-    Stage addScene = new Stage();
-    Button btnConfirm = new Button("Confirm");
-    Button btnEdit = new Button("Edit");
+    Stage deleteScene = new Stage();
+    Button btnConfirm = new Button("Yes");
+    Button btnEdit = new Button("No");
 
     /**
-     * Account name, user name, and password received from dashboard textfields
-     * to this scene
+     * Account name, user name, password and website received from dashboard
+     * textfields to this scene
      *
      * @param actName
      * @param usrName
      * @param pw
      * @param ws
      */
-    public void insert(String actName, String usrName, String pw) {
+    public void delete(String actName) {
 
         //declarations for Confirmation dialog
         Pane pane = new Pane();
@@ -57,7 +55,7 @@ public class Add {
         dropShadow.setOffsetX(5);
         dropShadow.setOffsetY(5);
 
-        Text header = new Text(15, 15, "Confirm New Account");
+        Text header = new Text(35, 15, "Delete Account\n Are You Sure?");
         header.setFont(Font.font("Courier New", FontWeight.BOLD, 20));
         pane.getChildren().addAll(header); //add children to top pane
         header.setEffect(dropShadow);
@@ -65,18 +63,12 @@ public class Add {
         //labels        
         Label lblaccountName = new Label("Account Name:");
         Label lblaccountGetText = new Label(actName);
-        Label lblLUserName = new Label("User Name:");
-        Label lbluserNameGetText = new Label(usrName);
-        Label lblpassword = new Label("Password:");
-        Label lblpasswordGetText = new Label(pw);
-        //Label lblwebsite = new Label("Website:");
-        //Label lblwebsiteGetText = new Label(ws);        
 
         /* Add panes to appropriate region */
         bp.setTop(pane);
         bp.setCenter(gridPane);
 
-        //Add ID's to Nodes for CSS
+        //Add ID's to Nodes
         bp.setId("bp");
         gridPane.setId("root");
         btnConfirm.setId("btn");
@@ -94,46 +86,33 @@ public class Add {
         GridPane.setConstraints(lblaccountName, 0, 0, 1, 1);
         gridPane.add(lblaccountGetText, 1, 0);
         GridPane.setConstraints(lblaccountGetText, 1, 0, 1, 1);
-        //Add User Name to grid pane
-        gridPane.add(lblLUserName, 0, 1);
-        GridPane.setConstraints(lblLUserName, 0, 1, 1, 1);
-        gridPane.add(lbluserNameGetText, 1, 1);
-        GridPane.setConstraints(lbluserNameGetText, 1, 1, 1, 1);
-        //add password to grid pane
-        gridPane.add(lblpassword, 0, 2);
-        GridPane.setConstraints(lblpassword, 0, 2, 1, 1);
-        gridPane.add(lblpasswordGetText, 1, 2);
-        GridPane.setConstraints(lblpasswordGetText, 1, 2, 1, 1);
-        //add website to grid pane
-        //gridPane.add(lblwebsite, 0, 3);
-        //GridPane.setConstraints(lblwebsite, 0, 3, 1, 1);
-        //gridPane.add(lblwebsiteGetText, 1, 3);
-        //GridPane.setConstraints(lblwebsiteGetText, 1, 3, 1, 1);
+
         //add Buttons
-        gridPane.add(btnConfirm, 0, 4);
-        GridPane.setConstraints(btnConfirm, 0, 4, 1, 1);
-        gridPane.add(btnEdit, 1, 4);
-        GridPane.setConstraints(btnEdit, 1, 4, 1, 1);
+        gridPane.add(btnConfirm, 0, 2);
+        GridPane.setConstraints(btnConfirm, 0, 2, 1, 1);
+        gridPane.add(btnEdit, 1, 2);
+        GridPane.setConstraints(btnEdit, 1, 2, 1, 1);
 
         //lambda expression confirm and Edit
         btnConfirm.setOnAction((ActionEvent e) -> {
-            addScene.close();
-            //!!!!!!!!!!!!!!!!!business logic or call class to perform function!!!!!!!!!!!!!!!
-            Account newAct = new Account(actName, usrName, pw);
-            System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
+            deleteScene.close();
+            //!!!!!!!!!!!!!!!!!insert business logic or call class!!!!!!!!!!!!!!!
+
+            System.out.println("Delete " + actName + " from database");
             Dashboard.clearHandler();//calls Static method in main
         });//end confirm event handler
 
         //lambda expression Exit Program        
         btnEdit.setOnAction((ActionEvent e) -> {
-            addScene.close();
+            deleteScene.close();
         });//end edit event handler
 
         //New stage
-        Scene scene = new Scene(bp, 275, 180);
+        Scene scene = new Scene(bp, 255, 180);
         scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
-        addScene.setTitle("Confirm Information");
-        addScene.setScene(scene);
-        addScene.show();
-    }  
-}//End Subclass Add
+        deleteScene.setTitle("Confirm Information");
+        deleteScene.setScene(scene);
+        deleteScene.show();
+    }
+
+} //End Subclass Delete

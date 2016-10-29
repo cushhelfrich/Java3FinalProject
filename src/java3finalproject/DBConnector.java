@@ -6,16 +6,25 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- *
- * @author charl
+/** 
+ * @Course: SDEV 450 ~ Enterprise Java Programming
+ * @Author Name: Charlotte Hirschberger
+ * @Created Date: October 16, 2016
+ * @Last update: October 28, 2016
+ * @Description: This class is responsible for initiating and returning the 
+ *      connection to a database and executing queries received in String parameters.
  */
+
 public class DBConnector {
     private Connection connection;
     private String dbUser = "champlain";
     private String dbPassword = "Fin8lPr0ject";
     private String dbPath = "jdbc:mysql://localhost/projectdb";
     
+    /**
+     * Constructor automatically attempts to establish connection using database
+     * credentials from member variables
+     */
     public DBConnector()
     {
             try {
@@ -41,30 +50,81 @@ public class DBConnector {
         return connection;
     }
     
-    public ResultSet retrieveRecordPS(String query)
+    /**
+     * General method for executing SQL queries, for use with SELECT statements     * 
+     * @param query SQL statement in a string
+     * @return 
+     */
+    public ResultSet retrieveRecords(String query)
     {
-                
+       Statement stmt; 
+       ResultSet rs = null;
+       
+       try
+       {
+            stmt = connection.createStatement();
+           
+            rs = stmt.executeQuery(query);
+       }
+       
+       catch(Exception ex)
+        {
+            System.out.println("A problem occurred while accessing records. "
+                    + "Error message: " + ex.getMessage());
+        }
+       
+       return rs;
     }
-    public ResultSet retrieveSaltedPW(String user) throws SQLException
+    
+    /**
+     * Accepts an SQL statement in a string and returns an integer, representing
+     * the number of rows affected by the query. 0 indicates a query that
+     * affects 0 results.
+     * @param query delete, update, or insert
+     * @return 
+     */
+    public int modifyRecords(String query)
     {
-        boolean b = false;
+        Statement stmt;
+        int rowsAffected = 0;
+        
+        try
+        {
+            stmt = connection.createStatement();
+            
+            rowsAffected = stmt.executeUpdate(query);
+        } 
+       catch(Exception ex)
+        {
+            System.out.println("A problem occurred while accessing records. "
+                    + "Error message: " + ex.getMessage());
+        }
+        
+       return rowsAffected; 
+    }
+    
+    //**************************wayne*************************************8
+    /**
+     * Queries account table and returns to dashboard and printed in Textarea.
+     *
+     * @param actName
+     * @return 
+     * @throws SQLException
+     */
+    public ResultSet act() throws SQLException {
+
         Statement stmt;
         ResultSet rs = null;
-        
-        try 
-        {
-             stmt = connection.createStatement();
-             // Modify these parameters according to group discussion
-             rs = stmt.executeQuery("SELECT email, password, salt FROM user WHERE email = '" + user + "'");
-        }
-        catch (SQLException ex)
-        {
+
+         try {
+        stmt = connection.createStatement();
+        rs = stmt.executeQuery("SELECT account_name FROM account");
+        } catch (SQLException ex) {
             // handle any errors
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
             System.out.println("VendorError: " + ex.getErrorCode());
-        }
-        
+        }        
         return rs;
-    }
+    }    
 }
