@@ -42,9 +42,8 @@ public class Login extends Application {
     //instantiate subclass
     Dashboard dashboard = new Dashboard();
     CreateUser createUser = new CreateUser();
-    
+
     //[Char, 10/19] deleted
-    
     private final Encryptor encrypt = new Encryptor();
     private final Label lblMessage = new Label();
     private final TextField txtUserName = new TextField();
@@ -109,7 +108,7 @@ public class Login extends Application {
         //Add ID's to Nodes
         bp.setId("bp");
         gridPane.setId("root");
-        btnLogin.setId("btnLogin");
+        btnLogin.setId("btn");
         btnCreateUser.setId("btnCreateUser"); //CUSH
         btnResetPassword.setId("btnResetPassword"); //CUSH
         text.setId("text");
@@ -117,20 +116,19 @@ public class Login extends Application {
         //Action for btnLogin
         btnLogin.setOnAction(
                 (ActionEvent e) -> {
-                    if(processLogin(txtUserName.getText(), pf.getText()))
-                    {
+                    if (processLogin(txtUserName.getText(), pf.getText())) {
                         primaryStage.close();
                     }
                 });
-        
+
         //[Cush]Action for btnCreateUser
-       btnCreateUser.setOnAction(
+        btnCreateUser.setOnAction(
                 (ActionEvent e) -> {
-                    
+
                     createUser.createUser();
-                    
+
                 });
-    
+
         //Add HBox and GridPane layout to BorderPane Layout
         bp.setTop(hb);
         bp.setCenter(gridPane);
@@ -142,63 +140,52 @@ public class Login extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    
-        // Sanitize inputs!
-    private boolean processLogin(String user, String pw)
-    {    
-        boolean bool = false;
-        Connection connection;
+
+    // Sanitize inputs!
+    private boolean processLogin(String user, String pw) {
+        boolean bool = false;       
         DBConnector db = new DBConnector();
         lblMessage.setText("");
-        
+
         // Connect to DB
-        try
-        {
-            connection = db.makeConnection();            
+        try {
+           db.makeConnection();
 
             // Query User table for user, pw, and salt where user = user
             ResultSet rs = db.retrieveSaltedPW(user);
-            
+
             rs.last();
             int rsSize = rs.getRow();
-            
-            if(rsSize == 0)
-            {
+
+            if (rsSize == 0) {
                 lblMessage.setText("No account exists for this user.");
                 lblMessage.setTextFill(Color.RED);
-            }
-            else // Record returned
+            } else // Record returned
             {
                 // These parameters will have to be modified, in accordance with group decisions
                 String salt = rs.getString("salt");
                 String pw_hash = rs.getString("password");
-                
+
                 byte[] byteSalt = Base64.getDecoder().decode(salt);
-                
-                if(encrypt.isExpectedPassword(pw, pw_hash, byteSalt))
-                {
+
+                if (encrypt.isExpectedPassword(pw, pw_hash, byteSalt)) {
                     dashboard.mainScreen();
                     bool = true;
-                }
-                
-                else
-                {
+                } else {
                     lblMessage.setText("Incorrect user or password");
                     lblMessage.setTextFill(Color.RED);
                 }
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Failed to connect to db");
-                    
+
         }
-        
-          txtUserName.setText("");
-          pf.setText("");
-          
-          return bool;
+
+        txtUserName.setText("");
+        pf.setText("");
+
+        return bool;
     }
 
 } //End Class Login
