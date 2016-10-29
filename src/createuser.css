@@ -1,4 +1,4 @@
-#root {
+#gp {
  -fx-background-color:  linear-gradient(lightgray, gray);
  -fx-border-color: white;
  -fx-border-radius: 20;
@@ -12,26 +12,11 @@
  
 }
 
-#btnLogin {
+#btn {
     -fx-background-radius: 30, 30, 29, 28;
     -fx-padding: 3px 10px 3px 10px;
     -fx-background-color: linear-gradient(orange, orangered );
 }
-
-/*CUSH*/
-#btnCreateUser {
-    -fx-background-radius: 30, 30, 29, 28;
-    -fx-padding: 3px 10px 3px 10px;
-    -fx-background-color: linear-gradient(gainsboro, DimGrey );
-     
-}
-
-#btnResetPassword {
-    -fx-background-radius: 30, 30, 29, 28;
-    -fx-padding: 3px 10px 3px 10px;
-    -fx-background-color: linear-gradient(gainsboro, DimGrey ); 
-}
-/*END CUSH*/
 
 #text {
  -fx-fill:  linear-gradient(orange , orangered);

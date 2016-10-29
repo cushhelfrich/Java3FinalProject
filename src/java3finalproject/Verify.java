@@ -1,6 +1,8 @@
 package java3finalproject;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
 /** 
  * @Course: SDEV 450 ~ Enterprise Java Programming
@@ -36,5 +38,32 @@ public class Verify {
         return flag;
         
     } //End checkEmail method
+    
+    /**
+     * isData Method:  Checks if field is empty
+     * @param t
+     * @param l
+     * @return boolChecks
+     */
+    public boolean isData(TextField t, Label l) {
+
+        boolean boolChecks = true;
+        if (t.getText().isEmpty()) {
+
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("ERROR");
+            alert.setHeaderText("No Data Error");
+            alert.setContentText("You must enter a value int the " + l.getText() +
+                    " field.  Please try again");
+               
+            alert.showAndWait();
+
+            boolChecks = false;
+        }
+
+        return boolChecks;
+        
+    } //End isData method
+
     
 } //End Subclass Verify
