@@ -8,13 +8,14 @@ import java.sql.Statement;
 
 /** 
  * @Course: SDEV 450 ~ Enterprise Java Programming
- * @Author Name: Charlotte Hirschberger
+ * @Contributors: Charlotte Hirschberger, Wayne Riley
  * @Created Date: October 16, 2016
  * @Last update: October 28, 2016
  * @Description: This class is responsible for initiating and returning the 
  *      connection to a database and executing queries received in String parameters.
  */
 
+/**Start Charlotte's code**/
 public class DBConnector {
     private Connection connection;
     private String dbUser = "champlain";
@@ -45,6 +46,10 @@ public class DBConnector {
             }
     }
     
+    /**
+     * Returns connection established in constructor
+     * @return 
+     */
     public Connection getConnection()
     {
         return connection;
@@ -79,7 +84,7 @@ public class DBConnector {
     /**
      * Accepts an SQL statement in a string and returns an integer, representing
      * the number of rows affected by the query. 0 indicates a query that
-     * affects 0 results.
+     * affects 0 rows
      * @param query delete, update, or insert
      * @return 
      */
@@ -102,12 +107,12 @@ public class DBConnector {
         
        return rowsAffected; 
     }
+    /*End Charlotte's code*/
     
     //**************************wayne*************************************8
     /**
      * Queries account table and returns to dashboard and printed in Textarea.
      *
-     * @param actName
      * @return 
      * @throws SQLException
      */

@@ -143,18 +143,23 @@ public class Login extends Application {
     }
 
         // Sanitize inputs!
+    /**
+     * This function is responsible for validating textfield entries and creating
+     * the SQL statement used to query the User table for the provided username.
+     * If a record is found, this function computes the hash for the provided
+     * password and compares it to the retrieved one.
+     * @param user      textfield entry
+     * @param pw        textfield entry
+     * @return 
+     */
     private boolean processLogin(String user, String pw)
     {    
         boolean bool = false;
-        lblMessage.setText("");
-        
-        Statement stmt;
+        lblMessage.setText(""); // Clear alert
         
         // Connect to DB
         try
-        {    
-            stmt = db.getConnection().createStatement();
-            
+        {             
             String isUser = "SELECT * FROM user WHERE username = '" + user + "'";
             
             // Query User table for user, pw, and salt where user = user
@@ -174,34 +179,40 @@ public class Login extends Application {
                 String salt = rs.getString("salt");
                 String pw_hash = rs.getString("password");
                 
+                //Determine whether the hash of the provided password matches the stored hash
                 if(encrypt.isExpectedPassword(pw, pw_hash, salt))
                 {
+                    // If the passwords match, gather the other record values for User creation
                     String email = rs.getString("email");
                     String first = rs.getString("first_name");
                     String last = rs.getString("last_name");
                     String created = rs.getString("created");
                     String updated = rs.getString("last_update");
                     
+                    // Store the db values in a User object's attributes
                     currUser = new User(email, user, pw_hash, salt, first, last, created, updated);
-                    bool = true;
-                    dashboard.mainScreen(currUser);
+                    
+                    bool = true;                    // signal to calling function that stage should be closed
+                    dashboard.mainScreen(currUser); // display the user's dashboard
                 }
-                
-                else
+                else // User's password entry was invalid
                 {
                     lblMessage.setText("Incorrect user or password");
                     lblMessage.setTextFill(Color.RED);
                 }
             }
+            
         }
         catch (SQLException e)
         {
             e.printStackTrace();
             System.out.println("Failed to connect to db");
                     
-        }        
-          txtUserName.setText("");
-          pf.setText("");
+        } 
+        
+        // Wipe the textfields
+        txtUserName.setText("");
+        pf.setText("");
           
           return bool;
     }

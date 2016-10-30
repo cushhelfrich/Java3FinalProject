@@ -8,7 +8,7 @@ import java.util.Base64;
 import java.util.Random;
 /** 
  * @Course: SDEV 450 ~ Enterprise Java Programming
- * @Author Name: Charlotte Hirschberger
+ * @Contributors: Charlotte Hirschberger
  * @Created Date: October 16, 2016
  * @Description: This class will be called by the main JavaFX class. It will contain methods for hashing, 
  *      AES encryption, and so on. Currently contains overloaded getHashString methods, getSalt,
@@ -16,10 +16,10 @@ import java.util.Random;
  */
 
 public class Encryptor {
-    private static final Random RANDOM = new SecureRandom();
+    private static final Random RANDOM = new SecureRandom();    // Seed for salt
     
     // Future update: compute hash length based on salt size
-    private static final int HASH_LENGTH = 44; // use to extract hash substring from hash/salt string
+    private static final int HASH_LENGTH = 44;                  // use to extract hash substring from hash/salt string
     
     // default constructor
     public Encryptor()
