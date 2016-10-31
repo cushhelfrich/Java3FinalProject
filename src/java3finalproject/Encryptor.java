@@ -33,8 +33,13 @@ public class Encryptor {
      */
     public String getHashString(String unhashed)
     {
-        byte[] salt = getSalt();
-        String hashed = getHashString(unhashed, salt);
+        byte[] salt = getSalt();  // Make a new salt array 
+        
+        // Convert the bytes to a string so they can be stored in User table
+        String saltString = Base64.getEncoder().encodeToString(salt);
+        
+        // Concatenate the hash and salt
+        String hashed = getHashString(unhashed, salt) + saltString;
         
         return hashed;
     }
@@ -51,9 +56,6 @@ public class Encryptor {
     {
         String hashed = "";
         
-        // convert the salt to a Base64 string for concatenation later
-        String saltString = Base64.getEncoder().encodeToString(salt);
-        
         try 
         {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -64,7 +66,7 @@ public class Encryptor {
             byte[] unhashedBytes = md.digest(unhashed.getBytes("UTF-8"));
             
             // Convert the hash to a string and stick the salt on the end
-            hashed = new String(Base64.getEncoder().encode(unhashedBytes)) + saltString;
+            hashed = new String(Base64.getEncoder().encode(unhashedBytes));
         }
         
         catch(NoSuchAlgorithmException | UnsupportedEncodingException e)
@@ -104,7 +106,7 @@ public class Encryptor {
         
         /*Hash the password entry and then use substring() to separate the hash
         from the salt in the returned string*/
-        String currHash = getHashString(pwEntry, byteSalt).substring(0,HASH_LENGTH);
+        String currHash = getHashString(pwEntry, byteSalt);
         
         if(currHash.equals(pwHash))
         {
