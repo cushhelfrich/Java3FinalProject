@@ -120,6 +120,7 @@ public class Add {
             addScene.close();
             //!!!!!!!!!!!!!!!!!business logic or call class to perform function!!!!!!!!!!!!!!!
             Account newAct = new Account(actName, usrName, pw);
+            newAct.insert(actName, usrName, pw);            
             System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
             Dashboard.clearHandler();//calls Static method in main
         });//end confirm event handler
