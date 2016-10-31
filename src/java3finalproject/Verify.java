@@ -4,7 +4,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-/** 
+/**
  * @Course: SDEV 450 ~ Enterprise Java Programming
  * @Author Name: Cush Helfrich
  * @Assignment Name: java3finalproject
@@ -12,12 +12,12 @@ import javafx.scene.control.TextField;
  * @Subclass Verify Description: Subclass used for verification of data entry
  */
 //Imports
-
 //Begin Subclass Verify
 public class Verify {
 
     /**
      * checkEmail method: used to check syntax of email entered
+     *
      * @param n
      * @return flag
      */
@@ -36,11 +36,12 @@ public class Verify {
 
         }
         return flag;
-        
+
     } //End checkEmail method
-    
+
     /**
-     * isData Method:  Checks if field is empty
+     * isData Method: Checks if field is empty
+     *
      * @param t
      * @param l
      * @return boolChecks
@@ -53,17 +54,55 @@ public class Verify {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("ERROR");
             alert.setHeaderText("No Data Error");
-            alert.setContentText("You must enter a value int the " + l.getText() +
-                    " field.  Please try again");
-               
+            alert.setContentText("You must enter a value int the " + l.getText()
+                    + " field.  Please try again");
+
             alert.showAndWait();
 
             boolChecks = false;
         }
 
         return boolChecks;
-        
-    } //End isData method
 
+    } //End isData method
     
+    //********************Wayne**********************************
+
+    /**
+     * Alert if Account, username and password fields are blank
+     */
+    public void empty() {
+
+        Alert blank = new Alert(Alert.AlertType.WARNING);
+        blank.setTitle("Warning");
+        blank.setHeaderText("Missing Information");
+        blank.setContentText("You must populate Account, Username and Password fields");
+        blank.showAndWait();
+    }
+
+    /**
+     * Alert if account only is blank
+     */
+    public void deleteEmpty() {
+
+        Alert missing = new Alert(Alert.AlertType.WARNING);
+        missing.setTitle("Warning");
+        missing.setHeaderText("Missing Information");
+        missing.setContentText("You must populate Account field");
+        missing.showAndWait();
+    }
+    
+    
+    /**
+     * Alert if duplicate account exist
+     */
+    public void duplicate() {
+
+        Alert missing = new Alert(Alert.AlertType.WARNING);
+        missing.setTitle("Warning");
+        missing.setHeaderText("Duplicate Account");
+        missing.setContentText("You must enter a unique Account Name");
+        missing.showAndWait();
+    }
+
 } //End Subclass Verify

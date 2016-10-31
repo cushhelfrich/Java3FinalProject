@@ -1,12 +1,11 @@
 package java3finalproject;
 
-/**
+/** 
  * @Course: SDEV 450 ~ Java Programming III
- * @Author Name: Wayne Riley
+ * @Author Name: Riley Laptop
  * @Assignment Name: java3finalproject
- * @Date: Oct 17, 2016
- * @Subclass Add Description: Content (Account, Username, password)
- * passed from dashboard textfields and inserted into database.
+ * @Date: Oct 29, 2016
+ * @Subclass Modify Description: 
  */
 //Imports
 import javafx.event.ActionEvent;
@@ -18,20 +17,17 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-//Begin Subclass Add
-//***********************Wayne***************************
-public class Add {
-
-    //declarations
-    Stage addScene = new Stage();
+//Begin Subclass Modify
+class Modify {
+    
+//declarations
+    Stage modifyScene = new Stage();
     Button btnConfirm = new Button("Confirm");
     Button btnEdit = new Button("Edit");
 
@@ -44,7 +40,7 @@ public class Add {
      * @param pw
      * @param ws
      */
-    public void insert(String actName, String usrName, String pw) {
+    public void change(String actName, String usrName, String pw) {
 
         //declarations for Confirmation dialog
         Pane pane = new Pane();
@@ -57,7 +53,7 @@ public class Add {
         dropShadow.setOffsetX(5);
         dropShadow.setOffsetY(5);
 
-        Text header = new Text(15, 15, "Confirm New Account");
+        Text header = new Text(35, 15, "Modify Account\n Are you sure?");
         header.setFont(Font.font("Courier New", FontWeight.BOLD, 20));
         pane.getChildren().addAll(header); //add children to top pane
         header.setEffect(dropShadow);
@@ -90,20 +86,20 @@ public class Add {
         gridPane.setVgap(5);
 
         //add Account Name to grid pane
-        gridPane.add(lblaccountName, 0, 0);
-        GridPane.setConstraints(lblaccountName, 0, 0, 1, 1);
-        gridPane.add(lblaccountGetText, 1, 0);
-        GridPane.setConstraints(lblaccountGetText, 1, 0, 1, 1);
+        //gridPane.add(lblaccountName, 0, 0);
+        //GridPane.setConstraints(lblaccountName, 0, 0, 1, 1);
+        //gridPane.add(lblaccountGetText, 1, 0);
+        //GridPane.setConstraints(lblaccountGetText, 1, 0, 1, 1);
         //Add User Name to grid pane
-        gridPane.add(lblLUserName, 0, 1);
-        GridPane.setConstraints(lblLUserName, 0, 1, 1, 1);
-        gridPane.add(lbluserNameGetText, 1, 1);
-        GridPane.setConstraints(lbluserNameGetText, 1, 1, 1, 1);
+        //gridPane.add(lblLUserName, 0, 1);
+        //GridPane.setConstraints(lblLUserName, 0, 1, 1, 1);
+        //gridPane.add(lbluserNameGetText, 1, 1);
+        //GridPane.setConstraints(lbluserNameGetText, 1, 1, 1, 1);
         //add password to grid pane
-        gridPane.add(lblpassword, 0, 2);
-        GridPane.setConstraints(lblpassword, 0, 2, 1, 1);
-        gridPane.add(lblpasswordGetText, 1, 2);
-        GridPane.setConstraints(lblpasswordGetText, 1, 2, 1, 1);
+        //gridPane.add(lblpassword, 0, 2);
+        //GridPane.setConstraints(lblpassword, 0, 2, 1, 1);
+        //gridPane.add(lblpasswordGetText, 1, 2);
+        //GridPane.setConstraints(lblpasswordGetText, 1, 2, 1, 1);
         //add website to grid pane
         //gridPane.add(lblwebsite, 0, 3);
         //GridPane.setConstraints(lblwebsite, 0, 3, 1, 1);
@@ -117,24 +113,25 @@ public class Add {
 
         //lambda expression confirm and Edit
         btnConfirm.setOnAction((ActionEvent e) -> {
-            addScene.close();
+            modifyScene.close();
             //!!!!!!!!!!!!!!!!!business logic or call class to perform function!!!!!!!!!!!!!!!
-            Account newAct = new Account(actName, usrName, pw);
-            newAct.insert(actName, usrName, pw);            
-            System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
+            
+            System.out.println("Modify " + actName + " " + usrName + " " + pw + " " + " in database");
             Dashboard.clearHandler();//calls Static method in main
         });//end confirm event handler
 
         //lambda expression Exit Program        
         btnEdit.setOnAction((ActionEvent e) -> {
-            addScene.close();
+            modifyScene.close();
         });//end edit event handler
 
         //New stage
         Scene scene = new Scene(bp, 275, 180);
         scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
-        addScene.setTitle("Add Information");
-        addScene.setScene(scene);
-        addScene.show();
-    }  
-}//End Subclass Add
+        modifyScene.setTitle("Modify Information");
+        modifyScene.setScene(scene);
+        modifyScene.show();
+    }      
+    
+
+} //End Subclass Modify

@@ -11,6 +11,9 @@ package java3finalproject;
 //Imports
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -39,6 +42,8 @@ public class Dashboard {
     Button btnExit;
     static TextArea accountView;
     Alert blank;
+    String dup;
+    ArrayList<String> account = new ArrayList();
     static TextField accountName = new TextField();
     static TextField userName = new TextField();
     static TextField passWord = new TextField();
@@ -48,10 +53,14 @@ public class Dashboard {
     Add add = new Add();
     Delete delete = new Delete();
     DBConnector db = new DBConnector();
+    Modify modify = new Modify();
+    Verify verify = new Verify();
 
     /**
      * Main dashboard - User can view accounts or add, modify and delete
      * accounts
+     *
+     * @throws java.sql.SQLException
      */
     public void mainScreen(User currUser) throws SQLException {
 
@@ -127,9 +136,7 @@ public class Dashboard {
         vBox.getChildren().addAll(accountView);
 
         return vBox;
-    }
-
-    ;
+    };
 
     /**
      * get hBox and buttons (Add, modify, delete, clear and Exit)
@@ -148,35 +155,57 @@ public class Dashboard {
 
         //Launches add confirmation scene
         btnAdd.setOnAction((ActionEvent e) -> {
+
             boolean blank = accountName.getText().matches("") || userName.getText().matches("")
                     || passWord.getText().matches("");
             if (blank == true) {
-                empty();
+                verify.empty();
+            } else if (account.contains(accountName.getText())) {
+                verify.duplicate();
             } else {
                 add.insert(accountName.getText(), userName.getText(), passWord.getText());
             }
-        });//end Add event handler
+        }
+        );//end Add event handler
+
+        //Launches modify confirmation scene
+        btnModify.setOnAction(
+                (ActionEvent e) -> {
+                    if (accountName.getText().matches("")) {
+                        verify.deleteEmpty();
+                    } else {
+                        modify.change(accountName.getText(), userName.getText(), passWord.getText());
+                    }
+                }
+        );//end modify event handler
+
+        //Launches delete confirmation scene
+        btnDelete.setOnAction(
+                (ActionEvent e) -> {
+                    if (accountName.getText().matches("")) {
+                        verify.deleteEmpty();
+                    } else {
+                        delete.delete(accountName.getText());
+                    }
+                }
+        );//end delete event handler
 
         //Clears TextFields
-        btnDelete.setOnAction((ActionEvent e) -> {
-            if (accountName.getText().matches("")) {
-                deleteEmpty();
-            } else {
-                delete.delete(accountName.getText());
-            }
-        });//end clear event handler
-
-        //Clears TextFields
-        btnClear.setOnAction((ActionEvent e) -> {
-            clearHandler();
-        });//end clear event handler
+        btnClear.setOnAction(
+                (ActionEvent e) -> {
+                    clearHandler();
+                }
+        );//end clear event handler
 
         //Exit Program
-        btnExit.setOnAction((ActionEvent e) -> {
-            System.exit(0);
-        });//end exit event handler
+        btnExit.setOnAction(
+                (ActionEvent e) -> {
+                    System.exit(0);
+                }
+        );//end exit event handler
 
-        hBox.getChildren().addAll(btnAdd, btnModify, btnDelete, btnClear, btnExit);
+        hBox.getChildren()
+                .addAll(btnAdd, btnModify, btnDelete, btnClear, btnExit);
 
         return hBox;
     }
@@ -203,32 +232,8 @@ public class Dashboard {
         ResultSet rs = db.act();
 
         while (rs.next()) {
-            accountView.appendText(rs.getString(1) + "\n");//append text area;
+            accountView.appendText(rs.getString(1) + "\n");//append text area;            
+            account.add(rs.getString(1));
         }
     }
-
-    /**
-     * Alert if fields are blank
-     */
-    private void empty() {
-
-        blank = new Alert(Alert.AlertType.WARNING);
-        blank.setTitle("Warning");
-        blank.setHeaderText("Missing Information");
-        blank.setContentText("Please Populate Account, Username and Password Fields");
-        blank.showAndWait();
-    }
-
-    /**
-     * Alert if account is blank
-     */
-    private void deleteEmpty() {
-
-        Alert missing = new Alert(Alert.AlertType.WARNING);
-        missing.setTitle("Warning");
-        missing.setHeaderText("Missing Information");
-        missing.setContentText("Please Populate Account Field");
-        missing.showAndWait();
-    }
-
 } //End Subclass Dashboard
