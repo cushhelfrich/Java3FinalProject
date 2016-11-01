@@ -104,5 +104,17 @@ public class Verify {
         missing.setContentText("You must enter a unique Account Name");
         missing.showAndWait();
     }
+    
+        /**
+     * Alert if duplicate account exist
+     */
+    public void noAct() {
+
+        Alert missing = new Alert(Alert.AlertType.WARNING);
+        missing.setTitle("Warning");
+        missing.setHeaderText("Account Does Not Exist");
+        missing.setContentText("You must enter a valid account name");
+        missing.showAndWait();
+    }
 
 } //End Subclass Verify

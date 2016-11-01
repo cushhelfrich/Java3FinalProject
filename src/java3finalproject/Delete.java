@@ -9,6 +9,12 @@ package java3finalproject;
  * textfiled to delete account
  */
 //Imports
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static java3finalproject.Dashboard.account;
+import static java3finalproject.Dashboard.accountName;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -25,13 +31,15 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 //Begin Subclass Delete
-//***********************Wayne***************************
+//**********Start Wayne Code ***************************
 class Delete {
 
     //declarations
     Stage deleteScene = new Stage();
     Button btnConfirm = new Button("Yes");
     Button btnEdit = new Button("No");
+    DBConnector db = new DBConnector();
+    Verify verify = new Verify();
 
     /**
      * Account name, user name, password and website received from dashboard
@@ -44,7 +52,7 @@ class Delete {
      */
     public void delete(String actName) {
 
-        //declarations for Confirmation dialog
+        //Borderpane and Gridpane
         Pane pane = new Pane();
         BorderPane bp = new BorderPane();
         bp.setPadding(new Insets(10, 10, 10, 10));
@@ -55,6 +63,7 @@ class Delete {
         dropShadow.setOffsetX(5);
         dropShadow.setOffsetY(5);
 
+        //Header information
         Text header = new Text(35, 15, "Delete Account\n Are You Sure?");
         header.setFont(Font.font("Courier New", FontWeight.BOLD, 20));
         pane.getChildren().addAll(header); //add children to top pane
@@ -96,8 +105,13 @@ class Delete {
         //lambda expression confirm and Edit
         btnConfirm.setOnAction((ActionEvent e) -> {
             deleteScene.close();
-            //!!!!!!!!!!!!!!!!!insert business logic or call class!!!!!!!!!!!!!!!
-
+            account.remove(accountName.getText());
+            Dashboard.viewAccount();
+            try {
+                removeAct(accountName.getText());
+            } catch (SQLException ex) {
+                Logger.getLogger(Delete.class.getName()).log(Level.SEVERE, null, ex);
+            }
             System.out.println("Delete " + actName + " from database");
             Dashboard.clearHandler();//calls Static method in main
         });//end confirm event handler
@@ -115,4 +129,35 @@ class Delete {
         deleteScene.show();
     }
 
+    /**
+     * Calls retrieveRecords method in DBConnector class to determine account_id
+     * and then calls modifyRecords to delete account informaion in SQL.
+     *
+     * @throws SQLException
+     */
+    private void removeAct(String actName) throws SQLException {
+
+        String rmvAct = "SELECT * FROM account WHERE account_name = '" + actName + "'";
+
+        // Query User table for account_id to that matches account name.
+        ResultSet rs = db.retrieveRecords(rmvAct);
+
+        // Move the cursor to the end of the ResultSet
+        rs.last();
+        int rsSize = rs.getRow();
+
+        if (rsSize == 0) // Query returned 0 results
+        {
+            verify.noAct();
+
+        } else {
+
+            //SQL string to delete account account row
+            String dltAct = "DELETE FROM account WHERE account_id = '" + rs.getString(1) + "'";
+
+            //Calls modifyRecords in DBConnector to execute SQL string and delete account
+            db.modifyRecords(dltAct);
+        }
+    }
+    //**********End Wayne Code ***************************
 } //End Subclass Delete

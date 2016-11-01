@@ -12,13 +12,10 @@ package java3finalproject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -41,9 +38,7 @@ public class Dashboard {
     Button btnClear;
     Button btnExit;
     static TextArea accountView;
-    Alert blank;
-    String dup;
-    ArrayList<String> account = new ArrayList();
+    static ArrayList<String> account = new ArrayList();
     static TextField accountName = new TextField();
     static TextField userName = new TextField();
     static TextField passWord = new TextField();
@@ -110,8 +105,9 @@ public class Dashboard {
         scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
         dbScene.setScene(scene);
         dbScene.show();
-
-        account();
+        
+        account();//calls account method to load ArrayList from database
+        viewAccount();//calls viewAccount method to display account name in display
     }
 
     /**
@@ -130,13 +126,15 @@ public class Dashboard {
         accountView.setPrefRowCount(8);
         accountView.setEditable(false);
         accountView.setWrapText(true);
-        accountView.setText("ACCOUNT INFORMATION\n-----------------------------\n");
+        //accountView.setText("ACCOUNT INFORMATION\n-----------------------------\n");
         //ImageView image = new ImageView(new Image("images/smallLock.jpg"));
 
         vBox.getChildren().addAll(accountView);
 
         return vBox;
-    };
+    }
+
+    ;
 
     /**
      * get hBox and buttons (Add, modify, delete, clear and Exit)
@@ -211,6 +209,37 @@ public class Dashboard {
     }
 
     /**
+     * Calls dbConnector for connection and query returns account name which
+     * loads to ArrayList
+     *
+     * @throws SQLException
+     */
+    private void account() throws SQLException {
+
+        account.clear();
+        String rtrvAct = "SELECT account_name FROM account";
+
+        //calls account to load accounts in arraylist
+        ResultSet rs = db.retrieveRecords(rtrvAct);
+
+        while (rs.next()) {
+            //accountView.appendText(rs.getString(1) + "\n");//append text area;    
+            //Add to ArrayList
+            account.add(rs.getString(1));
+        }
+    }
+
+    /**
+     * Read ArrayList and display in text area.
+     */
+    public static void viewAccount() {
+        accountView.setText("ACCOUNT NAME\n-----------------------------\n");
+        for (int i = 0; i < account.size(); i++) {
+            accountView.appendText(account.get(i) + "\n");
+        }
+    }
+
+    /**
      * Method called to clear text fields
      */
     public static void clearHandler() {
@@ -218,22 +247,5 @@ public class Dashboard {
         userName.clear();
         passWord.clear();
         //webSite.clear();
-    }
-
-    /**
-     * Calls dbConnector for connection calls dbConnector for query returns
-     * account name Prints account names in Textarea.
-     *
-     * @throws SQLException
-     */
-    private void account() throws SQLException {
-
-        //calls account to load accounts in textArea
-        ResultSet rs = db.act();
-
-        while (rs.next()) {
-            accountView.appendText(rs.getString(1) + "\n");//append text area;            
-            account.add(rs.getString(1));
-        }
     }
 } //End Subclass Dashboard

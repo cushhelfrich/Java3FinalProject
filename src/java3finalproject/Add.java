@@ -5,10 +5,12 @@ package java3finalproject;
  * @Author Name: Wayne Riley
  * @Assignment Name: java3finalproject
  * @Date: Oct 17, 2016
- * @Subclass Add Description: Content (Account, Username, password)
- * passed from dashboard textfields and inserted into database.
+ * @Subclass Add Description: Content (Account, Username, password) passed from
+ * dashboard textfields and inserted into database.
  */
 //Imports
+import static java3finalproject.Dashboard.account;
+import static java3finalproject.Dashboard.accountName;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,10 +20,8 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -120,9 +120,11 @@ public class Add {
             addScene.close();
             //!!!!!!!!!!!!!!!!!business logic or call class to perform function!!!!!!!!!!!!!!!
             Account newAct = new Account(actName, usrName, pw);
-            newAct.insert(actName, usrName, pw);            
+            newAct.insert(actName, usrName, pw);
+            account.add(accountName.getText());
             System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
-            Dashboard.clearHandler();//calls Static method in main
+            Dashboard.viewAccount();//calls method in Dashboard to update view
+            Dashboard.clearHandler();//clears all textfields
         });//end confirm event handler
 
         //lambda expression Exit Program        
@@ -136,5 +138,6 @@ public class Add {
         addScene.setTitle("Add Information");
         addScene.setScene(scene);
         addScene.show();
-    }  
+    }
+    //*********End Wayne's Code
 }//End Subclass Add
