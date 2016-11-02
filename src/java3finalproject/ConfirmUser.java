@@ -238,7 +238,9 @@ public class ConfirmUser {
      
      private boolean inputDatabase(String user) {
          
-         String hashSalt = encrypt.getHashString(user);
+         boolean checks = false;
+         try {
+             String hashSalt = encrypt.getHashString(user);
          
          String hash = hashSalt.substring(0, 44);
          String salt = hashSalt.substring(44, hashSalt.length());
@@ -253,8 +255,13 @@ public class ConfirmUser {
                  + "','" + hash + "','" + salt + "')";
          System.out.println(query);
          dbConnection.insertUser(query);
+         checks = true;
+         }
+         catch (Exception ex) {
+             System.out.println("Error occurred while entering user");
+         }
          
-         return true;
+         return checks;
      }
 
 } //End Subclass ConfirmUser
