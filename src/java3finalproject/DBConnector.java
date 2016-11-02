@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * @Course: SDEV 450 ~ Enterprise Java Programming
@@ -132,4 +134,19 @@ public class DBConnector {
         }        
         return rs;
     }    
+    
+    //*****Cush********
+    public void insertUser (String query) {
+        
+        
+        try {
+            Statement statement = connection.createStatement();
+            
+            statement.executeUpdate(query);
+        } catch (SQLException ex) {
+            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+        
+    }
 }
