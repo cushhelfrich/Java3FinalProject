@@ -122,7 +122,7 @@ public class Add {
             Account newAct = new Account(actName, usrName, pw);
             newAct.insert(actName, usrName, pw);
             //****************End Bill Code*********************
-            account.add(accountName.getText());            
+            account.add(accountName.getText());
             System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
             Dashboard.viewAccount();//calls method in Dashboard to update view
             Dashboard.clearHandler();//clears all textfields
