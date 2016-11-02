@@ -27,7 +27,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 //Begin Subclass Add
-//***********************Wayne***************************
+//***************Start Wayne Code***************************
 public class Add {
 
     //declarations
@@ -118,10 +118,11 @@ public class Add {
         //lambda expression confirm and Edit
         btnConfirm.setOnAction((ActionEvent e) -> {
             addScene.close();
-            //!!!!!!!!!!!!!!!!!business logic or call class to perform function!!!!!!!!!!!!!!!
+            //****************Start Bill Code*********************
             Account newAct = new Account(actName, usrName, pw);
             newAct.insert(actName, usrName, pw);
-            account.add(accountName.getText());
+            //****************End Bill Code*********************
+            account.add(accountName.getText());            
             System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
             Dashboard.viewAccount();//calls method in Dashboard to update view
             Dashboard.clearHandler();//clears all textfields

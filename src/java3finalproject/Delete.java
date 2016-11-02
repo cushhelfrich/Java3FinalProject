@@ -104,8 +104,10 @@ class Delete {
 
         //lambda expression confirm and Edit
         btnConfirm.setOnAction((ActionEvent e) -> {
-            deleteScene.close();
-            account.remove(accountName.getText());
+            
+            if (!account.contains(accountName.getText())) {
+                verify.noAct();
+            } else {
             Dashboard.viewAccount();
             try {
                 removeAct(accountName.getText());
@@ -113,7 +115,11 @@ class Delete {
                 Logger.getLogger(Delete.class.getName()).log(Level.SEVERE, null, ex);
             }
             System.out.println("Delete " + actName + " from database");
+            account.remove(accountName.getText());
+            Dashboard.viewAccount();
             Dashboard.clearHandler();//calls Static method in main
+            deleteScene.close();//closes scene
+            }
         });//end confirm event handler
 
         //lambda expression Exit Program        
@@ -159,5 +165,5 @@ class Delete {
             db.modifyRecords(dltAct);
         }
     }
-    //**********End Wayne Code ***************************
 } //End Subclass Delete
+//****************************End Wayne Code***************************

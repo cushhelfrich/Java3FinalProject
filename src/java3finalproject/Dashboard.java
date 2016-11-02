@@ -12,6 +12,7 @@ package java3finalproject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -25,8 +26,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+//************Start Wayne Code*********************
 //Begin Subclass Dashboard
-//***********************Wayne ***************************
 public class Dashboard {
 
     //declarations
@@ -55,6 +56,7 @@ public class Dashboard {
      * Main dashboard - User can view accounts or add, modify and delete
      * accounts
      *
+     * @param currUser
      * @throws java.sql.SQLException
      */
     public void mainScreen(User currUser) throws SQLException {
@@ -105,7 +107,7 @@ public class Dashboard {
         scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
         dbScene.setScene(scene);
         dbScene.show();
-        
+
         account();//calls account method to load ArrayList from database
         viewAccount();//calls viewAccount method to display account name in display
     }
@@ -156,10 +158,10 @@ public class Dashboard {
 
             boolean blank = accountName.getText().matches("") || userName.getText().matches("")
                     || passWord.getText().matches("");
-            if (blank == true) {
-                verify.empty();
-            } else if (account.contains(accountName.getText())) {
+            if (account.contains(accountName.getText())) {
                 verify.duplicate();
+            } else if (blank == true) {
+                verify.empty();
             } else {
                 add.insert(accountName.getText(), userName.getText(), passWord.getText());
             }
@@ -249,3 +251,4 @@ public class Dashboard {
         //webSite.clear();
     }
 } //End Subclass Dashboard
+//************End Wayne Code*********************
