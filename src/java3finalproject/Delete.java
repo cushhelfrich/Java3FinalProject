@@ -107,8 +107,7 @@ class Delete {
             
             if (!account.contains(accountName.getText())) {
                 verify.noAct();
-            } else {
-            Dashboard.viewAccount();
+            } else {            
             try {
                 removeAct(accountName.getText());
             } catch (SQLException ex) {
@@ -116,7 +115,7 @@ class Delete {
             }
             System.out.println("Delete " + actName + " from database");
             account.remove(accountName.getText());
-            Dashboard.viewAccount();
+            Dashboard.updateTextArea();
             Dashboard.clearHandler();//calls Static method in main
             deleteScene.close();//closes scene
             }

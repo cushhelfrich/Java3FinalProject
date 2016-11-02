@@ -108,8 +108,8 @@ public class Dashboard {
         dbScene.setScene(scene);
         dbScene.show();
 
-        account();//calls account method to load ArrayList from database
-        viewAccount();//calls viewAccount method to display account name in display
+        getAct();//calls account method to load ArrayList from database
+        updateTextArea();//calls viewAccount method to display account name in display
     }
 
     /**
@@ -216,25 +216,24 @@ public class Dashboard {
      *
      * @throws SQLException
      */
-    private void account() throws SQLException {
+    private void getAct() throws SQLException {
 
-        account.clear();
+        account.clear();//clears arrayList
         String rtrvAct = "SELECT account_name FROM account";
 
         //calls account to load accounts in arraylist
         ResultSet rs = db.retrieveRecords(rtrvAct);
 
         while (rs.next()) {
-            //accountView.appendText(rs.getString(1) + "\n");//append text area;    
-            //Add to ArrayList
-            account.add(rs.getString(1));
+            //accountView.appendText(rs.getString(1) + "\n");//append text area; 
+            account.add(rs.getString(1));//Add to ArrayList
         }
     }
 
     /**
      * Read ArrayList and display in text area.
      */
-    public static void viewAccount() {
+    public static void updateTextArea() {
         accountView.setText("ACCOUNT NAME\n-----------------------------\n");
         for (int i = 0; i < account.size(); i++) {
             accountView.appendText(account.get(i) + "\n");

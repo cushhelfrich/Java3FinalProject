@@ -124,7 +124,7 @@ public class Add {
             //****************End Bill Code*********************
             account.add(accountName.getText());
             System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
-            Dashboard.viewAccount();//calls method in Dashboard to update view
+            Dashboard.updateTextArea();//calls method in Dashboard to update view
             Dashboard.clearHandler();//clears all textfields
         });//end confirm event handler
 
