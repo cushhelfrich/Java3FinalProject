@@ -36,7 +36,7 @@ public class ConfirmUser {
     DBConnector dbConnection = new DBConnector(); //Instance to connec to database
     Encryptor encrypt = new Encryptor();
     CreateUser createUser = new CreateUser();
-    
+
     Stage confirmUserStage = new Stage();
     //The main BorderPane
     BorderPane bpConfirmUser = new BorderPane();
@@ -58,11 +58,10 @@ public class ConfirmUser {
     Button btnEdit = new Button("Edit");
 
     //Default Constructor
-    public ConfirmUser(){
-        
-        
+    public ConfirmUser() {
+
     }
-    
+
     //Constructor with arguments
     public ConfirmUser(TextField tfUserName, TextField tfEmail,
             TextField tfFirstName, TextField tfLastName, PasswordField pfPassword) {
@@ -211,57 +210,65 @@ public class ConfirmUser {
 
         @Override
         public void handle(ActionEvent e) {
-            
-            if (inputDatabase(txtUserName.getText())){
+
+            //Returns true if user was entered successfully, then close stage
+            if (inputDatabase(txtPassword.getText())) {
                 confirmUserStage.close();
             }
         }
     }
-    
-     class EditHandler implements EventHandler<ActionEvent> {
+
+    class EditHandler implements EventHandler<ActionEvent> {
 
         @Override
         public void handle(ActionEvent e) {
-            
-            
-            
+
             //Create new instance of CreatUser and pass data user entered to it
-            CreateUser create = new CreateUser (txtUserName, txtEmail,
-            txtFirstName, txtLastName, txtPassword);
-            
+            CreateUser create = new CreateUser(txtUserName, txtEmail,
+                    txtFirstName, txtLastName, txtPassword);
+
             create.createUser(); //Call the createUser method.
             confirmUserStage.close(); //Close the confirm stage
-            
-            
+
         }
     }
-     
-     private boolean inputDatabase(String user) {
-         
-         boolean checks = false;
-         try {
-             String hashSalt = encrypt.getHashString(user);
-         
-         String hash = hashSalt.substring(0, 44);
-         String salt = hashSalt.substring(44, hashSalt.length());
-         String username = txtUserName.getText();
-         String email = txtEmail.getText();
-         String first_name = txtFirstName.getText();
-         String last_name = txtLastName.getText();
-         
-         String query = "INSERT INTO user (username, email, first_name," 
-                 + "last_name,password,salt) values ('" + username + "','" 
-                 + email + "','" + first_name + "','" + last_name 
-                 + "','" + hash + "','" + salt + "')";
-         System.out.println(query);
-         dbConnection.insertUser(query);
-         checks = true;
-         }
-         catch (Exception ex) {
-             System.out.println("Error occurred while entering user");
-         }
-         
-         return checks;
-     }
+
+    private boolean inputDatabase(String password) {
+
+        boolean checks = false;
+       
+            int wasUpdated = 0;
+            //Get the hash and salt for the given password
+            String hashSalt = encrypt.getHashString(password);
+
+            String hash = hashSalt.substring(0, 44); //Substring for password hash
+            String salt = hashSalt.substring(44, hashSalt.length()); //Substring for salt
+            
+            //Variables fo other fields to include in query
+            String username = txtUserName.getText();
+            String email = txtEmail.getText();
+            String first_name = txtFirstName.getText();
+            String last_name = txtLastName.getText();
+
+            //Create the query string
+            String query = "INSERT INTO user (username,email,first_name,"
+                    + "last_name,created,last_update,password,salt) values ('" 
+                    + username + "','" + email + "','" + first_name + "','" 
+                    + last_name + "',?,?,'" + hash + "','" + salt + "')";
+            System.out.println(query);
+            
+            //Call insertUser in DBConnector to 
+            wasUpdated = dbConnection.insertUser(query); 
+            
+            //If the prepareStatement in DBConnector.insertUser returns int > 0
+            if (wasUpdated > 0) {
+                checks = true;
+            } else {
+                
+            }
+            
+
+        return checks;
+    }
 
 } //End Subclass ConfirmUser

@@ -2,9 +2,12 @@ package java3finalproject;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -136,17 +139,23 @@ public class DBConnector {
     }    
     
     //*****Cush********
-    public void insertUser (String query) {
+    public int insertUser (String query) {
         
-        
+        PreparedStatement prepStmt;
+        int rowsAffected = 0;
+        Timestamp datetime = new Timestamp(new Date().getTime());
         try {
-            Statement statement = connection.createStatement();
+            prepStmt = connection.prepareStatement(query);
+            prepStmt.setTimestamp(1, datetime);
+            prepStmt.setTimestamp(2, datetime);
             
-            statement.executeUpdate(query);
-        } catch (SQLException ex) {
-            Logger.getLogger(DBConnector.class.getName()).log(Level.SEVERE, null, ex);
+            rowsAffected = prepStmt.executeUpdate();
+        } catch (Exception ex) {
+            System.out.println("A problem occurred while inserting the user. "
+                    + "Error Message: " + ex.getMessage());
         }
-            
-        
+       
+        return rowsAffected;
     }
+    //****End Cush*******
 }
