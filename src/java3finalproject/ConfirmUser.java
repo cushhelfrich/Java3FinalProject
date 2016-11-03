@@ -258,7 +258,7 @@ public class ConfirmUser {
             System.out.println(query);
             
             //Call insertUser in DBConnector to 
-            wasUpdated = dbConnection.insertUser(query); 
+            //wasUpdated = dbConnection.insertUser(query); 
             
             //If the prepareStatement in DBConnector.insertUser returns int > 0
             if (wasUpdated > 0) {
