@@ -141,8 +141,10 @@ public class Login extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+    //*********End Wayne's code*************************
 
-        // Sanitize inputs!
+        // ***********Start Charlotte Code***************
+        //Sanitize inputs!
     /**
      * This function is responsible for validating textfield entries and creating
      * the SQL statement used to query the User table for the provided username.
@@ -218,3 +220,4 @@ public class Login extends Application {
     }
 
 } //End Class Login
+//**********End Charlotte Code*******************

@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
  * @Subclass Verify Description: Subclass used for verification of data entry
  */
 //Imports
+//*******************Start Cush Code****************************
 //Begin Subclass Verify
 public class Verify {
 
@@ -65,9 +66,10 @@ public class Verify {
         return boolChecks;
 
     } //End isData method
-    
-    //********************Wayne**********************************
 
+    //****************End Cush Code**********************************
+    
+    //****************Start Wayne Code**********************************
     /**
      * Alert if Account, username and password fields are blank
      */
@@ -91,8 +93,7 @@ public class Verify {
         missing.setContentText("You must populate Account field");
         missing.showAndWait();
     }
-    
-    
+
     /**
      * Alert if duplicate account exist
      */
@@ -105,4 +106,18 @@ public class Verify {
         missing.showAndWait();
     }
 
+    /**
+     * Alert if duplicate account exist
+     */
+    public void noAct() {
+
+        Alert missing = new Alert(Alert.AlertType.WARNING);
+        missing.setTitle("Warning");
+        missing.setHeaderText("Account Does Not Exist");
+        missing.setContentText("You must enter a valid account name\nAccount Name must be entered exactly as it "
+                + "was created");
+        missing.showAndWait();
+    }
+
+    //****************End Wayne Code**********************************
 } //End Subclass Verify
