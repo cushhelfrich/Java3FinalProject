@@ -86,7 +86,7 @@ public class CreateUser {
         bpCreateUser.setTop(vbText());//Add vbTop to bpMain top by calling method
         bpCreateUser.setCenter(gpCenter());//Add GridPane to center
         bpCreateUser.setBottom(hbButtons());
-
+        
         tfUserName.setOnKeyPressed(new PressEnter());
         tfEmail.setOnKeyPressed(new PressEnter());
         tfFirstName.setOnKeyPressed(new PressEnter());
@@ -107,7 +107,7 @@ public class CreateUser {
         createUserStage.show(); //Show Stage
 
     }
-
+    
     public VBox vbText() {
 
         VBox vbTop = new VBox(); //VBox for text at the top
@@ -225,7 +225,7 @@ public class CreateUser {
 
         @Override
         public void handle(ActionEvent e) {
-
+            
             boolean checks = true;
 
             //Check if username is populated
@@ -312,7 +312,7 @@ public class CreateUser {
             if (checks) {
                 ConfirmUser confirm = new ConfirmUser(tfUserName, tfEmail,
                         tfFirstName, tfLastName, pfPassword);
-
+                
                 confirm.confirmUser(); //Call method to show confirm user stage
                 createUserStage.close(); //Close the stage
 
@@ -326,7 +326,7 @@ public class CreateUser {
         public void handle(KeyEvent pressenter) {
 
             if (pressenter.getCode() == KeyCode.ENTER) {
-
+            
                 boolean checks = true;
 
                 //Check if username is populated
