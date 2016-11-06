@@ -64,9 +64,13 @@ public class Account {
         query = "INSERT INTO account (user_id, username, password,account_name)"
                 + " VALUES (?,?,?,?)";
 
+        int user_id = Login.currUser.getUserId();
+        System.out.println(user_id);
+        
         try {
             prepstmt = sqlstmt.createStatement(query);
-            prepstmt.setInt(1, 1);
+            
+            prepstmt.setInt(1, user_id);
             prepstmt.setString(2, usrName);
             prepstmt.setString(3, pw);
             prepstmt.setString(4, actName);

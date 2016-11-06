@@ -11,7 +11,6 @@ package java3finalproject;
 //Imports
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -55,10 +54,9 @@ public class Dashboard {
      * Main dashboard - User can view accounts or add, modify and delete
      * accounts
      *
-     * @param currUser
      * @throws java.sql.SQLException
      */
-    public void mainScreen(User currUser) throws SQLException {
+    public void mainScreen() throws SQLException {
 
         //Borderpane to hold Gridpane, HBOX (holds buttons)
         BorderPane bp = new BorderPane();
@@ -216,8 +214,10 @@ public class Dashboard {
      * @throws SQLException
      */
     private void getAct() throws SQLException {
-
-        account.clear();//clears arrayList
+        if(account != null)
+        {
+            account.clear(); // clears arrayList
+        }
         String rtrvAct = "SELECT account_name FROM account";
 
         //calls account to load accounts in arraylist
