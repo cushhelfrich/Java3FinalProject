@@ -2,7 +2,9 @@ package java3finalproject;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 import javafx.event.ActionEvent;
@@ -214,6 +216,7 @@ public class ConfirmUser {
 
             //Returns true if user was entered successfully, then close stage
             if (inputDatabase(txtPassword.getText())) {
+                
                 confirmUserStage.close();
                 
             }
@@ -268,6 +271,7 @@ public class ConfirmUser {
             prepStmt.setTimestamp(2, datetime);
 
             rowsAffected = prepStmt.executeUpdate();
+            
         } catch (SQLException ex) {
             System.out.println("A problem occurred while inserting the user. "
                     + "Error Message: " + ex.getMessage());
