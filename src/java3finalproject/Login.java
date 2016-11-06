@@ -12,11 +12,12 @@ package java3finalproject;
  * https://www.javacodegeeks.com/2012/06/in-this-tutorial-i-will-design-nice.html
  */
 //Imports
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.List;
+import java.util.Map;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -33,6 +34,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 //Begin Class Login
 //*********************Wayne Riley**************************************
@@ -140,11 +142,13 @@ public class Login extends Application {
         scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.show();
+        primaryStage.setOnCloseRequest((WindowEvent we) -> {
+            db.closeConnection();
+        }); 
     }
-    //*********End Wayne's code*************************
 
-        // ***********Start Charlotte Code***************
-        //Sanitize inputs!
+    // Start Charlotte's code
+    // Note to self: Sanitize inputs!
     /**
      * This function is responsible for validating textfield entries and creating
      * the SQL statement used to query the User table for the provided username.
@@ -165,31 +169,28 @@ public class Login extends Application {
             String isUser = "SELECT * FROM user WHERE username = '" + user + "'";
             
             // Query User table for user, pw, and salt where user = user
-            ResultSet rs = db.retrieveRecords(isUser);
+            List<Map<String, Object>> results = db.retrieveRecords(isUser);
             
-            // Move the cursor to the end of the ResultSet
-            rs.last();
-            int rsSize = rs.getRow();
-            
-            if(rsSize == 0) // Query returned 0 results
+            if(results.isEmpty()) // Query returned 0 results
             {
                 lblMessage.setText("No account exists for this user.");
                 lblMessage.setTextFill(Color.RED);
             }
             else // Record returned
             {
-                String salt = rs.getString("salt");
-                String pw_hash = rs.getString("password");
+                Map<String, Object> aRow = results.get(0);
+                String salt = (String) aRow.get("salt");
+                String pw_hash = (String)aRow.get("pw_hash");
                 
                 //Determine whether the hash of the provided password matches the stored hash
                 if(encrypt.isExpectedPassword(pw, pw_hash, salt))
                 {
                     // If the passwords match, gather the other record values for User creation
-                    String email = rs.getString("email");
-                    String first = rs.getString("first_name");
-                    String last = rs.getString("last_name");
-                    String created = rs.getString("created");
-                    String updated = rs.getString("last_update");
+                    String email = (String) aRow.get("email");
+                    String first =  (String) aRow.get("first_name");
+                    String last =  (String) aRow.get("last_name");
+                    String created =  (String) aRow.get("created");
+                    String updated =  (String) aRow.get("last_update");
                     
                     // Store the db values in a User object's attributes
                     currUser = new User(email, user, pw_hash, salt, first, last, created, updated);
@@ -217,7 +218,6 @@ public class Login extends Application {
         pf.setText("");
           
           return bool;
-    }
+    } // End Charlotte's code
 
 } //End Class Login
-//**********End Charlotte Code*******************

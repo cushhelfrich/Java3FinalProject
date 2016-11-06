@@ -9,8 +9,9 @@ package java3finalproject;
  * textfiled to delete account
  */
 //Imports
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java3finalproject.Dashboard.account;
@@ -145,20 +146,17 @@ class Delete {
         String rmvAct = "SELECT * FROM account WHERE account_name = '" + actName + "'";
 
         // Query User table for account_id to that matches account name.
-        ResultSet rs = db.retrieveRecords(rmvAct);
+        List<Map<String,Object>> results = db.retrieveRecords(rmvAct);
 
-        // Move the cursor to the end of the ResultSet
-        rs.last();
-        int rsSize = rs.getRow();
-
-        if (rsSize == 0) // Query returned 0 results
+        if (results.isEmpty()) // Query returned 0 results
         {
             verify.noAct();
 
         } else {
+            String deleteId = (String) results.get(0).get("account_id");
 
             //SQL string to delete account account row
-            String dltAct = "DELETE FROM account WHERE account_id = '" + rs.getString(1) + "'";
+            String dltAct = "DELETE FROM account WHERE account_id = '" + deleteId + "'";
 
             //Calls modifyRecords in DBConnector to execute SQL string and delete account
             db.modifyRecords(dltAct);
