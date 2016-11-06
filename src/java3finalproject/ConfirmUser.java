@@ -2,7 +2,9 @@ package java3finalproject;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 import javafx.event.ActionEvent;
@@ -214,6 +216,7 @@ public class ConfirmUser {
 
             //Returns true if user was entered successfully, then close stage
             if (inputDatabase(txtPassword.getText())) {
+                
                 confirmUserStage.close();
                 
             }
@@ -243,6 +246,7 @@ public class ConfirmUser {
         boolean checks = false;
         int rowsAffected = 0;
         Timestamp datetime = new Timestamp(new Date().getTime());
+        int user_id = 0;
 
         //Get the hash and salt for the given password
         String hashSalt = encrypt.getHashString(password);
@@ -263,11 +267,15 @@ public class ConfirmUser {
         System.out.println(query);
 
         try {
-            prepStmt = connection.prepareStatement(query);
+            prepStmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             prepStmt.setTimestamp(1, datetime);
             prepStmt.setTimestamp(2, datetime);
 
             rowsAffected = prepStmt.executeUpdate();
+            
+            ResultSet rs = prepStmt.getGeneratedKeys();
+            user_id = rs.getInt("user_id");
+            
         } catch (SQLException ex) {
             System.out.println("A problem occurred while inserting the user. "
                     + "Error Message: " + ex.getMessage());
@@ -275,6 +283,7 @@ public class ConfirmUser {
 
         if (rowsAffected > 0) {
             checks = true;
+            Login.currUser = new User(user_id, email, username, hash, salt, first_name, last_name, datetime, datetime);
         }
         
         try {
