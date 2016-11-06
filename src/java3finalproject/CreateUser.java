@@ -1,11 +1,7 @@
 package java3finalproject;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.application.Application;
+import java.util.List;
+import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -23,7 +19,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -86,7 +81,7 @@ public class CreateUser {
         bpCreateUser.setTop(vbText());//Add vbTop to bpMain top by calling method
         bpCreateUser.setCenter(gpCenter());//Add GridPane to center
         bpCreateUser.setBottom(hbButtons());
-        
+
         tfUserName.setOnKeyPressed(new PressEnter());
         tfEmail.setOnKeyPressed(new PressEnter());
         tfFirstName.setOnKeyPressed(new PressEnter());
@@ -107,7 +102,7 @@ public class CreateUser {
         createUserStage.show(); //Show Stage
 
     }
-    
+
     public VBox vbText() {
 
         VBox vbTop = new VBox(); //VBox for text at the top
@@ -225,7 +220,7 @@ public class CreateUser {
 
         @Override
         public void handle(ActionEvent e) {
-            
+
             boolean checks = true;
 
             //Check if username is populated
@@ -287,32 +282,30 @@ public class CreateUser {
                 }
 
             }
-            //Check if username is already used
-            if (checks != false) {
-                String query = "SELECT * FROM user WHERE username = '"
-                        + tfUserName.getText() + "'";
+                //Check if username is already used
+                if (checks != false) {
+                    String query = "SELECT * FROM user WHERE username = '"
+                            + tfUserName.getText() + "'";
+                    
+                    List<Map<String, Object>> results = dbConnection.retrieveRecords(query);
+                    
+                    if (!results.isEmpty()) 
+                    {
 
-                ResultSet results = dbConnection.retrieveRecords(query);
-                try {
-                    if (results.next()) {
-
-                        lblMessage.setText("Username already used");
-                        lblMessage.setTextFill(Color.RED);
-                        tfUserName.clear();
-                        tfUserName.requestFocus();
-                        checks = false;
+                            lblMessage.setText("Username already used");
+                            lblMessage.setTextFill(Color.RED);
+                            tfUserName.clear();
+                            tfUserName.requestFocus();
+                            checks = false;
 
                     }
-                } catch (SQLException ex) {
-                    Logger.getLogger(CreateUser.class.getName()).log(Level.SEVERE, null, ex);
-                }
 
-            }
+                }
 
             if (checks) {
                 ConfirmUser confirm = new ConfirmUser(tfUserName, tfEmail,
                         tfFirstName, tfLastName, pfPassword);
-                
+
                 confirm.confirmUser(); //Call method to show confirm user stage
                 createUserStage.close(); //Close the stage
 
@@ -326,7 +319,7 @@ public class CreateUser {
         public void handle(KeyEvent pressenter) {
 
             if (pressenter.getCode() == KeyCode.ENTER) {
-            
+
                 boolean checks = true;
 
                 //Check if username is populated
@@ -393,10 +386,11 @@ public class CreateUser {
                 if (checks != false) {
                     String query = "SELECT * FROM user WHERE username = '"
                             + tfUserName.getText() + "'";
-
-                    ResultSet results = dbConnection.retrieveRecords(query);
-                    try {
-                        if (results.next()) {
+                    
+                    List<Map<String, Object>> results = dbConnection.retrieveRecords(query);
+                    
+                    if (!results.isEmpty()) 
+                    {
 
                             lblMessage.setText("Username already used");
                             lblMessage.setTextFill(Color.RED);
@@ -404,9 +398,6 @@ public class CreateUser {
                             tfUserName.requestFocus();
                             checks = false;
 
-                        }
-                    } catch (SQLException ex) {
-                        Logger.getLogger(CreateUser.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
                 }

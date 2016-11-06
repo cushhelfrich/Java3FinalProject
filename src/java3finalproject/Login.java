@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -208,7 +207,6 @@ public class Login extends Application {
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
             System.out.println("Failed to connect to db");
                     
         } 
