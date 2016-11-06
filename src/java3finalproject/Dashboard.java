@@ -9,10 +9,9 @@ package java3finalproject;
  * proper UID/PID is accepted
  */
 //Imports
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -39,7 +38,7 @@ public class Dashboard {
     Button btnClear;
     Button btnExit;
     static TextArea accountView;
-    static ArrayList<String> account = new ArrayList();
+    static List<String> account = null;
     static TextField accountName = new TextField();
     static TextField userName = new TextField();
     static TextField passWord = new TextField();
@@ -222,12 +221,7 @@ public class Dashboard {
         String rtrvAct = "SELECT account_name FROM account";
 
         //calls account to load accounts in arraylist
-        ResultSet rs = db.retrieveRecords(rtrvAct);
-
-        while (rs.next()) {
-            //accountView.appendText(rs.getString(1) + "\n");//append text area; 
-            account.add(rs.getString(1));//Add to ArrayList
-        }
+        account = db.retrieveAccts(rtrvAct);
     }
 
     /**
