@@ -246,6 +246,7 @@ public class ConfirmUser {
         boolean checks = false;
         int rowsAffected = 0;
         Timestamp datetime = new Timestamp(new Date().getTime());
+        int user_id = 0;
 
         //Get the hash and salt for the given password
         String hashSalt = encrypt.getHashString(password);
@@ -266,7 +267,7 @@ public class ConfirmUser {
         System.out.println(query);
 
         try {
-            prepStmt = connection.prepareStatement(query);
+            prepStmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             prepStmt.setTimestamp(1, datetime);
             prepStmt.setTimestamp(2, datetime);
 
@@ -279,6 +280,7 @@ public class ConfirmUser {
 
         if (rowsAffected > 0) {
             checks = true;
+            Login.currUser = new User(user_id, email, username, hash, salt, first_name, last_name, datetime, datetime);
         }
         
         try {

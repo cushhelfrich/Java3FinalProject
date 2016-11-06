@@ -65,7 +65,6 @@ public class Account {
                 + " VALUES (?,?,?,?)";
 
         int user_id = Login.currUser.getUserId();
-        System.out.println(user_id);
         
         try {
             prepstmt = sqlstmt.createStatement(query);
