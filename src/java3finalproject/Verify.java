@@ -2,6 +2,7 @@ package java3finalproject;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 /**
@@ -55,7 +56,7 @@ public class Verify {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("ERROR");
             alert.setHeaderText("No Data Error");
-            alert.setContentText("You must enter a value int the " + l.getText()
+            alert.setContentText("You must enter a value in the " + l.getText()
                     + " field.  Please try again");
 
             alert.showAndWait();
@@ -120,4 +121,48 @@ public class Verify {
     }
 
     //****************End Wayne Code**********************************
+    
+    public boolean areValidCreds(TextField txtUserName, PasswordField pf)
+    {
+        boolean areValid = true;
+        String user = txtUserName.getText();
+        String invalidMsg = "";
+        
+        if(!user.matches("[a-zA-Z0-9]+([.-_]{1}[a-zA-Z0-9]+)*"))
+        {
+            areValid = false;
+            invalidMsg += "The username must be 1-64 characters in length, must "
+                    + "start with a number or letter, and must contain only numbers, "
+                    + "letters, dashes, underscores, and periods. ";
+        }
+        
+        if(!isValidPwEntry(pf))
+        {
+            areValid = false;
+            invalidMsg += "The password must be 8-255 characters in length and contain";
+        }
+        
+        createAlert(Alert.AlertType.ERROR, "", "Invalid entries", invalidMsg);
+        
+        return areValid;
+    }
+    
+    private boolean isValidPwEntry(PasswordField pf)
+    {
+        boolean isValid = true;
+        String pw = pf.getText();
+        
+        // if doesn't match regex, set to false
+        
+        return isValid;
+    }
+    
+    private void createAlert(Alert.AlertType type, String title, String header, String content)
+    {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
 } //End Subclass Verify
