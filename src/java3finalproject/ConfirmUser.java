@@ -216,9 +216,9 @@ public class ConfirmUser {
 
             //Returns true if user was entered successfully, then close stage
             if (inputDatabase(txtPassword.getText())) {
-                
+
                 confirmUserStage.close();
-                
+
             }
         }
     }
@@ -238,17 +238,14 @@ public class ConfirmUser {
         }
     }
 
-    
     private boolean inputDatabase(String password) {
 
-        PreparedStatement prepStmt;
-        Connection connection = dbConnection.getConnection();
         boolean checks = false;
-        int rowsAffected = 0;
-        Timestamp datetime = new Timestamp(new Date().getTime());
 
+        int wasUpdated = 0;
         //Get the hash and salt for the given password
         String hashSalt = encrypt.getHashString(password);
+
         String hash = hashSalt.substring(0, 44); //Substring for password hash
         String salt = hashSalt.substring(44, hashSalt.length()); //Substring for salt
 
@@ -265,28 +262,13 @@ public class ConfirmUser {
                 + last_name + "',?,?,'" + hash + "','" + salt + "')";
         System.out.println(query);
 
-        try {
-            prepStmt = connection.prepareStatement(query);
-            prepStmt.setTimestamp(1, datetime);
-            prepStmt.setTimestamp(2, datetime);
+        //Call insertUser in DBConnector to 
+        wasUpdated = dbConnection.insertUser(query);
 
-            rowsAffected = prepStmt.executeUpdate();
-            
-        } catch (SQLException ex) {
-            System.out.println("A problem occurred while inserting the user. "
-                    + "Error Message: " + ex.getMessage());
-        }
-
-        if (rowsAffected > 0) {
+        //If the prepareStatement in DBConnector.insertUser returns int > 0
+        if (wasUpdated > 0) 
             checks = true;
-        }
         
-        try {
-            connection.close();
-        } catch (SQLException ex) {
-            System.out.println("Unable to close connection."
-                    + "Error Message: " + ex.getMessage());
-        }
         return checks;
     }
 
