@@ -1,7 +1,7 @@
 package java3finalproject;
 
-import java.util.ArrayList;
-import javafx.application.Application;
+import java.util.List;
+import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -11,12 +11,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -33,6 +35,7 @@ import javafx.stage.Stage;
 public class CreateUser {
 
     Verify verify = new Verify();
+    DBConnector dbConnection = new DBConnector();//Instance of connection to database
 
     //ConfirmUser confUser = new ConfirmUser();  //Create instance
     Stage createUserStage = new Stage();
@@ -45,6 +48,7 @@ public class CreateUser {
     Label lblFirstName = new Label("First Name");
     Label lblLastName = new Label("Last Name");
     Label lblPassword = new Label("Password");
+    Label lblMessage = new Label("");
 
     //TextArea
     TextField tfUserName = new TextField();
@@ -56,11 +60,33 @@ public class CreateUser {
 
     Button btnEnterUser = new Button("Enter");
 
+    //Default constructor
+    public CreateUser() {
+
+    }
+
+    //Constructor with arguments
+    public CreateUser(Text txtUserName, Text txtEmail, Text txtFirstName,
+            Text txtLastName, Text txtPassword) {
+
+        this.tfUserName.setText(String.valueOf(txtUserName.getText()));
+        this.tfEmail.setText(String.valueOf(txtEmail.getText()));
+        this.tfFirstName.setText(String.valueOf(txtFirstName.getText()));
+        this.tfLastName.setText(String.valueOf(txtLastName.getText()));
+        this.pfPassword.setText(String.valueOf(txtPassword.getText()));
+    }
+
     public void createUser() {
 
         bpCreateUser.setTop(vbText());//Add vbTop to bpMain top by calling method
         bpCreateUser.setCenter(gpCenter());//Add GridPane to center
         bpCreateUser.setBottom(hbButtons());
+
+        tfUserName.setOnKeyPressed(new PressEnter());
+        tfEmail.setOnKeyPressed(new PressEnter());
+        tfFirstName.setOnKeyPressed(new PressEnter());
+        tfLastName.setOnKeyPressed(new PressEnter());
+        pfPassword.setOnKeyPressed(new PressEnter());
 
         bpCreateUser.setPadding(new Insets(10, 50, 50, 50));
 
@@ -74,6 +100,7 @@ public class CreateUser {
         createUserStage.setScene(myScene);  //Add Scene to Stage
 
         createUserStage.show(); //Show Stage
+
     }
 
     public VBox vbText() {
@@ -152,6 +179,9 @@ public class CreateUser {
 
         gpEntries.add(pfPassword, 1, 4);
         GridPane.setConstraints(pfPassword, 1, 4, 1, 1);
+
+        gpEntries.add(lblMessage, 1, 5);
+        GridPane.setConstraints(lblMessage, 1, 5, 1, 1);
 
         //Set last label to good width for all labels in GridPane (0, #)
         lblPassword.setPrefWidth(75);
@@ -252,13 +282,137 @@ public class CreateUser {
                 }
 
             }
+                //Check if username is already used
+                if (checks != false) {
+                    String query = "SELECT * FROM user WHERE username = '"
+                            + tfUserName.getText() + "'";
+                    
+                    List<Map<String, Object>> results = dbConnection.retrieveRecords(query);
+                    
+                    if (!results.isEmpty()) 
+                    {
+
+                            lblMessage.setText("Username already used");
+                            lblMessage.setTextFill(Color.RED);
+                            tfUserName.clear();
+                            tfUserName.requestFocus();
+                            checks = false;
+
+                    }
+
+                }
 
             if (checks) {
                 ConfirmUser confirm = new ConfirmUser(tfUserName, tfEmail,
                         tfFirstName, tfLastName, pfPassword);
 
-                confirm.confirmUser();
+                confirm.confirmUser(); //Call method to show confirm user stage
+                createUserStage.close(); //Close the stage
+
             }
+        }
+    }
+
+    class PressEnter implements EventHandler<KeyEvent> {
+
+        @Override
+        public void handle(KeyEvent pressenter) {
+
+            if (pressenter.getCode() == KeyCode.ENTER) {
+
+                boolean checks = true;
+
+                //Check if username is populated
+                if (!verify.isData(tfUserName, lblUserName)) {
+
+                    tfUserName.clear();
+                    tfUserName.requestFocus();
+                    checks = false;
+
+                }
+                //Check if email is populated
+                if (checks != false) {
+                    if (!verify.isData(tfEmail, lblEmail)) {
+
+                        tfEmail.clear();
+                        tfEmail.requestFocus();
+                        checks = false;
+
+                    }
+                }
+                //Check if first name is populated
+                if (checks != false) {
+                    if (!verify.isData(tfFirstName, lblFirstName)) {
+
+                        tfFirstName.clear();
+                        tfFirstName.requestFocus();
+                        checks = false;
+
+                    }
+                }
+                //Check if last name is populated
+                if (checks != false) {
+                    if (!verify.isData(tfLastName, lblLastName)) {
+
+                        tfLastName.clear();
+                        tfLastName.requestFocus();
+                        checks = false;
+
+                    }
+                }
+                //Check if password name is populated
+                if (checks != false) {
+                    if (!verify.isData(pfPassword, lblPassword)) {
+
+                        pfPassword.clear();
+                        pfPassword.requestFocus();
+                        checks = false;
+
+                    }
+                }
+
+                //Check email syntax
+                if (checks != false) {
+                    if (!Verify.checkEmail(tfEmail.getText())) {
+                        tfEmail.clear();
+                        tfEmail.requestFocus();
+                        checks = false;
+
+                    }
+
+                }
+
+                //Check if username is already used
+                if (checks != false) {
+                    String query = "SELECT * FROM user WHERE username = '"
+                            + tfUserName.getText() + "'";
+                    
+                    List<Map<String, Object>> results = dbConnection.retrieveRecords(query);
+                    
+                    if (!results.isEmpty()) 
+                    {
+
+                            lblMessage.setText("Username already used");
+                            lblMessage.setTextFill(Color.RED);
+                            tfUserName.clear();
+                            tfUserName.requestFocus();
+                            checks = false;
+
+                    }
+
+                }
+
+                if (checks) {
+                    ConfirmUser confirm = new ConfirmUser(tfUserName, tfEmail,
+                            tfFirstName, tfLastName, pfPassword);
+
+                    confirm.confirmUser(); //Call method to show confirm user stage
+                    createUserStage.close(); //Close the stage
+
+                }
+
+            }
+
         }
     }
 
