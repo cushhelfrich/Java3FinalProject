@@ -2,6 +2,7 @@ package java3finalproject;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 /**
@@ -55,7 +56,7 @@ public class Verify {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("ERROR");
             alert.setHeaderText("No Data Error");
-            alert.setContentText("You must enter a value int the " + l.getText()
+            alert.setContentText("You must enter a value in the " + l.getText()
                     + " field.  Please try again");
 
             alert.showAndWait();
@@ -120,4 +121,103 @@ public class Verify {
     }
 
     //****************End Wayne Code**********************************
+    
+    /***********Start Charlotte's Code******************/
+    
+    /**
+     * 
+     * @param txtUserName
+     * @param pf
+     * @return 
+     */
+    public boolean areValidCreds(TextField txtUserName, PasswordField pf)
+    {
+        boolean areValid = true;
+        String user = txtUserName.getText();
+        String pw = pf.getText();
+        String invalidMsg = "";
+        
+        if(!isValidUName(user))
+        {
+            areValid = false;
+            invalidMsg += "The username must be 6-64 characters in length, must"
+                    + "start with a number or letter, and must contain only numbers, "
+                    + "letters, dashes, underscores, and periods. ";
+        }
+        if(!user.matches("[a-zA-Z0-9]+([.-_]{1}[a-zA-Z0-9]+)*"))
+        {
+            areValid = false;
+            invalidMsg += "The username must be 1-64 characters in length, must "
+                    + "start with a number or letter, and must contain only numbers, "
+                    + "letters, dashes, underscores, and periods. ";
+        }
+        
+        if(!isValidPwEntry(pw))
+        {
+            areValid = false;
+            invalidMsg += "The password must be 8-255 characters in length and contain";
+        }
+        
+        createAlert(Alert.AlertType.ERROR, "", "Invalid entries", invalidMsg);
+        
+        return areValid;
+    }
+    
+    /**
+     * Returns false if value in user argument doesn't match regex pattern
+     * Password must be 6-64 characters, start and end with an alphanumeric char,
+     * contain only letters, numbers, and . - _ with hyphens, periods, and underscores
+     * occurring one at a time
+     * @param user value from username TextField
+     * @return 
+     */
+    private boolean isValidUName(String user)
+    {
+        boolean isValid = true;
+        
+        if(!user.matches("(?=[A-Za-z0-9-_.]{6,64}$)"            //String has between 6-64 characters
+                + "^[A-Za-z0-9]([-_.]{0,1}[A-Za-z0-9]+)+$"))    //String starts and ends with alphanumeric data
+        {
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+    
+    /**
+     * Returns false if value in pw argument doesn't match regex pattern
+     * Password must be 8-255 characters in length, contain at least 1 uppercase letter,
+     * 1 digit, and 1 non-word character
+     * @param pw value from PasswordField
+     * @return 
+     */
+    private boolean isValidPwEntry(String pw)
+    {
+        boolean isValid = true;
+        
+        if(!pw.matches("^.*(?=.{8,255})"                // Password must be 8-255 characters
+                + "(?=.*\\d)(?=.*[A-Z])(?=.*\\W).*$"))  // Password must contain 1 digit, 1 capital, 1 symbol
+        {
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+    
+    /**
+     * Accepts an AlertType and multiple strings, in order to efficiently create
+     * an alert dialog
+     * @param type      AlertType
+     * @param title     Dialog title
+     * @param header
+     * @param content 
+     */
+    private void createAlert(Alert.AlertType type, String title, String header, String content)
+    {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
 } //End Subclass Verify
