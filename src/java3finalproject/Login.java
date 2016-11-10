@@ -12,12 +12,11 @@ package java3finalproject;
  * https://www.javacodegeeks.com/2012/06/in-this-tutorial-i-will-design-nice.html
  */
 //Imports
-import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -50,7 +49,7 @@ public class Login extends Application {
     private final Label lblMessage = new Label();
     private final TextField txtUserName = new TextField();
     private final PasswordField pf = new PasswordField();
-    User currUser;
+    public static User currUser;
 
     @Override
     public void start(Stage primaryStage) {
@@ -119,7 +118,7 @@ public class Login extends Application {
         //Action for btnLogin
         btnLogin.setOnAction(
                 (ActionEvent e) -> {
-                    if (processLogin(txtUserName.getText(), pf.getText())) {
+                    if (processLogin(txtUserName, pf)) {
                         primaryStage.close();
                     }
                 });
@@ -158,66 +157,75 @@ public class Login extends Application {
      * @param pw        textfield entry
      * @return 
      */
-    private boolean processLogin(String user, String pw)
+    private boolean processLogin(TextField txtUserName, PasswordField pf)
     {    
+        Verify verify = new Verify();
         boolean bool = false;
-        lblMessage.setText(""); // Clear alert
+        lblMessage.setText("");
+        String user = txtUserName.getText();
+        String pw = pf.getText();
         
-        // Connect to DB
-        try
-        {             
-            String isUser = "SELECT * FROM user WHERE username = '" + user + "'";
-            
-            // Query User table for user, pw, and salt where user = user
-            List<Map<String, Object>> results = db.retrieveRecords(isUser);
-            
-            if(results.isEmpty()) // Query returned 0 results
+        if(verify.areValidCreds(txtUserName, pf))
+        {        
+            try
             {
-                lblMessage.setText("No account exists for this user.");
-                lblMessage.setTextFill(Color.RED);
-            }
-            else // Record returned
-            {
-                Map<String, Object> aRow = results.get(0);
-                String salt = (String) aRow.get("salt");
-                String pw_hash = (String)aRow.get("pw_hash");
-                
-                //Determine whether the hash of the provided password matches the stored hash
-                if(encrypt.isExpectedPassword(pw, pw_hash, salt))
+                String isUser = "SELECT * FROM user WHERE username = '" + user + "'";
+            
+                // Query User table for user, pw, and salt where user = user
+                List<Map<String, Object>> results = db.retrieveRecords(isUser);
+            
+                if(results.isEmpty()) // Query returned 0 results
                 {
-                    // If the passwords match, gather the other record values for User creation
-                    String email = (String) aRow.get("email");
-                    String first =  (String) aRow.get("first_name");
-                    String last =  (String) aRow.get("last_name");
-                    String created =  (String) aRow.get("created");
-                    String updated =  (String) aRow.get("last_update");
-                    
-                    // Store the db values in a User object's attributes
-                    currUser = new User(email, user, pw_hash, salt, first, last, created, updated);
-                    
-                    bool = true;                    // signal to calling function that stage should be closed
-                    dashboard.mainScreen(currUser); // display the user's dashboard
-                }
-                else // User's password entry was invalid
-                {
-                    lblMessage.setText("Incorrect user or password");
+                    lblMessage.setText("No account exists for this user.");
                     lblMessage.setTextFill(Color.RED);
                 }
-            }
-            
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-            System.out.println("Failed to connect to db");
+                else // Record returned
+                {
+                    Map<String, Object> aRow = results.get(0);
+                    String salt = (String) aRow.get("salt");
+                    String pw_hash = (String)aRow.get("password");
+                
+                    //Determine whether the hash of the provided password matches the stored hash
+                    if(encrypt.isExpectedPassword(pw, pw_hash, salt))
+                    {
+                        // If the passwords match, gather the other record values for User creation
+                        Integer user_id = (Integer) aRow.get("user_id");
+                        String email = (String) aRow.get("email");
+                        String first =  (String) aRow.get("first_name");
+                        String last =  (String) aRow.get("last_name");
+                        Timestamp created =  (Timestamp) aRow.get("created");
+                        Timestamp updated =  (Timestamp) aRow.get("last_update");
                     
-        } 
+                        // Store the db values in a User object's attributes
+                        currUser = new User(user_id, email, user, pw_hash, salt, first, last, created, updated);
+                    
+                        bool = true;                    // signal to calling function that stage should be closed
+                        dashboard.mainScreen(); // display the user's dashboard
+                    }
+                    else // User's password entry was invalid
+                    {
+                        lblMessage.setText("Incorrect user or password");
+                        lblMessage.setTextFill(Color.RED);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                
+            }
+        }
+        
+        else
+        {
+            lblMessage.setText("Correct entries above");
+            lblMessage.setTextFill(Color.RED);
+        }
         
         // Wipe the textfields
         txtUserName.setText("");
         pf.setText("");
           
-          return bool;
+        return bool;
     } // End Charlotte's code
 
 } //End Class Login
