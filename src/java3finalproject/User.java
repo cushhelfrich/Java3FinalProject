@@ -1,5 +1,7 @@
 package java3finalproject;
 
+import java.sql.Timestamp;
+
 /** 
  * @Course: SDEV 450 ~ Enterprise Java Programming
  * @Contributors: Charlotte Hirschberger
@@ -13,18 +15,20 @@ package java3finalproject;
  */
 
 public class User {
+    private int user_id = 0;
     private String email = "";
     private String username = "";
     private String password = "";
     private String salt = "";
     private String first_name = "";
     private String last_name = "";
-    private String created = "";
-    private String updated = "";
+    private Timestamp created = null;
+    private Timestamp updated = null;
     
     /**
      * Assigns the values retrieved from the database or user to the corresponding
      * member variables
+     * @param user_id   integer
      * @param email
      * @param username
      * @param password  Base 64 string
@@ -34,9 +38,10 @@ public class User {
      * @param created   YYYY-MM-DD HH:MM:SS, DATETIME
      * @param updated   YYYY-MM-DD HH:MM:SS, TIMESTAMP UTC
      */
-    public User(String email, String username, String password, String salt, 
-        String first_name, String last_name,String created, String updated)
+    public User(int user_id, String email, String username, String password,
+            String salt, String first_name, String last_name, Timestamp created, Timestamp updated)
     {
+        this.user_id = user_id;
         this.email = email;
         this.username = username;
         this.password = password;
@@ -47,6 +52,14 @@ public class User {
         this.updated = updated;
     }
     
-    // Getter and setter methods will go here
+    // Additional getter and setter methods will go here
     
+    /**
+     * Return the current user's id, which was retrieved during login
+     * @return 
+     */
+    public int getUserId()
+    {
+        return user_id;
+    }
 }
