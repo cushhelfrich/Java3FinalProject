@@ -3,6 +3,7 @@ package java3finalproject;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,32 +61,33 @@ public class Account {
     String query;
     
     public boolean insert(String actName, String usrName, String pw) {
+        DBConnector db = new DBConnector();
+        
+        
 
         query = "INSERT INTO account (user_id, username, password,account_name)"
                 + " VALUES (?,?,?,?)";
-
-        try {
-            prepstmt = sqlstmt.createStatement(query);
-            prepstmt.setInt(1, 1);
-            prepstmt.setString(2, usrName);
-            prepstmt.setString(3, pw);
-            prepstmt.setString(4, actName);
-            tableInserted = prepstmt.execute();
-            res=prepstmt.getResultSet();
-            rowsaffected=prepstmt.getUpdateCount();
-        } catch (SQLException e) {
-            System.out.println("Failed to create PreparedStatement");
-
-        } finally {
-            try {
-                prepstmt.close();    //  Close resources 
-                sqlstmt.closeDB();
-
-            } catch (SQLException ex) {
-                Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        int user_id = Login.currUser.getUserId();
+        
+        ArrayList<Object> paramVals = new ArrayList<>();
+        
+        paramVals.add(user_id);
+        paramVals.add(usrName);
+        paramVals.add(pw);
+        paramVals.add(actName);
+        
+        try
+        {
+            int rowsAffected = db.modifyRecordsPS(query, 4, paramVals);
         }
-        tableInserted = rowsaffected >0;
+        catch(Exception ex)
+        {
+            System.out.println("There was an error inserting the account."
+                    + " Error message: " + ex.getMessage());
+        }
+        
+        
+        tableInserted = rowsaffected > 0;
             
         return tableInserted;
     }
