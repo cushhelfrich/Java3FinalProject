@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -55,6 +54,7 @@ public class DBConnector {
      * General method for executing SQL queries, for use with SELECT statements     * 
      * @param query SQL statement in a string
      * @return 
+     * @throws java.lang.Exception 
      */
     public List<Map<String, Object>> retrieveRecords(String query)
     {
@@ -83,6 +83,25 @@ public class DBConnector {
        }
        return results;
     }
+    
+    public int modifyRecordsPS(String query, int numParams, ArrayList<Object> paramVals) throws Exception
+    {
+       int rowsAffected = 0;
+       PreparedStatement pstmt = getConnection().prepareStatement(query);
+       
+       for(int i = 1; i <= numParams; i++)
+       {
+           pstmt.setObject(i, paramVals.get(i - 1));
+       }
+       
+       rowsAffected = pstmt.executeUpdate();
+       
+       pstmt.close();
+       System.out.println(pstmt.isClosed());
+       System.out.println(rowsAffected);
+       return rowsAffected;
+    }
+        
     
     /**
      * Accepts an SQL statement in a string and returns an integer, representing
