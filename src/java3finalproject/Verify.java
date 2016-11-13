@@ -158,7 +158,10 @@ public class Verify {
             invalidMsg += "The password must be 8-255 characters in length and contain";
         }
         
-        createAlert(Alert.AlertType.ERROR, "", "Invalid entries", invalidMsg);
+        if(areValid == false)
+        {
+            createAlert(Alert.AlertType.ERROR, "Invalid entries", invalidMsg);
+        }
         
         return areValid;
     }
@@ -208,14 +211,12 @@ public class Verify {
      * Accepts an AlertType and multiple strings, in order to efficiently create
      * an alert dialog
      * @param type      AlertType
-     * @param title     Dialog title
      * @param header
      * @param content 
      */
-    private void createAlert(Alert.AlertType type, String title, String header, String content)
+    public void createAlert(Alert.AlertType type, String header, String content)
     {
         Alert alert = new Alert(type);
-        alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
