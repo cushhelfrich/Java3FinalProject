@@ -4,8 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /** 
  * @Course: SDEV 250 ~ Java Programming III
@@ -60,7 +58,7 @@ public class Account {
     PreparedStatement prepstmt;
     String query;
     
-    public boolean insert(String actName, String usrName, String pw) {
+    public boolean insert(String actName, String usrName, String pw) throws SQLException{
         DBConnector db = new DBConnector();
         
         
@@ -76,16 +74,8 @@ public class Account {
         paramVals.add(pw);
         paramVals.add(actName);
         
-        try
-        {
-            int rowsAffected = db.modifyRecordsPS(query, 4, paramVals);
-        }
-        catch(Exception ex)
-        {
-            System.out.println("There was an error inserting the account."
-                    + " Error message: " + ex.getMessage());
-        }
-        
+
+        int rowsAffected = db.modifyRecordsPS(query, 4, paramVals);
         
         tableInserted = rowsaffected > 0;
             
