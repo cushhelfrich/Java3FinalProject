@@ -169,6 +169,7 @@ public class Login extends Application {
      */
     private boolean processLogin(TextField txtUserName, PasswordField pf)
     {    
+        Verify verify = new Verify();
         boolean bool = false;
         lblMessage.setText("");
         String user = txtUserName.getText();
