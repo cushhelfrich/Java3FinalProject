@@ -136,26 +136,24 @@ public class Verify {
         String user = txtUserName.getText();
         String pw = pf.getText();
         String invalidMsg = "";
+        pf.requestFocus();
         
         if(!isValidUName(user))
         {
             areValid = false;
-            invalidMsg += "The username must be 6-64 characters in length, must"
+            invalidMsg += "The username must be 6-64 characters in length, must "
                     + "start with a number or letter, and must contain only numbers, "
                     + "letters, dashes, underscores, and periods. ";
-        }
-        if(!user.matches("[a-zA-Z0-9]+([.-_]{1}[a-zA-Z0-9]+)*"))
-        {
-            areValid = false;
-            invalidMsg += "The username must be 1-64 characters in length, must "
-                    + "start with a number or letter, and must contain only numbers, "
-                    + "letters, dashes, underscores, and periods. ";
+            txtUserName.setText("");
+            txtUserName.requestFocus();
         }
         
         if(!isValidPwEntry(pw))
         {
             areValid = false;
-            invalidMsg += "The password must be 8-255 characters in length and contain";
+            invalidMsg += "The password must be 8-255 characters in length and "
+                    + "contain at least 1 digit, 1 symbol, and 1 uppercase letter.";
+            pf.setText("");
         }
         
         if(areValid == false)
