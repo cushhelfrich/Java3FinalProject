@@ -31,7 +31,7 @@ public class Encryptor {
      * @param unhashed user's choice of password during account creation
      * @return 
      */
-    public String getHashString(String unhashed) throws NoSuchAlgorithmException, UnsupportedEncodingException
+    public String getHashString(String unhashed)
     {
         byte[] salt = getSalt();  // Make a new salt array 
         
@@ -52,10 +52,12 @@ public class Encryptor {
      * 
      * Future update: make independent of charset?, store Instance in attribute
      */
-    public String getHashString(String unhashed, byte[] salt) throws NoSuchAlgorithmException, UnsupportedEncodingException
+    public String getHashString(String unhashed, byte[] salt)
     {
         String hashed = "";
         
+        try 
+        {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.reset();         // empty the digest buffer
             md.update(salt);    // put the salt array in the buffer
@@ -65,6 +67,12 @@ public class Encryptor {
             
             // Convert the hash to a string and stick the salt on the end
             hashed = new String(Base64.getEncoder().encode(unhashedBytes));
+        }
+        
+        catch(NoSuchAlgorithmException | UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
         
         return hashed;
     }
@@ -91,7 +99,7 @@ public class Encryptor {
      * @param salt Salt retrieved from database
      * @return true or false
      */
-    public boolean isExpectedPassword(String pwEntry, String pwHash, String salt) throws NoSuchAlgorithmException, UnsupportedEncodingException
+    public boolean isExpectedPassword(String pwEntry, String pwHash, String salt)
     {
         boolean b = false;
         byte[] byteSalt = Base64.getDecoder().decode(salt);
@@ -106,5 +114,14 @@ public class Encryptor {
         }
         
         return b;
+    }
+    
+    /**
+     * For use when extracting a hash from getHashString's hash/salt combo string
+     * @return 
+     */
+    public int getHashLength()
+    {
+        return HASH_LENGTH;
     }
 }
