@@ -1,5 +1,7 @@
 package java3finalproject;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javafx.event.ActionEvent;
@@ -7,6 +9,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -222,6 +225,7 @@ public class CreateUser {
         public void handle(ActionEvent e) {
 
             boolean checks = true;
+            List<Map<String, Object>> results = new ArrayList();
 
             //Check if username is populated
             if (!verify.isData(tfUserName, lblUserName)) {
@@ -286,8 +290,19 @@ public class CreateUser {
                 if (checks != false) {
                     String query = "SELECT * FROM user WHERE username = '"
                             + tfUserName.getText() + "'";
-                    
-                    List<Map<String, Object>> results = dbConnection.retrieveRecords(query);
+
+                    try
+                    {
+                        results = dbConnection.retrieveRecords(query);
+                    }
+                    catch(SQLException ex)
+                    {
+                        verify.createAlert(Alert.AlertType.ERROR, "Processing error",
+                                "An error prevented the program from verifying that"
+                                + "you have selected an available username. Error message: " 
+                                + ex.getMessage());
+                    }
+
                     
                     if (!results.isEmpty()) 
                     {
@@ -297,9 +312,7 @@ public class CreateUser {
                             tfUserName.clear();
                             tfUserName.requestFocus();
                             checks = false;
-
                     }
-
                 }
 
             if (checks) {
@@ -321,6 +334,7 @@ public class CreateUser {
             if (pressenter.getCode() == KeyCode.ENTER) {
 
                 boolean checks = true;
+                List<Map<String, Object>> results = new ArrayList();
 
                 //Check if username is populated
                 if (!verify.isData(tfUserName, lblUserName)) {
@@ -386,8 +400,18 @@ public class CreateUser {
                 if (checks != false) {
                     String query = "SELECT * FROM user WHERE username = '"
                             + tfUserName.getText() + "'";
-                    
-                    List<Map<String, Object>> results = dbConnection.retrieveRecords(query);
+
+                    try
+                    {
+                        results = dbConnection.retrieveRecords(query);
+                    }
+                    catch(SQLException ex)
+                    {
+                        verify.createAlert(Alert.AlertType.ERROR, "Processing error",
+                                "An error prevented the program from verifying that"
+                                + "you have selected an available username. Error message: " 
+                                + ex.getMessage());
+                    }
                     
                     if (!results.isEmpty()) 
                     {
@@ -412,7 +436,6 @@ public class CreateUser {
                 }
 
             }
-
         }
     }
 
