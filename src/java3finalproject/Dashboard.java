@@ -218,7 +218,7 @@ public class Dashboard {
         {
             account.clear(); // clears arrayList
         }
-        String rtrvAct = "SELECT account_name FROM account";
+        String rtrvAct = "SELECT account_name FROM account WHERE user_id = " + Login.currUser.getUserId();
 
         //calls account to load accounts in arraylist
         account = db.retrieveAccts(rtrvAct);
