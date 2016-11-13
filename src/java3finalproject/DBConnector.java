@@ -176,7 +176,9 @@ public class DBConnector {
                 for(int i = 1; i <= rowCount; i++)
                 {
                     results.add(rs.getString("account_name"));
+                    rs.next();
                 }
+                System.out.println(rowCount);
             }
         }
 
