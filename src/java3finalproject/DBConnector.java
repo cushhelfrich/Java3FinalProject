@@ -15,17 +15,16 @@ import java.util.List;
 import java.util.Map;
 import javafx.scene.control.Alert;
 
-/**
+/** 
  * @Course: SDEV 450 ~ Enterprise Java Programming
  * @Contributors: Charlotte Hirschberger, Wayne Riley
  * @Created Date: October 16, 2016
  * @Last update: October 28, 2016
- * @Description: This class is responsible for initiating and returning the
- * connection to a database and executing queries received in String parameters.
+ * @Description: This class is responsible for initiating and returning the 
+ *      connection to a database and executing queries received in String parameters.
  */
-/**
- * Start Charlotte's code*
- */
+
+/**Start Charlotte's code**/
 public class DBConnector {
     private static Connection conn = null;
     private static final String DB_USER = "champlain";
@@ -134,7 +133,6 @@ public class DBConnector {
      * Accepts an SQL statement in a string and returns an integer, representing
      * the number of rows affected by the query. 0 indicates a query that
      * affects 0 rows
-     *
      * @param query delete, update, or insert
      * @return 
      * @throws java.sql.SQLException 
@@ -154,7 +152,7 @@ public class DBConnector {
         return rowsAffected; 
     }
     /*End Charlotte's code*/
-
+    
     //**************************wayne*************************************8
     /**
      * Queries account table and returns to dashboard and printed in Textarea.
