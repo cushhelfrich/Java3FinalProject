@@ -28,7 +28,7 @@ public class User {
     /**
      * Assigns the values retrieved from the database or user to the corresponding
      * member variables
-     * @param user_id
+     * @param user_id   integer
      * @param email
      * @param username
      * @param password  Base 64 string
@@ -52,7 +52,12 @@ public class User {
         this.updated = updated;
     }
     
-    // Getter and setter methods will go here
+    // Additional getter and setter methods will go here
+    
+    /**
+     * Return the current user's id, which was retrieved during login
+     * @return 
+     */
     public int getUserId()
     {
         return user_id;
