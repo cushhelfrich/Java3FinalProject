@@ -180,6 +180,7 @@ public class DBConnector {
                     results.add(rs.getString("account_name"));
                     rs.next();
                 }
+                System.out.println(rowCount);
             }
         }
 
