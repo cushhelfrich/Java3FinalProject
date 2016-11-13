@@ -9,12 +9,14 @@ package java3finalproject;
  * dashboard textfields and inserted into database.
  */
 //Imports
+import java.sql.SQLException;
 import static java3finalproject.Dashboard.account;
 import static java3finalproject.Dashboard.accountName;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -120,9 +122,21 @@ public class Add {
             addScene.close();
             //****************Start Bill Code*********************
             Account newAct = new Account(actName, usrName, pw);
-            newAct.insert(actName, usrName, pw);
+            
+            try
+            {
+                newAct.insert(actName, usrName, pw);
+                account.add(accountName.getText());
+            }
+            catch (SQLException ex)
+            {
+                 Login.verify.createAlert(Alert.AlertType.ERROR, "Processing error",
+                         "An error occured while processing your request. Account"
+                          + " credentials may not have been added to the database."
+                                 + " Error message: " + ex.getMessage());
+            }
             //****************End Bill Code*********************
-            account.add(accountName.getText());
+            
             System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
             Dashboard.updateTextArea();//calls method in Dashboard to update view
             Dashboard.clearHandler();//clears all textfields
