@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.scene.control.Alert;
 
 /** 
  * @Course: SDEV 450 ~ Enterprise Java Programming
@@ -24,10 +26,11 @@ import java.util.Map;
 
 /**Start Charlotte's code**/
 public class DBConnector {
-    private static Connection conn;
-    private static String dbUser = "champlain";
-    private static String dbPassword = "Fin8lPr0ject";
-    private static String dbPath = "jdbc:mysql://localhost/projectdb";
+    private static Connection conn = null;
+    private static final String DB_USER = "champlain";
+    private static final String DB_PASSWORD = "Fin8lPr0ject";
+    private static final String DB_PATH = "jdbc:mysql://localhost/projectdb";
+    private static int countFailed = 0;
     
     /**
      * Constructor automatically attempts to establish connection using database
@@ -35,18 +38,35 @@ public class DBConnector {
      */
     public DBConnector()
     {
+        initConnection();
+    }
+    
+    private boolean initConnection()
+    {
+        boolean b = true;
         try
         {
-            conn = DriverManager.getConnection(dbPath, dbUser, dbPassword);
+            // load and register JDBC driver for MySQL 
+            Class.forName("com.mysql.jdbc.Driver"); 
+
+            conn = DriverManager.getConnection(DB_PATH, DB_USER, DB_PASSWORD);
         }
-         catch(Exception ex)
-         {
-             System.out.println("Error connecting to database."
-                     + "Error message: " + ex.getMessage());
+        catch(ClassNotFoundException | SQLException ex)
+        {
+            if(countFailed == 0)
+            {
+                Login.verify.createAlert(Alert.AlertType.WARNING, "Connection error", 
+                     "Error connecting to database. Check your Internet connection "
+                     + "before proceeding. Error message: " + ex.getMessage());
+            }
+            
+            countFailed++;
+            b = false;
          }
+        return b;
     }
         
-        public Connection getConnection()
+    public Connection getConnection()
     {
         return conn;
     }
@@ -54,51 +74,57 @@ public class DBConnector {
      * General method for executing SQL queries, for use with SELECT statements     * 
      * @param query SQL statement in a string
      * @return 
-     * @throws java.lang.Exception 
+     * @throws java.sql.SQLException 
      */
-    public List<Map<String, Object>> retrieveRecords(String query)
+    public List<Map<String, Object>> retrieveRecords(String query) throws SQLException
     {
        List<Map<String, Object>> results = new ArrayList<>();
        HashMap<String, Object> row;
 
-       try (Statement stmt = conn.createStatement();
+       if(conn != null || (conn == null && initConnection()))
+       {
+            countFailed = 0;
+            try (Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query))
-       {       
-           ResultSetMetaData metaData = rs.getMetaData();
-           int colCount = metaData.getColumnCount();
-            while(rs.next())
-            {
-                row = new HashMap<>();
-                for(int i = 1; i <= colCount; i++)
+            {       
+                ResultSetMetaData metaData = rs.getMetaData();
+                int colCount = metaData.getColumnCount();
+                while(rs.next())
                 {
-                    row.put(metaData.getColumnName(i), rs.getObject(i));
-                }
+                    row = new HashMap<>();
+                    for(int i = 1; i <= colCount; i++)
+                    {
+                        row.put(metaData.getColumnName(i), rs.getObject(i));
+                    }
                 results.add(row);
+                }
             }
        }
-       catch(Exception ex)
-       {
-            System.out.println("A problem occurred while accessing records. "
-                    + "Error message: " + ex.getMessage());
-       }
+
        return results;
     }
     
-    public int modifyRecordsPS(String query, int numParams, ArrayList<Object> paramVals) throws Exception
+    public int getCountFailed()
+    {
+        return countFailed;
+    }
+    
+    public int modifyRecordsPS(String query, int numParams, ArrayList<Object> paramVals) throws SQLException
     {
        int rowsAffected = 0;
-       PreparedStatement pstmt = getConnection().prepareStatement(query);
        
-       for(int i = 1; i <= numParams; i++)
+       if(conn != null || (conn == null && initConnection()))
        {
-           pstmt.setObject(i, paramVals.get(i - 1));
+            try (PreparedStatement pstmt = conn.prepareStatement(query)) 
+            {
+                for(int i = 1; i <= numParams; i++)
+                {
+                    pstmt.setObject(i, paramVals.get(i - 1));
+                }
+            rowsAffected = pstmt.executeUpdate();
+            }
        }
-       
-       rowsAffected = pstmt.executeUpdate();
-       
-       pstmt.close();
-       System.out.println(pstmt.isClosed());
-       System.out.println(rowsAffected);
+
        return rowsAffected;
     }
         
@@ -109,21 +135,21 @@ public class DBConnector {
      * affects 0 rows
      * @param query delete, update, or insert
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public int modifyRecords(String query)
+    public int modifyRecords(String query) throws SQLException
     {
         int rowsAffected = 0;
         
-        try(Statement stmt = conn.createStatement())
+        if(conn != null || (conn == null && initConnection()))
         {
-            rowsAffected = stmt.executeUpdate(query);
-        } 
-       catch(Exception ex)
-        {
-            System.out.println("A problem occurred while updating records. "
-                    + "Error message: " + ex.getMessage());
+            try(Statement stmt = conn.createStatement())
+            {
+                rowsAffected = stmt.executeUpdate(query);
+            }
         }
-       return rowsAffected; 
+
+        return rowsAffected; 
     }
     /*End Charlotte's code*/
     
@@ -131,51 +157,53 @@ public class DBConnector {
     /**
      * Queries account table and returns to dashboard and printed in Textarea.
      *
+     * @param query
      * @return
+     * @throws java.sql.SQLException
      */
-     public List<String> retrieveAccts(String query)
+    public List<String> retrieveAccts(String query) throws SQLException
     {
        List<String> results = new ArrayList<>();
-
-       try (Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query))
-       {                  
-           rs.last();
-           int rowCount = rs.getRow();
-           rs.beforeFirst();
-           
-            for(int i = 1; i <= rowCount; i++)
-            {
-                results.add(rs.getString("account_name"));
-            }
-       }
-       catch(Exception ex)
+       if(conn != null || (conn == null && initConnection()))
        {
-            System.out.println("A problem occurred while retrieving account details. "
-                    + "Error message: " + ex.getMessage());
-       }
-       return results;
+            try (Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query))
+            {                  
+                rs.last();
+                int rowCount = rs.getRow();
+                rs.first();
+           
+                for(int i = 1; i <= rowCount; i++)
+                {
+                    results.add(rs.getString("account_name"));
+                }
+            }
+        }
+
+        return results;
     }
     
-    public int insertUser(String query)
+    /**
+     *
+     * @param query
+     * @return
+     * @throws SQLException
+     */
+    public int insertUser(String query) throws SQLException
     {
         int rowsAffected = 0;
         Timestamp datetime = new Timestamp(new Date().getTime());
         
-        try(PreparedStatement prepStmt = conn.prepareStatement(query))
-        {            
-            prepStmt.setTimestamp(1, datetime);
-            prepStmt.setTimestamp(2, datetime);
-            
-            rowsAffected = prepStmt.executeUpdate();
-                     
-        } 
-       catch(Exception ex)
+        if(conn != null || (conn == null && initConnection()))
         {
-            System.out.println("A problem occurred while inserting the user record. "
-                    + "Error message: " + ex.getMessage());
+            try(PreparedStatement prepStmt = conn.prepareStatement(query))
+            {            
+                prepStmt.setTimestamp(1, datetime);
+                prepStmt.setTimestamp(2, datetime);
+            
+                rowsAffected = prepStmt.executeUpdate();    
+            } 
         }
-        
        return rowsAffected; 
     }
     
@@ -183,13 +211,15 @@ public class DBConnector {
     {
         try
         {
-            conn.close();
+            if(conn != null)
+            {
+                conn.close();  
+            }
         }
         catch(Exception ex)
         {
             System.out.println("There was a problem closing the connection to the database."
-                + "Error message: " + ex.getMessage());
+                + " Error message: " + ex.getMessage());
         }
     }
 }
-
