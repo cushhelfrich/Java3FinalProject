@@ -3,8 +3,7 @@ package java3finalproject;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
 
 /** 
  * @Course: SDEV 250 ~ Java Programming III
@@ -59,36 +58,26 @@ public class Account {
     PreparedStatement prepstmt;
     String query;
     
-    public boolean insert(String actName, String usrName, String pw) {
+    public boolean insert(String actName, String usrName, String pw) throws SQLException{
+        DBConnector db = new DBConnector();
+        
+        
 
         query = "INSERT INTO account (user_id, username, password,account_name)"
                 + " VALUES (?,?,?,?)";
-
         int user_id = Login.currUser.getUserId();
         
-        try {
-            prepstmt = sqlstmt.createStatement(query);
-            
-            prepstmt.setInt(1, user_id);
-            prepstmt.setString(2, usrName);
-            prepstmt.setString(3, pw);
-            prepstmt.setString(4, actName);
-            tableInserted = prepstmt.execute();
-            res=prepstmt.getResultSet();
-            rowsaffected=prepstmt.getUpdateCount();
-        } catch (SQLException e) {
-            System.out.println("Failed to create PreparedStatement");
+        ArrayList<Object> paramVals = new ArrayList<>();
+        
+        paramVals.add(user_id);
+        paramVals.add(usrName);
+        paramVals.add(pw);
+        paramVals.add(actName);
+        
 
-        } finally {
-            try {
-                prepstmt.close();    //  Close resources 
-                sqlstmt.closeDB();
-
-            } catch (SQLException ex) {
-                Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        tableInserted = rowsaffected >0;
+        int rowsAffected = db.modifyRecordsPS(query, 4, paramVals);
+        
+        tableInserted = rowsaffected > 0;
             
         return tableInserted;
     }
