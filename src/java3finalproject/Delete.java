@@ -143,7 +143,7 @@ class Delete {
      */
     private void removeAct(String actName) throws SQLException {
 
-        String rmvAct = "SELECT * FROM account WHERE account_name = '" + actName + "'";
+        String rmvAct = "SELECT * FROM account WHERE account_name = '" + actName + "' AND user_id = " + Login.currUser.getUserId();
 
         // Query User table for account_id to that matches account name.
         List<Map<String,Object>> results = db.retrieveRecords(rmvAct);
@@ -153,7 +153,7 @@ class Delete {
             verify.noAct();
 
         } else {
-            String deleteId = (String) results.get(0).get("account_id");
+            int deleteId = (Integer) results.get(0).get("account_id");
 
             //SQL string to delete account account row
             String dltAct = "DELETE FROM account WHERE account_id = '" + deleteId + "'";
