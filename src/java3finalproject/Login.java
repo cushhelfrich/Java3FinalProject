@@ -14,8 +14,6 @@ package java3finalproject;
 //Imports
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Provider;
-import java.security.Security;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
@@ -234,10 +232,6 @@ public class Login extends Application {
             lblMessage.setText("Fix entries above");
             lblMessage.setTextFill(Color.RED);
         }
-        
-        // Wipe the textfields
-        txtUserName.setText("");
-        pf.setText("");
           
         return bool;
     } // End Charlotte's code
