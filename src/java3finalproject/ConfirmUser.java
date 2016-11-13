@@ -1,12 +1,14 @@
 package java3finalproject;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -237,7 +239,6 @@ public class ConfirmUser {
 
         }
     }
-
     
     private boolean inputDatabase(String password) {
 
@@ -246,46 +247,52 @@ public class ConfirmUser {
         boolean checks = false;
         int rowsAffected = 0;
         Timestamp datetime = new Timestamp(new Date().getTime());
+        String hashSalt = "";
 
-        //Get the hash and salt for the given password
-        String hashSalt = encrypt.getHashString(password);
-        String hash = hashSalt.substring(0, 44); //Substring for password hash
-        String salt = hashSalt.substring(44, hashSalt.length()); //Substring for salt
-
-        //Variables fo other fields to include in query
-        String username = txtUserName.getText();
-        String email = txtEmail.getText();
-        String first_name = txtFirstName.getText();
-        String last_name = txtLastName.getText();
-
-        //Create the query string
-        String query = "INSERT INTO user (username,email,first_name,"
-                + "last_name,created,last_update,password,salt) values ('"
-                + username + "','" + email + "','" + first_name + "','"
-                + last_name + "',?,?,'" + hash + "','" + salt + "')";
-        System.out.println(query);
-
-        try {
-            prepStmt = connection.prepareStatement(query);
-            prepStmt.setTimestamp(1, datetime);
-            prepStmt.setTimestamp(2, datetime);
-
-            rowsAffected = prepStmt.executeUpdate();
-            
-        } catch (SQLException ex) {
+        try
+        {
+            //Get the hash and salt for the given password
+            hashSalt = encrypt.getHashString(password);
+        } 
+        catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) 
+        {
             System.out.println("A problem occurred while inserting the user. "
                     + "Error Message: " + ex.getMessage());
         }
 
-        if (rowsAffected > 0) {
-            checks = true;
+        if(!hashSalt.isEmpty()) // Encryption was successful
+        {
+            String hash = hashSalt.substring(0, 44); //Substring for password hash
+            String salt = hashSalt.substring(44, hashSalt.length()); //Substring for salt
+
+            //Variables fo other fields to include in query
+            String username = txtUserName.getText();
+            String email = txtEmail.getText();
+            String first_name = txtFirstName.getText();
+            String last_name = txtLastName.getText();
+
+            //Create the query string
+            String query = "INSERT INTO user (username,email,first_name,"
+                + "last_name,created,last_update,password,salt) values ('"
+                + username + "','" + email + "','" + first_name + "','"
+                + last_name + "',?,?,'" + hash + "','" + salt + "')";
+            System.out.println(query);
+
+            try {
+                prepStmt = connection.prepareStatement(query);
+                prepStmt.setTimestamp(1, datetime);
+                prepStmt.setTimestamp(2, datetime);
+
+                rowsAffected = prepStmt.executeUpdate();
+            
+            } catch (SQLException ex) {
+            System.out.println("A problem occurred while inserting the user. "
+                    + "Error Message: " + ex.getMessage());
+            }
         }
         
-        try {
-            connection.close();
-        } catch (SQLException ex) {
-            System.out.println("Unable to close connection."
-                    + "Error Message: " + ex.getMessage());
+        if (rowsAffected > 0) {
+            checks = true;
         }
         return checks;
     }
