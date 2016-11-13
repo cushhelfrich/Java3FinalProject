@@ -12,6 +12,8 @@ package java3finalproject;
  * https://www.javacodegeeks.com/2012/06/in-this-tutorial-i-will-design-nice.html
  */
 //Imports
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
@@ -20,6 +22,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -34,7 +37,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 //Begin Class Login
 //*********************Wayne Riley**************************************
@@ -43,9 +45,10 @@ public class Login extends Application {
     //instantiate subclass
     Dashboard dashboard = new Dashboard();
     CreateUser createUser = new CreateUser();
-    DBConnector db = new DBConnector();
+    public static DBConnector db = new DBConnector();
+    public static Verify verify = new Verify();
 
-    //[Char, 10/19] deleted
+ 
     private final Encryptor encrypt = new Encryptor();
     private final Label lblMessage = new Label();
     private final TextField txtUserName = new TextField();
@@ -54,7 +57,6 @@ public class Login extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-
         BorderPane bp = new BorderPane();
         bp.setPadding(new Insets(10, 50, 50, 50));
 
@@ -142,13 +144,20 @@ public class Login extends Application {
         scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.show();
-        primaryStage.setOnCloseRequest((WindowEvent we) -> {
-            db.closeConnection();
+        
+        /**
+         * Start Charlotte's code
+         * This snippet adapted from https://www.tutorialspoint.com/java/lang/runtime_addshutdownhook.htm
+         */
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run()
+            {
+                System.out.println("The system is closing");
+            }
         }); 
     }
-
-    // Start Charlotte's code
-    // Note to self: Sanitize inputs!
+    
     /**
      * This function is responsible for validating textfield entries and creating
      * the SQL statement used to query the User table for the provided username.
@@ -160,7 +169,6 @@ public class Login extends Application {
      */
     private boolean processLogin(TextField txtUserName, PasswordField pf)
     {    
-        Verify verify = new Verify();
         boolean bool = false;
         lblMessage.setText("");
         String user = txtUserName.getText();
@@ -210,23 +218,21 @@ public class Login extends Application {
                     }
                 }
             }
-            catch (Exception ex)
+            catch (SQLException | NoSuchAlgorithmException | UnsupportedEncodingException ex)
             {
-                
+                verify.createAlert(Alert.AlertType.ERROR, "Failed login", 
+                        "An error occurred while processing your credentials or"
+                        + " connection problems continue to persist. The system "
+                        + "will now exit. Error message: " + ex.getMessage());
             }
         }
         
         else
         {
-            lblMessage.setText("Correct entries above");
+            lblMessage.setText("Fix entries above");
             lblMessage.setTextFill(Color.RED);
         }
-        
-        // Wipe the textfields
-        txtUserName.setText("");
-        pf.setText("");
           
         return bool;
     } // End Charlotte's code
-
 } //End Class Login
