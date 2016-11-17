@@ -44,7 +44,7 @@ public class Login extends Application {
 
     //instantiate subclass
     Dashboard dashboard = new Dashboard();
-    CreateUser createUser = new CreateUser();
+    
     public static DBConnector db = new DBConnector();
     public static Verify verify = new Verify();
 
@@ -129,7 +129,9 @@ public class Login extends Application {
         //[Cush]Action for btnCreateUser
         btnCreateUser.setOnAction(
                 (ActionEvent e) -> {
-
+                    
+                    //Moved here so user can create multiple users before login
+                    CreateUser createUser = new CreateUser();
                     createUser.createUser();
 
                 });

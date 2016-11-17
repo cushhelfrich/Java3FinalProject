@@ -218,9 +218,9 @@ public class ConfirmUser {
 
             //Returns true if user was entered successfully, then close stage
             if (inputDatabase(txtPassword.getText())) {
-                
+
                 confirmUserStage.close();
-                
+
             }
         }
     }
@@ -239,28 +239,24 @@ public class ConfirmUser {
 
         }
     }
-    
+
     private boolean inputDatabase(String password) {
 
-        PreparedStatement prepStmt;
         Connection connection = dbConnection.getConnection();
         boolean checks = false;
-        int rowsAffected = 0;
-        Timestamp datetime = new Timestamp(new Date().getTime());
+        int wasUpdated = 0;
+        
         String hashSalt = "";
 
-        try
-        {
+        try {
             //Get the hash and salt for the given password
             hashSalt = encrypt.getHashString(password);
-        } 
-        catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) 
-        {
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
             System.out.println("A problem occurred while inserting the user. "
                     + "Error Message: " + ex.getMessage());
         }
 
-        if(!hashSalt.isEmpty()) // Encryption was successful
+        if (!hashSalt.isEmpty()) // Encryption was successful
         {
             String hash = hashSalt.substring(0, 44); //Substring for password hash
             String salt = hashSalt.substring(44, hashSalt.length()); //Substring for salt
@@ -273,25 +269,22 @@ public class ConfirmUser {
 
             //Create the query string
             String query = "INSERT INTO user (username,email,first_name,"
-                + "last_name,created,last_update,password,salt) values ('"
-                + username + "','" + email + "','" + first_name + "','"
-                + last_name + "',?,?,'" + hash + "','" + salt + "')";
+                    + "last_name,created,last_update,password,salt) values ('"
+                    + username + "','" + email + "','" + first_name + "','"
+                    + last_name + "',?,?,'" + hash + "','" + salt + "')";
             System.out.println(query);
 
             try {
-                prepStmt = connection.prepareStatement(query);
-                prepStmt.setTimestamp(1, datetime);
-                prepStmt.setTimestamp(2, datetime);
+                //Call insertUser in DBConnector to 
+                wasUpdated = dbConnection.insertUser(query);
 
-                rowsAffected = prepStmt.executeUpdate();
-            
             } catch (SQLException ex) {
-            System.out.println("A problem occurred while inserting the user. "
-                    + "Error Message: " + ex.getMessage());
+                System.out.println("A problem occurred while inserting the user. "
+                        + "Error Message: " + ex.getMessage());
             }
         }
-        
-        if (rowsAffected > 0) {
+
+        if (wasUpdated > 0) {
             checks = true;
         }
         return checks;
