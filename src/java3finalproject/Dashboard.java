@@ -41,6 +41,8 @@ public class Dashboard {
     static TextField accountName = new TextField();
     static TextField userName = new TextField();
     static TextField passWord = new TextField();
+    
+
     //static TextField webSite = new TextField();
 
     //instantiate subclass
@@ -165,6 +167,21 @@ public class Dashboard {
         }
         );//end Add event handler
 
+        viewAccount.setOnAction(
+                (ActionEvent e) -> {
+                    if (accountName.getText().matches("")) {
+                        verify.deleteEmpty();
+                    } else {
+                        Account dispAccount = new Account(accountName.getText());
+                        userName.setText(dispAccount.getUserName());
+                        passWord.setText(dispAccount.getPassword());
+                        passWord.setText(AEScrypt.decrypt(dispAccount.getPassword(), "DonaTellaNobody"));
+
+                       //modify.change(accountName.getText(), userName.getText(), passWord.getText());
+                    }
+                }
+        );
+
         //Launches modify confirmation scene
         btnModify.setOnAction(
                 (ActionEvent e) -> {
@@ -214,8 +231,7 @@ public class Dashboard {
      * @throws SQLException
      */
     private void getAct() throws SQLException {
-        if(account != null)
-        {
+        if (account != null) {
             account.clear(); // clears arrayList
         }
         String rtrvAct = "SELECT account_name FROM account";

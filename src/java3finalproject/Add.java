@@ -120,12 +120,15 @@ public class Add {
             addScene.close();
             //****************Start Bill Code*********************
             Account newAct = new Account(actName, usrName, pw);
-            newAct.insert(actName, usrName, pw);
+            newAct.insert(actName, usrName, newAct.getPassword());            
+            System.out.println("Insert " + actName + " " + usrName + " " + newAct.getPassword() + " " + " into database");
             //****************End Bill Code*********************
             account.add(accountName.getText());
             System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
             Dashboard.updateTextArea();//calls method in Dashboard to update view
             Dashboard.clearHandler();//clears all textfields
+
+            Dashboard.clearHandler();//calls Static method in main
         });//end confirm event handler
 
         //lambda expression Exit Program        
