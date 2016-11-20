@@ -30,6 +30,8 @@ public class Encryptor {
      * Creates a new salt and uses it to call hashString(String unhashed, byte[] salt)
      * @param unhashed user's choice of password during account creation
      * @return 
+     * @throws java.security.NoSuchAlgorithmException 
+     * @throws java.io.UnsupportedEncodingException 
      */
     public String getHashString(String unhashed) throws NoSuchAlgorithmException, UnsupportedEncodingException
     {
@@ -51,6 +53,8 @@ public class Encryptor {
      * @return Hash substring concatenated with Salt substring
      * 
      * Future update: make independent of charset?, store Instance in attribute
+     * @throws java.security.NoSuchAlgorithmException
+     * @throws java.io.UnsupportedEncodingException
      */
     public String getHashString(String unhashed, byte[] salt) throws NoSuchAlgorithmException, UnsupportedEncodingException
     {
@@ -91,6 +95,7 @@ public class Encryptor {
      * @param salt Salt retrieved from database
      * @return true or false
      * @throws java.security.NoSuchAlgorithmException
+     * @throws java.io.UnsupportedEncodingException
      */
     public boolean isExpectedPassword(String pwEntry, String pwHash, String salt) throws NoSuchAlgorithmException, UnsupportedEncodingException
     {

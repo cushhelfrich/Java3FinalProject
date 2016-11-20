@@ -2,13 +2,7 @@ package java3finalproject;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -242,7 +236,6 @@ public class ConfirmUser {
 
     private boolean inputDatabase(String password) {
 
-        Connection connection = dbConnection.getConnection();
         boolean checks = false;
         int wasUpdated = 0;
         

@@ -7,12 +7,12 @@ import javafx.scene.control.TextField;
 
 /**
  * @Course: SDEV 450 ~ Enterprise Java Programming
- * @Author Name: Cush Helfrich
+ * @Contributors: Cush Helfrich, Wayne Riley, Charlotte Hirschberger
  * @Assignment Name: java3finalproject
  * @Date: Oct 26, 2016
  * @Subclass Verify Description: Subclass used for verification of data entry
  */
-//Imports
+
 //*******************Start Cush Code****************************
 //Begin Subclass Verify
 public class Verify {
@@ -125,7 +125,10 @@ public class Verify {
     /***********Start Charlotte's Code******************/
     
     /**
-     * 
+     * Extracts entries from username and password fields and sends them to
+     * isValidUName and isValidPWEntry methods for regex tests.
+     * Concatenates an alert message that displays the requirements for the entry or entries
+     * determined to be invalid.
      * @param txtUserName
      * @param pf
      * @return 
@@ -138,7 +141,7 @@ public class Verify {
         String invalidMsg = "";
         pf.requestFocus();
         
-        if(!isValidUName(user))
+        if(!isValidUName(user)) // String in txtUserName didn't match regex pattern
         {
             areValid = false;
             invalidMsg += "The username must be 6-64 characters in length, must "
@@ -148,7 +151,10 @@ public class Verify {
             txtUserName.requestFocus();
         }
         
-        if(!isValidPwEntry(pw))
+        /* If user string was invalid, text will be added to invalidMsg. Otherwise,
+        invalidMsg will only display the text inside this block, i.e. "The password..."
+        */
+        if(!isValidPwEntry(pw)) // String in pf didn't match regex pattern
         {
             areValid = false;
             invalidMsg += "The password must be 8-255 characters in length and "
@@ -156,6 +162,7 @@ public class Verify {
             pf.setText("");
         }
         
+        /* If either entry was invalid, show an alert*/
         if(areValid == false)
         {
             createAlert(Alert.AlertType.ERROR, "Invalid entries", invalidMsg);

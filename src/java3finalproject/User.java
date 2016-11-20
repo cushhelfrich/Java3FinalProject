@@ -52,8 +52,6 @@ public class User {
         this.updated = updated;
     }
     
-    // Additional getter and setter methods will go here
-    
     /**
      * Return the current user's id, which was retrieved during login
      * @return 
@@ -61,5 +59,7 @@ public class User {
     public int getUserId()
     {
         return user_id;
-    }
+    }    
+
+    // Additional getter and setter methods will go here
 }

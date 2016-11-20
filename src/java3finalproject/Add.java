@@ -9,14 +9,10 @@ package java3finalproject;
  * dashboard textfields and inserted into database.
  */
 //Imports
-import java.sql.SQLException;
-import static java3finalproject.Dashboard.account;
-import static java3finalproject.Dashboard.accountName;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;

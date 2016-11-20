@@ -2,7 +2,7 @@ package java3finalproject;
 
 /**
  * @Course: SDEV 450 ~ Java Programming III
- * @Author Name: Wayne Riley
+ * @Contributors: Wayne Riley, Cush Helfrich, Charlotte Hirschberger
  * @Assignment Name: login
  * @Date: Sep 22, 2016
  * @Description: Java III final Project - Password Wizard App - this is the
@@ -161,22 +161,26 @@ public class Login extends Application {
     }
     
     /**
+     * Charlotte's code
      * This function is responsible for validating textfield entries and creating
      * the SQL statement used to query the User table for the provided username.
      * If a record is found, this function computes the hash for the provided
-     * password and compares it to the retrieved one.
+     * password and compares it to the retrieved one. If the user's entry and the
+     * hash match, Dashboard is loaded and a User object is created.
      * @param user      textfield entry
      * @param pw        textfield entry
-     * @return 
+     * @return          boolean indicates whether login was successful
      */
     private boolean processLogin(TextField txtUserName, PasswordField pf)
-    {    
-        Verify verify = new Verify();
+    {   
         boolean bool = false;
         lblMessage.setText("");
         String user = txtUserName.getText();
         String pw = pf.getText();
         
+       /* If username and password match Regex patterns, proceed with DB retrieval and encryption.
+        Otherwise, Verify displays a detailed alert
+        */
         if(verify.areValidCreds(txtUserName, pf))
         {        
             try
@@ -211,16 +215,19 @@ public class Login extends Application {
                         // Store the db values in a User object's attributes
                         currUser = new User(user_id, email, user, pw_hash, salt, first, last, created, updated);
                     
-                        bool = true;                    // signal to calling function that stage should be closed
-                        dashboard.mainScreen(); // display the user's dashboard
+                        bool = true;                // signal to calling function that stage should be closed
+                        dashboard.mainScreen();     // display the user's dashboard
                     }
-                    else // User's password entry was invalid
+                    else // User's password entry did not match the value in database
                     {
                         lblMessage.setText("Incorrect user or password");
                         lblMessage.setTextFill(Color.RED);
                     }
                 }
             }
+            
+            /* Catch Exceptions thrown by Encryptor and DBConnector classes and
+            display an Alert describing the Exception*/
             catch (SQLException | NoSuchAlgorithmException | UnsupportedEncodingException ex)
             {
                 verify.createAlert(Alert.AlertType.ERROR, "Failed login", 
@@ -229,6 +236,10 @@ public class Login extends Application {
                         + "will now exit. Error message: " + ex.getMessage());
             }
         }
+        
+        /* Display a red alert message in the Login screen if one or more entries
+        fail the regex tests in Verify
+        */
         
         else
         {
