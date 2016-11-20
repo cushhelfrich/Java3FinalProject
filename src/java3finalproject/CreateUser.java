@@ -310,12 +310,7 @@ public class CreateUser {
                 }
             }
             
-            //Check if username/password meet requirments
-            if (checks != false) {
-                if(verify.areValidCreds(tfUserName, pfPassword)) {
-                    
-                }
-            }
+            
 
             if ((verify.areValidCreds(tfUserName, pfPassword) && checks)) {
                 ConfirmUser confirm = new ConfirmUser(tfUserName, tfEmail,
