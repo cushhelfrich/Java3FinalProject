@@ -164,7 +164,20 @@ public class Dashboard {
             }
         }
         );//end Add event handler
+        viewAccount.setOnAction(
+                (ActionEvent e) -> {
+                    if (accountName.getText().matches("")) {
+                        verify.deleteEmpty();
+                    } else {
+                        Account dispAccount = new Account(accountName.getText());
+                        userName.setText(dispAccount.getUserName());
+                        passWord.setText(dispAccount.getPassword());
+                        passWord.setText(AEScrypt.decrypt(dispAccount.getPassword(), "DonaTellaNobody"));
 
+                       //modify.change(accountName.getText(), userName.getText(), passWord.getText());
+                    }
+                }
+        );
         //Launches modify confirmation scene
         btnModify.setOnAction(
                 (ActionEvent e) -> {
