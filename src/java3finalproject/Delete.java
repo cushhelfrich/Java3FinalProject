@@ -39,7 +39,6 @@ class Delete {
     Stage deleteScene = new Stage();
     Button btnConfirm = new Button("Yes");
     Button btnEdit = new Button("No");
-    DBConnector db = new DBConnector();
     Verify verify = new Verify();
 
     /**
@@ -146,7 +145,7 @@ class Delete {
         String rmvAct = "SELECT * FROM account WHERE account_name = '" + actName + "' AND user_id = " + Login.currUser.getUserId();
 
         // Query User table for account_id to that matches account name.
-        List<Map<String,Object>> results = db.retrieveRecords(rmvAct);
+        List<Map<String,Object>> results = Login.db.retrieveRecords(rmvAct);
 
         if (results.isEmpty()) // Query returned 0 results
         {
@@ -159,7 +158,7 @@ class Delete {
             String dltAct = "DELETE FROM account WHERE account_id = '" + deleteId + "'";
 
             //Calls modifyRecords in DBConnector to execute SQL string and delete account
-            db.modifyRecords(dltAct);
+            Login.db.modifyRecords(dltAct);
         }
     }
 } //End Subclass Delete

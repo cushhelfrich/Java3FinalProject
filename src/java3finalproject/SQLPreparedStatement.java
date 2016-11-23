@@ -22,7 +22,6 @@ public class SQLPreparedStatement {
 
     private PreparedStatement preparedStmt = null;
     // create a database connections
-    private final DBConnector db = new DBConnector();  // Tanona
     private Connection connection = null;
 
     /**
@@ -34,7 +33,7 @@ public class SQLPreparedStatement {
     public PreparedStatement createStatement(String query) throws SQLException {
 
         try {
-            connection = db.getConnection();
+            connection = Login.db.getConnection();
 
             preparedStmt = connection.prepareStatement(query);
 

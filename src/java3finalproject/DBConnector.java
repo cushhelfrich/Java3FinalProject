@@ -40,6 +40,7 @@ public class DBConnector {
     public DBConnector()
     {
         initConnection();
+        System.out.println("successful init");
     }
     
     /**
@@ -55,7 +56,7 @@ public class DBConnector {
         try
         {
             // load and register JDBC driver for MySQL 
-            Class.forName("com.mysql.jdbc.Driver"); 
+            Class.forName("com.mysql.jdbc.Driver");
 
             // try to establish the connection
             conn = DriverManager.getConnection(DB_PATH, DB_USER, DB_PASSWORD);
@@ -71,10 +72,18 @@ public class DBConnector {
             if(countFailed == 0)
             {
                 Login.verify.createAlert(Alert.AlertType.WARNING, "Connection error", 
-                     "Error connecting to database. Check your Internet connection "
-                     + "before proceeding. Error message: " + ex.getMessage());
+                "Error connecting to database. Check your Internet connection "
+                + "before proceeding. Error message: " + ex.getMessage());
+            }
+            else
+            {
+                Login.verify.createAlert(Alert.AlertType.ERROR, "Connection error",
+                "The program is still unable to establish a connection to the database."
+                        + "The program will now exit. Error message: " + ex.getMessage());
+                System.exit(1);
             }
             
+
             countFailed++;
             b = false;
          }
@@ -100,13 +109,14 @@ public class DBConnector {
      */
     public List<Map<String, Object>> retrieveRecords(String query) throws SQLException
     {
-       List<Map<String, Object>> results = new ArrayList<>();
-       HashMap<String, Object> row;
+        List<Map<String, Object>> results = null;
 
        /*If Connection is already established or can be re-established, get the ResultSet
        and populate the List. Otherwise, initConnection will throw an Exception.*/
        if(conn != null || (conn == null && initConnection()))
-       {
+       {       
+            results = new ArrayList<>();
+            HashMap<String, Object> row;
             countFailed = 0;    // Reset
             
             /* try-with-resources closes resources automatically*/

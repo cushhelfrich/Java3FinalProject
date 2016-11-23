@@ -46,7 +46,6 @@ public class Dashboard {
     //instantiate subclass
     Add add = new Add();
     Delete delete = new Delete();
-    DBConnector db = new DBConnector();
     Modify modify = new Modify();
     Verify verify = new Verify();
 
@@ -234,7 +233,7 @@ public class Dashboard {
         String rtrvAct = "SELECT account_name FROM account WHERE user_id = " + Login.currUser.getUserId();
 
         //calls account to load accounts in arraylist
-        account = db.retrieveAccts(rtrvAct);
+        account = Login.db.retrieveAccts(rtrvAct);
     }
 
     /**

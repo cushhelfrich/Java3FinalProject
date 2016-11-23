@@ -31,8 +31,6 @@ import javafx.stage.Stage;
 //Imports
 //Begin Subclass ConfirmUser
 public class ConfirmUser {
-
-    DBConnector dbConnection = new DBConnector(); //Instance to connec to database
     Encryptor encrypt = new Encryptor();
     CreateUser createUser = new CreateUser();
 
@@ -269,7 +267,7 @@ public class ConfirmUser {
 
             try {
                 //Call insertUser in DBConnector to 
-                wasUpdated = dbConnection.insertUser(query);
+                wasUpdated = Login.db.insertUser(query);
 
             } catch (SQLException ex) {
                 System.out.println("A problem occurred while inserting the user. "

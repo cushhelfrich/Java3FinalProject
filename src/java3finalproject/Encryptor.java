@@ -16,6 +16,7 @@ import java.util.Random;
  */
 
 public class Encryptor {
+    
     private static final Random RANDOM = new SecureRandom();    // Seed for salt
     
     // Future update: compute hash length based on salt size
