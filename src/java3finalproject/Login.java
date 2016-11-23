@@ -45,11 +45,13 @@ public class Login extends Application {
     //instantiate subclass
     Dashboard dashboard = new Dashboard();
     
-    public static DBConnector db = new DBConnector();
+    private final Encryptor encrypt = new Encryptor();     
     public static Verify verify = new Verify();
+    public static DBConnector db = null;
+
 
  
-    private final Encryptor encrypt = new Encryptor();
+
     private final Label lblMessage = new Label();
     private final TextField txtUserName = new TextField();
     private final PasswordField pf = new PasswordField();
@@ -57,6 +59,7 @@ public class Login extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        db = new DBConnector();
         BorderPane bp = new BorderPane();
         bp.setPadding(new Insets(10, 50, 50, 50));
 
@@ -190,12 +193,12 @@ public class Login extends Application {
                 // Query User table for user, pw, and salt where user = user
                 List<Map<String, Object>> results = db.retrieveRecords(isUser);
             
-                if(results.isEmpty()) // Query returned 0 results
+                if(results != null && results.isEmpty()) // Query returned 0 results
                 {
                     lblMessage.setText("No account exists for this user.");
                     lblMessage.setTextFill(Color.RED);
                 }
-                else // Record returned
+                else if(results != null) // Record returned
                 {
                     Map<String, Object> aRow = results.get(0);
                     String salt = (String) aRow.get("salt");
@@ -231,9 +234,9 @@ public class Login extends Application {
             catch (SQLException | NoSuchAlgorithmException | UnsupportedEncodingException ex)
             {
                 verify.createAlert(Alert.AlertType.ERROR, "Failed login", 
-                        "An error occurred while processing your credentials or"
-                        + " connection problems continue to persist. The system "
+                        "An error occurred while processing your credentials. The system "
                         + "will now exit. Error message: " + ex.getMessage());
+                System.exit(1);
             }
         }
         
