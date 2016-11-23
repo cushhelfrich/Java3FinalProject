@@ -218,7 +218,7 @@ public class CreateUser {
 
     } //End hbButtons
 
-    class EnterHandler implements EventHandler<ActionEvent> {
+class EnterHandler implements EventHandler<ActionEvent> {
 
         @Override
         public void handle(ActionEvent e) {
@@ -285,36 +285,33 @@ public class CreateUser {
                 }
 
             }
-                //Check if username is already used
-                if (checks != false) {
-                    String query = "SELECT * FROM user WHERE username = '"
-                            + tfUserName.getText() + "'";
+            //Check if username is already used
+            if (checks != false) {
+                String query = "SELECT * FROM user WHERE username = '"
+                        + tfUserName.getText() + "'";
 
-                    try
-                    {
-                        results = Login.db.retrieveRecords(query);
-                    }
-                    catch(SQLException ex)
-                    {
-                        verify.createAlert(Alert.AlertType.ERROR, "Processing error",
-                                "An error prevented the program from verifying that"
-                                + "you have selected an available username. Error message: " 
-                                + ex.getMessage());
-                    }
-
-                    
-                    if (!results.isEmpty()) 
-                    {
-
-                            lblMessage.setText("Username already used");
-                            lblMessage.setTextFill(Color.RED);
-                            tfUserName.clear();
-                            tfUserName.requestFocus();
-                            checks = false;
-                    }
+                try {
+                    results = Login.db.retrieveRecords(query);
+                } catch (SQLException ex) {
+                    verify.createAlert(Alert.AlertType.ERROR, "Processing error",
+                            "An error prevented the program from verifying that"
+                            + "you have selected an available username. Error message: "
+                            + ex.getMessage());
                 }
 
-            if (checks) {
+                if (!results.isEmpty()) {
+
+                    lblMessage.setText("Username already used");
+                    lblMessage.setTextFill(Color.RED);
+                    tfUserName.clear();
+                    tfUserName.requestFocus();
+                    checks = false;
+                }
+            }
+            
+            
+
+            if ((verify.areValidCreds(tfUserName, pfPassword) && checks)) {
                 ConfirmUser confirm = new ConfirmUser(tfUserName, tfEmail,
                         tfFirstName, tfLastName, pfPassword);
 
@@ -332,7 +329,7 @@ public class CreateUser {
 
             if (pressenter.getCode() == KeyCode.ENTER) {
                 btnEnterUser.fire();
-               
+
             }
 
         }
