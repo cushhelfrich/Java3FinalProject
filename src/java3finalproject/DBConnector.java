@@ -40,7 +40,6 @@ public class DBConnector {
     public DBConnector()
     {
         initConnection();
-        System.out.println("successful init");
     }
     
     /**
@@ -79,7 +78,7 @@ public class DBConnector {
             {
                 Login.verify.createAlert(Alert.AlertType.ERROR, "Connection error",
                 "The program is still unable to establish a connection to the database."
-                        + "The program will now exit. Error message: " + ex.getMessage());
+                        + " The program will now exit. Error message: " + ex.getMessage());
                 System.exit(1);
             }
             
