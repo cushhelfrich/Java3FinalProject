@@ -38,7 +38,6 @@ import javafx.stage.Stage;
 public class CreateUser {
 
     Verify verify = new Verify();
-    DBConnector dbConnection = new DBConnector();//Instance of connection to database
 
     //ConfirmUser confUser = new ConfirmUser();  //Create instance
     Stage createUserStage = new Stage();
@@ -293,7 +292,7 @@ public class CreateUser {
 
                     try
                     {
-                        results = dbConnection.retrieveRecords(query);
+                        results = Login.db.retrieveRecords(query);
                     }
                     catch(SQLException ex)
                     {
