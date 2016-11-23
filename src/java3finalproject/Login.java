@@ -45,13 +45,9 @@ public class Login extends Application {
     //instantiate subclass
     Dashboard dashboard = new Dashboard();
     
-    private final Encryptor encrypt = new Encryptor();     
     public static Verify verify = new Verify();
-    public static DBConnector db = null;
-
-
- 
-
+    public static DBConnector db;
+    private final Encryptor encrypt = new Encryptor();
     private final Label lblMessage = new Label();
     private final TextField txtUserName = new TextField();
     private final PasswordField pf = new PasswordField();
