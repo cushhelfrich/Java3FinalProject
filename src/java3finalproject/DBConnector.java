@@ -109,10 +109,11 @@ public class DBConnector {
     public List<Map<String, Object>> retrieveRecords(String query) throws SQLException
     {
         List<Map<String, Object>> results = null;
+        
 
        /*If Connection is already established or can be re-established, get the ResultSet
        and populate the List. Otherwise, initConnection will throw an Exception.*/
-       if(conn != null || (conn == null && initConnection()))
+       if((conn != null && !conn.isClosed()) || initConnection())
        {       
             results = new ArrayList<>();
             HashMap<String, Object> row;
@@ -160,7 +161,7 @@ public class DBConnector {
     {
        int rowsAffected = 0;
        
-       if(conn != null || (conn == null && initConnection()))
+       if((conn != null && !conn.isClosed()) || initConnection())
        {
             try (PreparedStatement pstmt = conn.prepareStatement(query)) 
             {
@@ -189,7 +190,7 @@ public class DBConnector {
     {
         int rowsAffected = 0;
         
-        if(conn != null || (conn == null && initConnection()))
+        if((conn != null && !conn.isClosed()) || initConnection())
         {
             try(Statement stmt = conn.createStatement())
             {
@@ -213,7 +214,7 @@ public class DBConnector {
         /* get current time, for insertion in created and last_update fields*/
         Timestamp datetime = new Timestamp(new Date().getTime());
         
-        if(conn != null || (conn == null && initConnection()))
+       if((conn != null && !conn.isClosed()) || initConnection())
         {
             try(PreparedStatement prepStmt = conn.prepareStatement(query))
             {            

@@ -29,6 +29,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Reflection;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -117,6 +119,26 @@ public class Login extends Application {
         btnResetPassword.setId("btnResetPassword"); //CUSH
         text.setId("text");
 
+        txtUserName.setOnKeyReleased
+        ((KeyEvent k) -> 
+            {
+                if(k.getCode() == KeyCode.ENTER)
+                {
+                    btnLogin.fire();
+                }
+            } //handle
+        );
+        
+        pf.setOnKeyReleased
+        ((KeyEvent k) -> 
+            {
+                if(k.getCode() == KeyCode.ENTER)
+                {
+                    btnLogin.fire();
+                }
+            } //handle
+        );
+        
         //Action for btnLogin
         btnLogin.setOnAction(
                 (ActionEvent e) -> {

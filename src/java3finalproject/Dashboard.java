@@ -10,7 +10,10 @@ package java3finalproject;
  */
 //Imports
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -37,7 +40,8 @@ public class Dashboard {
     Button btnClear;
     Button btnExit;
     static TextArea accountView;
-    static List<String> account = null;
+    private static List<Map<String, Object>> account;
+    public static List<Account> accountArr = new ArrayList<>();
     static TextField accountName = new TextField();
     static TextField userName = new TextField();
     static TextField passWord = new TextField();
@@ -105,7 +109,7 @@ public class Dashboard {
         dbScene.show();
 
         getAct();//calls account method to load ArrayList from database
-        updateTextArea();//calls viewAccount method to display account name in display
+        initAccountSet();
     }
 
     /**
@@ -154,7 +158,7 @@ public class Dashboard {
 
             boolean blank = accountName.getText().matches("") || userName.getText().matches("")
                     || passWord.getText().matches("");
-            if (account.contains(accountName.getText())) {
+            if (isDuplicate(accountName.getText())) {
                 verify.duplicate();
             } else if (blank == true) {
                 verify.empty();
@@ -226,23 +230,62 @@ public class Dashboard {
      * @throws SQLException
      */
     private void getAct() throws SQLException {
-        if(account != null)
+        if(account != null && !account.isEmpty())
         {
             account.clear(); // clears arrayList
         }
         String rtrvAct = "SELECT account_name FROM account WHERE user_id = " + Login.currUser.getUserId();
 
         //calls account to load accounts in arraylist
-        account = Login.db.retrieveAccts(rtrvAct);
+        account = Login.db.retrieveRecords(rtrvAct);
     }
 
     /**
      * Read ArrayList and display in text area.
      */
-    public static void updateTextArea() {
+    private static void initAccountSet() {
         accountView.setText("ACCOUNT NAME\n-----------------------------\n");
-        for (int i = 0; i < account.size(); i++) {
-            accountView.appendText(account.get(i) + "\n");
+        Map<String, Object> row;
+        if(!account.isEmpty())
+        {
+            for (int i = 0; i < account.size(); i++) 
+            {
+                row = account.get(i);
+                Account acct = new Account(
+                    (String)row.get("account_name"), 
+                    (String)row.get("username"), 
+                    (String)row.get("password"),
+                    (Timestamp)row.get("created"),
+                    (Timestamp)row.get("last_update")
+                );
+                accountArr.add(acct);
+                accountView.appendText(acct.getName() + "\n");
+            }
+        }
+    }
+    
+    public static void updateAccountSet(Account newAcct) {
+        accountView.appendText(newAcct.getName() + "\n");
+        accountArr.add(newAcct);
+    }
+    
+    public static void deleteAccount(String acctName)
+    {
+        boolean contSearch = true;
+        int i = 0;
+        while(contSearch == true)
+        {
+            if(accountArr.get(i).getName().equals(acctName))
+            {
+                accountArr.remove(i);
+                contSearch = false;
+            }
+            i++;
+        }
+        
+        accountView.setText("ACCOUNT NAME\n-----------------------------\n");
+        for (Account acct : accountArr) {
+            accountView.appendText(acct.getName() + "\n");
         }
     }
 
@@ -254,6 +297,20 @@ public class Dashboard {
         userName.clear();
         passWord.clear();
         //webSite.clear();
+    }
+    
+    public static boolean isDuplicate(String acctName)
+    {
+        boolean b = false;
+        for(int i = 0; i < accountArr.size(); i++)
+        {
+            if(accountArr.get(i).getName().equals(acctName))
+            {
+                b = true;
+            }
+        }
+        
+        return b;
     }
 } //End Subclass Dashboard
 //*********************End Wayne Code******************************

@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static java3finalproject.Dashboard.account;
 import static java3finalproject.Dashboard.accountName;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -105,7 +104,7 @@ class Delete {
         //lambda expression confirm and Edit
         btnConfirm.setOnAction((ActionEvent e) -> {
             
-            if (!account.contains(accountName.getText())) {
+            if (!Dashboard.isDuplicate(accountName.getText())) {
                 verify.noAct();
             } else {            
             try {
@@ -114,8 +113,7 @@ class Delete {
                 Logger.getLogger(Delete.class.getName()).log(Level.SEVERE, null, ex);
             }
             System.out.println("Delete " + actName + " from database");
-            account.remove(accountName.getText());
-            Dashboard.updateTextArea();
+            Dashboard.deleteAccount(actName);
             Dashboard.clearHandler();//calls Static method in main
             deleteScene.close();//closes scene
             }
@@ -143,7 +141,7 @@ class Delete {
     private void removeAct(String actName) throws SQLException {
 
         String rmvAct = "SELECT * FROM account WHERE account_name = '" + actName + "' AND user_id = " + Login.currUser.getUserId();
-
+        
         // Query User table for account_id to that matches account name.
         List<Map<String,Object>> results = Login.db.retrieveRecords(rmvAct);
 

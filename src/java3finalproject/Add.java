@@ -40,7 +40,6 @@ public class Add {
      * @param actName
      * @param usrName
      * @param pw
-     * @param ws
      */
     public void insert(String actName, String usrName, String pw) {
 
@@ -137,7 +136,7 @@ public class Add {
             //****************End Bill Code*********************
             
             System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
-            Dashboard.updateTextArea();//calls method in Dashboard to update view
+            Dashboard.updateAccountSet(newAct);//calls method in Dashboard to update view
             Dashboard.clearHandler();//clears all textfields
 
             Dashboard.clearHandler();//calls Static method in main

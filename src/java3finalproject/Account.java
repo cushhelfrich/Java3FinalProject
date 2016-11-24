@@ -4,6 +4,9 @@ package java3finalproject;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,13 +26,15 @@ import java.util.logging.Logger;
  */
 //Imports
 //Begin Subclass Account
-public class Account {
+public class Account implements Comparable<Account> {
 
     private  String accountName;
     private  String username;
     private  String password;
     private  String website;
     private final int user_id = Login.currUser.getUserId();
+    private Timestamp created;
+    private Timestamp updated;
 
     final String secretKey = "DonaTellaNobody";
 
@@ -46,8 +51,19 @@ public class Account {
         this.password = AEScrypt.encrypt(password, secretKey);
         //   this.password=password;
         this.website = "na";
+        this.created = null;
+        this.updated = null;
     }
 
+    public Account(String name, String uname, String password, Timestamp created, Timestamp updated)
+    {
+        this.accountName=name;
+        this.username=uname;
+        this.password = AEScrypt.encrypt(password, secretKey);
+        this.website="na";
+        this.created = created;
+        this.updated = updated;
+    }
     /**
      * getAccount uses a prepared statement to query the DB for for account info
      *
@@ -75,6 +91,8 @@ public class Account {
             this.username = rs.getString("username");
             this.password = rs.getString("password");
             this.website = "na";
+            this.created = rs.getTimestamp("created");
+            this.updated = rs.getTimestamp("last_update");
 
             
         } catch (SQLException ex) {
@@ -102,6 +120,26 @@ public class Account {
 
     public String getWebsite() {
         return website;
+    }
+    
+    public Timestamp getCreated()
+    {
+        return created;
+    }
+    
+    public Timestamp getUpdated()
+    {
+        return updated;
+    }
+    
+    public void setCreated(Timestamp time)
+    {
+        this.created = time;
+    }
+    
+    public void setUpdated(Timestamp time)
+    {
+        this.updated = time;
     }
     // Create an insert method .... 
 
@@ -136,12 +174,26 @@ public class Account {
             tableInserted = prepstmt.execute();
             res = prepstmt.getResultSet();
             rowsaffected = prepstmt.getUpdateCount();
+            
+            List<Map<String, Object>> results = Login.db.retrieveRecords(
+                    "SELECT created, last_update FROM account WHERE user_id=" + user_id
+            );
+            
+            if(results != null & !results.isEmpty())
+            {
+                setCreated((Timestamp)results.get(0).get("created"));
+                setUpdated((Timestamp)results.get(0).get("last_update"));
+                
+            }
         } catch (SQLException e) {
             System.out.println("Failed to create PreparedStatement");
 
         } finally {
             try {
-                prepstmt.close();    //  Close resources 
+                if(prepstmt != null)
+                {
+                    prepstmt.close();
+                } //  Close resources 
                 sqlstmt.closeDB();
 
             } catch (SQLException ex) {
@@ -152,5 +204,10 @@ public class Account {
 
         return tableInserted;
     }
-
+    
+    @Override
+    public int compareTo(Account other)
+    {
+        return this.accountName.compareToIgnoreCase(other.getName());
+    }
 } //End Subclass Account
