@@ -261,7 +261,7 @@ public class DBConnector {
     public List<String> retrieveAccts(String query) throws SQLException
     {
        List<String> results = new ArrayList<>();
-       if(conn != null || (conn == null && initConnection()))
+       if((conn != null && !conn.isClosed()) || initConnection())
        {
             try (Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query))
