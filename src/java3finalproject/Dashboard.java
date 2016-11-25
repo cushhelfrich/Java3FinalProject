@@ -18,7 +18,9 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -59,7 +61,7 @@ public class Dashboard {
      *
      * @throws java.sql.SQLException
      */
-    public void mainScreen() throws SQLException {
+    public void mainScreen() {
 
         //Borderpane to hold Gridpane, HBOX (holds buttons)
         BorderPane bp = new BorderPane();
@@ -108,8 +110,17 @@ public class Dashboard {
         dbScene.setScene(scene);
         dbScene.show();
 
-        getAct();//calls account method to load ArrayList from database
-        initAccountSet();
+        try
+        {
+            getAct();           //calls method to load List<Map<>> with account details from database        
+            initAccountSet();   
+        }
+        catch(SQLException ex)
+        {
+            System.out.println("Error message: " + ex.getMessage());
+            verify.createAlert(Alert.AlertType.ERROR, "Error loading accounts", 
+                    "There was a problem loading your account details");
+        }
     }
 
     /**
@@ -122,6 +133,10 @@ public class Dashboard {
         VBox vBox = new VBox(5);
         vBox.setAlignment(Pos.CENTER_LEFT);
         vBox.setPadding(new Insets(5, 5, 5, 5));
+        
+        ComboBox sortCombo = new ComboBox();
+        sortCombo.getItems().addAll("Name", "Newest", "Last Updated");
+        
 
         accountView = new TextArea();
         accountView.setPrefColumnCount(13);
@@ -131,7 +146,7 @@ public class Dashboard {
         //accountView.setText("ACCOUNT INFORMATION\n-----------------------------\n");
         //ImageView image = new ImageView(new Image("images/smallLock.jpg"));
 
-        vBox.getChildren().addAll(accountView);
+        vBox.getChildren().addAll(sortCombo, accountView);
 
         return vBox;
     }
@@ -224,9 +239,9 @@ public class Dashboard {
     }
 
     /**
-     * Calls dbConnector for connection and query returns account name which
-     * loads to ArrayList
-     *
+     * Calls dbConnector for connection and loads this user's account details
+     * into a List of Maps.
+     * 
      * @throws SQLException
      */
     private void getAct() throws SQLException {
