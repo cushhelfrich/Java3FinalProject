@@ -19,6 +19,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -108,12 +109,16 @@ class Delete {
                 verify.noAct();
             } else {            
             try {
-                removeAct(accountName.getText());
+                removeAct(accountName.getText());            
+                System.out.println("Delete " + actName + " from database");            
+                Dashboard.deleteAccount(actName);
             } catch (SQLException ex) {
                 Logger.getLogger(Delete.class.getName()).log(Level.SEVERE, null, ex);
+                Login.verify.createAlert(Alert.AlertType.ERROR, "Error deleting account",
+                        "There was a problem processing your request, and account details"
+                                + " may not have been deleted from the database. Error message: " + ex.getMessage());
             }
-            System.out.println("Delete " + actName + " from database");
-            Dashboard.deleteAccount(actName);
+
             Dashboard.clearHandler();//calls Static method in main
             deleteScene.close();//closes scene
             }
@@ -145,11 +150,12 @@ class Delete {
         // Query User table for account_id to that matches account name.
         List<Map<String,Object>> results = Login.db.retrieveRecords(rmvAct);
 
-        if (results.isEmpty()) // Query returned 0 results
+        if (results != null && results.isEmpty()) // Query returned 0 results
         {
             verify.noAct();
 
-        } else {
+        } 
+        else if(results != null) {
             int deleteId = (Integer) results.get(0).get("account_id");
 
             //SQL string to delete account account row
