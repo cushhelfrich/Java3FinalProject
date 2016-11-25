@@ -72,13 +72,15 @@ public class Account implements Comparable<Account> {
     {
         this.accountName=name;
         this.username=uname;
-        this.password = AEScrypt.encrypt(password, secretKey);
+        this.password = password;
         this.website="na";
         this.created = created;
         this.updated = updated;
     }
     /*****End Charlotte's code*****/
     
+    
+    /*****Bill's code*****/
     /**
      * getAccount uses a prepared statement to query the DB for for account info
      *
@@ -136,9 +138,9 @@ public class Account implements Comparable<Account> {
     public String getWebsite() {
         return website;
     }
+    /*****End Bill's code*****/
     
     /*****Charlotte's code*****/
-    
     public Timestamp getCreated()
     {
         return created;
@@ -167,6 +169,7 @@ public class Account implements Comparable<Account> {
     }
     /*****End Charlotte's code*****/
     
+    /*****Bill's code*****/
     // Create an insert method .... 
 
     /**
@@ -202,9 +205,9 @@ public class Account implements Comparable<Account> {
             rowsaffected = prepstmt.getUpdateCount();
             
             /*****Charlotte's code****/
-            // Get the Timestamps created during record insertion
+            // Get the Timestamps just created during record insertion
             List<Map<String, Object>> results = Login.db.retrieveRecords(
-                    "SELECT created, last_update FROM account WHERE user_id=" + user_id
+                    "SELECT created, last_update FROM account WHERE user_id=" + user_id + " AND account_name ='" + actName + "'"
             );
             
             if(results != null & !results.isEmpty())
@@ -250,36 +253,47 @@ public class Account implements Comparable<Account> {
         return this.accountName.compareToIgnoreCase(other.getName());
     }
     
+    /**
+     * Sort Accounts by created date, using Comparator
+     */
     public static Comparator<Account> CreatedComp = (Account a1, Account a2) -> {
+        
+        // Convert Timestamps to a number, in order to make comparison
         long time1 = a1.getCreated().getTime();
         long time2 = a2.getCreated().getTime();
-        if(time1 > time2)
+        
+        if(time1 > time2) // a1 created more recently
         {
             return -1;
         }
-        else if(time2 > time1)
+        else if(time2 > time1) // a2 created more recently
         {
             return 1;
         }
-        else
+        else // accounts created at same time
         {
             return 0;
         }
     };
     
+     /**
+     * Sort Accounts by date of last update, using Comparator
+     */
     public static Comparator<Account> UpdatedComp = (Account a1, Account a2) ->
     {
+        // Convert Timestamps to a number, in order to make comparison
         long time1 = a1.getUpdated().getTime();
         long time2 = a2.getUpdated().getTime();
-        if(time1 > time2)
+        
+        if(time1 > time2) // a1 created more recently
         {
             return -1;
         }
-        else if(time2 > time1)
+        else if(time2 > time1) // a2 created more recently
         {
             return 1;
         }
-        else
+        else // accounts created at same time
         {
             return 0;
         }
