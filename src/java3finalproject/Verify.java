@@ -1,9 +1,14 @@
 package java3finalproject;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputControl;
 
 /**
  * @Course: SDEV 450 ~ Enterprise Java Programming
@@ -123,7 +128,7 @@ public class Verify {
     //****************End Wayne Code**********************************
     
     /***********Start Charlotte's Code******************/
-    
+
     /**
      * Extracts entries from username and password fields and sends them to
      * isValidUName and isValidPWEntry methods for regex tests.
@@ -212,6 +217,53 @@ public class Verify {
         return isValid;
     }
     
+    public boolean isValidUName(TextField userTF, Label uNameAlert)
+    {
+        boolean isValid = false;
+        
+        if(userTF.getText().isEmpty())
+        {
+            userTF.requestFocus();
+            uNameAlert.setVisible(true);
+            uNameAlert.setText("! Enter a username");
+        }
+        else if(!isValidUName(userTF.getText()))
+        {
+            userTF.requestFocus();
+            uNameAlert.setVisible(true);
+            uNameAlert.setText("Invalid username");
+        }
+        else
+        {
+            isValid = true;
+            uNameAlert.setText("");
+        }
+        
+        return isValid;
+    }
+    
+    public boolean isValidPwEntry(PasswordField pf, Label pwAlert)
+    {
+        boolean isValid = false;
+        
+        if(pf.getText().isEmpty())
+        {
+            pwAlert.setVisible(true);
+            pwAlert.setText("! Enter a password");
+        }
+        else if(!isValidPwEntry(pf.getText()))
+        {
+            pwAlert.setVisible(true);
+            pwAlert.setText("Invalid password");
+        }
+        else
+        {
+            isValid = true;
+            pwAlert.setText("");
+        }
+        
+        return isValid;
+    }
     /**
      * Accepts an AlertType and multiple strings, in order to efficiently create
      * an alert dialog

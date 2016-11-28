@@ -16,6 +16,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.application.Application;
@@ -27,6 +29,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
@@ -50,9 +53,10 @@ public class Login extends Application {
     public static Verify verify = new Verify();
     public static DBConnector db;
     private final Encryptor encrypt = new Encryptor();
-    private final Label lblMessage = new Label();
     private final TextField txtUserName = new TextField();
+    private final Label uNameAlert = new Label();
     private final PasswordField pf = new PasswordField();
+    private final Label pwAlert = new Label();
     public static User currUser;
 
     @Override
@@ -69,7 +73,11 @@ public class Login extends Application {
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(20, 20, 20, 20));
         gridPane.setHgap(5);
-        gridPane.setVgap(5);
+        
+        uNameAlert.getStyleClass().add("login-alert");
+        uNameAlert.setVisible(false);
+        pwAlert.getStyleClass().add("login-alert");
+        pwAlert.setVisible(false);
 
         //Implementing Nodes for GridPane
         Label lblUserName = new Label("Username");
@@ -82,17 +90,22 @@ public class Login extends Application {
         btnCreateUser.setPrefWidth(120);
         btnResetPassword.setPrefWidth(120);
         //END CUSH
+        
+        Text spacer = new Text();
+        spacer.setId("spacer");
 
         //Adding Nodes to GridPane layout
         //gridPane.setGridLinesVisible(true); //CUSH
         gridPane.add(lblUserName, 0, 0);
         gridPane.add(txtUserName, 1, 0);
-        gridPane.add(lblPassword, 0, 1);
-        gridPane.add(pf, 1, 1);
-        gridPane.add(btnLogin, 2, 1);
-        gridPane.add(lblMessage, 1, 2);
-        gridPane.add(btnCreateUser, 1, 3); //CUSH
-        gridPane.add(btnResetPassword, 1, 4); //CUSH
+        gridPane.add(uNameAlert, 1,1);
+        gridPane.add(lblPassword, 0, 2);
+        gridPane.add(pf, 1, 2);
+        gridPane.add(btnLogin, 2, 2);        
+        gridPane.add(pwAlert, 1, 3);
+        gridPane.add(btnCreateUser, 1, 4); //CUSH
+        gridPane.add(spacer, 1, 5);
+        gridPane.add(btnResetPassword, 1, 6); //CUSH
         //Reflection for gridPane
         Reflection r = new Reflection();
         r.setFraction(0.7f);
@@ -122,6 +135,10 @@ public class Login extends Application {
         txtUserName.setOnKeyReleased
         ((KeyEvent k) -> 
             {
+                if(uNameAlert.isVisible())
+                {
+                    uNameAlert.setVisible(false);
+                }
                 if(k.getCode() == KeyCode.ENTER)
                 {
                     btnLogin.fire();
@@ -132,6 +149,10 @@ public class Login extends Application {
         pf.setOnKeyReleased
         ((KeyEvent k) -> 
             {
+                if(pwAlert.isVisible())
+                {
+                    pwAlert.setVisible(false);
+                }
                 if(k.getCode() == KeyCode.ENTER)
                 {
                     btnLogin.fire();
@@ -192,82 +213,76 @@ public class Login extends Application {
      * @param pw        textfield entry
      * @return          boolean indicates whether login was successful
      */
-    private boolean processLogin(TextField txtUserName, PasswordField pf)
+    private boolean processLogin(TextField userTF, PasswordField pf)
     {   
-        boolean bool = false;
-        lblMessage.setText("");
-        String user = txtUserName.getText();
+        boolean success = false;
+        String user = userTF.getText();
         String pw = pf.getText();
+        pf.requestFocus();
         
-       /* If username and password match Regex patterns, proceed with DB retrieval and encryption.
-        Otherwise, Verify displays a detailed alert
-        */
-        if(verify.areValidCreds(txtUserName, pf))
-        {        
-            try
-            {
-                String isUser = "SELECT * FROM user WHERE username = '" + user + "'";
-            
-                // Query User table for user, pw, and salt where user = user
-                List<Map<String, Object>> results = db.retrieveRecords(isUser);
-            
-                if(results != null && results.isEmpty()) // Query returned 0 results
-                {
-                    lblMessage.setText("No account exists for this user.");
-                    lblMessage.setTextFill(Color.RED);
-                }
-                else if(results != null) // Record returned
-                {
-                    Map<String, Object> aRow = results.get(0);
-                    String salt = (String) aRow.get("salt");
-                    String pw_hash = (String)aRow.get("password");
-                
-                    //Determine whether the hash of the provided password matches the stored hash
-                    if(encrypt.isExpectedPassword(pw, pw_hash, salt))
-                    {
-                        // If the passwords match, gather the other record values for User creation
-                        Integer user_id = (Integer) aRow.get("user_id");
-                        String email = (String) aRow.get("email");
-                        String first =  (String) aRow.get("first_name");
-                        String last =  (String) aRow.get("last_name");
-                        Timestamp created =  (Timestamp) aRow.get("created");
-                        Timestamp updated =  (Timestamp) aRow.get("last_update");
-                    
-                        // Store the db values in a User object's attributes
-                        currUser = new User(user_id, email, user, pw_hash, salt, first, last, created, updated);
-                    
-                        bool = true;                // signal to calling function that stage should be closed
-                        dashboard.mainScreen();     // display the user's dashboard
-                    }
-                    else // User's password entry did not match the value in database
-                    {
-                        lblMessage.setText("Incorrect user or password");
-                        lblMessage.setTextFill(Color.RED);
-                    }
-                }
-            }
-            
-            /* Catch Exceptions thrown by Encryptor and DBConnector classes and
-            display an Alert describing the Exception*/
-            catch (SQLException | NoSuchAlgorithmException | UnsupportedEncodingException ex)
-            {
-                verify.createAlert(Alert.AlertType.ERROR, "Failed login", 
-                        "An error occurred while processing your credentials. The system "
-                        + "will now exit. Error message: " + ex.getMessage());
-                System.exit(1);
-            }
-        }
-        
-        /* Display a red alert message in the Login screen if one or more entries
-        fail the regex tests in Verify
-        */
-        
-        else
+        boolean validPW = verify.isValidPwEntry(pf, pwAlert);
+           
+        if(verify.isValidUName(userTF, uNameAlert) && validPW)
         {
-            lblMessage.setText("Fix entries above");
-            lblMessage.setTextFill(Color.RED);
+                try
+                {
+                    String isUser = "SELECT * FROM user WHERE username = '" + user + "'";
+            
+                    // Query User table for user, pw, and salt where user = user
+                    List<Map<String, Object>> results = db.retrieveRecords(isUser);
+            
+                    if(results != null && results.isEmpty()) // Query returned 0 results
+                    {
+                        uNameAlert.setVisible(true);
+                        uNameAlert.setText("! No account exists for this user");
+                        uNameAlert.requestFocus();
+                    }
+                    else if(results != null) // Record returned
+                    {
+                        Map<String, Object> aRow = results.get(0);
+                        String salt = (String) aRow.get("salt");
+                        String pw_hash = (String)aRow.get("password");
+                
+                        //Determine whether the hash of the provided password matches the stored hash
+                        if(encrypt.isExpectedPassword(pw, pw_hash, salt))
+                        {
+                            byte[] byteSalt = Base64.getDecoder().decode(salt);
+                            // use the salt retrieved above to hash the combined username and pw
+                            String ks_pass = encrypt.getHashString(user + pw, byteSalt, "SHA-512");
+                            
+                            // If the passwords match and the 2nd hash is successful, retrieve values for User attributes
+                            Integer user_id = (Integer) aRow.get("user_id");
+                            String email = (String) aRow.get("email");
+                            String first =  (String) aRow.get("first_name");
+                            String last =  (String) aRow.get("last_name");
+                            Timestamp created =  (Timestamp) aRow.get("created");
+                            Timestamp updated =  (Timestamp) aRow.get("last_update");
+                    
+                            // Store the db values in a User object's attributes
+                            currUser = new User(user_id, email, user, pw_hash, salt, first, last, created, updated, ks_pass);
+                    
+                            success = true;                // signal to calling function that stage should be closed
+                            dashboard.mainScreen();     // display the user's dashboard
+                        }
+                        else // User's password entry did not match the value in database
+                        {
+                            pwAlert.setText("! Password is incorrect");
+                            pwAlert.setVisible(true);
+                        }
+                    }
+                }
+            
+                /* Catch Exceptions thrown by Encryptor and DBConnector classes and
+                display an Alert describing the Exception*/
+                catch (SQLException | NoSuchAlgorithmException | UnsupportedEncodingException ex)
+                {
+                    verify.createAlert(Alert.AlertType.ERROR, "Failed login", 
+                            "An error occurred while processing your credentials. The system "
+                            + "will now exit. Error message: " + ex.getMessage());
+                    System.exit(1);
+                }
         }
-          
-        return bool;
+        
+        return success;
     } // End Charlotte's code
 } //End Class Login
