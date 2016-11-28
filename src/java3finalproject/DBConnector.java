@@ -63,8 +63,8 @@ public class DBConnector {
         catch(ClassNotFoundException | SQLException ex)
         {
             Login.verify.createAlert(Alert.AlertType.ERROR, "Connection error",
-            "The program is still unable to establish a connection to the database."
-                + " The program will now exit. Error message: " + ex.getMessage());
+            "The program cannot establish a connection to the database."
+                + " Check your Internet connection. The program will now exit. Error message: " + ex.getMessage());
                 System.exit(1);
          }
         return b;
