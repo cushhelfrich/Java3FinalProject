@@ -20,15 +20,19 @@ import java.util.List;
 import java.util.Map;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Reflection;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -116,6 +120,32 @@ public class Login extends Application {
         btnCreateUser.setId("btnCreateUser"); //CUSH
         btnResetPassword.setId("btnResetPassword"); //CUSH
         text.setId("text");
+        
+        //[Scott]Add Tooltip to User Name Field
+        Tooltip userTip = new Tooltip();
+        userTip.setText("Don't have a User Name?\n"
+                + "Select \"Create User\" below.\n");
+        txtUserName.setTooltip(userTip);
+        
+        //[Scott]Add Tooltip to Password Field
+        Tooltip pfTip = new Tooltip();
+        pfTip.setText("Forgot your password?\n"
+                + "Select Reset Password below.\n");
+        pf.setTooltip(pfTip);
+        
+        //[Scott]Enter Button Handler binding
+        EventHandler<KeyEvent> enterHandler = new EventHandler<KeyEvent>() {
+            public void handle(final KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.ENTER) {
+                    if (processLogin(txtUserName, pf)) {
+                        primaryStage.close();
+                    }
+                }
+            }
+        };
+
+        txtUserName.setOnKeyPressed(enterHandler);
+        pf.setOnKeyPressed(enterHandler);     
 
         //Action for btnLogin
         btnLogin.setOnAction(
@@ -158,6 +188,7 @@ public class Login extends Application {
             }
         }); 
     }
+
     
     /**
      * Charlotte's code
@@ -248,4 +279,5 @@ public class Login extends Application {
           
         return bool;
     } // End Charlotte's code
+    
 } //End Class Login
