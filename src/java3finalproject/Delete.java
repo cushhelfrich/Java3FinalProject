@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static java3finalproject.Dashboard.account;
 import static java3finalproject.Dashboard.accountName;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -105,20 +105,17 @@ class Delete {
         //lambda expression confirm and Edit
         btnConfirm.setOnAction((ActionEvent e) -> {
             
-            if (!Dashboard.isDuplicate(accountName.getText())) {
+            if (!account.contains(accountName.getText())) {
                 verify.noAct();
             } else {            
             try {
-                removeAct(accountName.getText());            
-                System.out.println("Delete " + actName + " from database");            
-                Dashboard.deleteAccount(actName);
+                removeAct(accountName.getText());
             } catch (SQLException ex) {
                 Logger.getLogger(Delete.class.getName()).log(Level.SEVERE, null, ex);
-                Login.verify.createAlert(Alert.AlertType.ERROR, "Error deleting account",
-                        "There was a problem processing your request, and account details"
-                                + " may not have been deleted from the database. Error message: " + ex.getMessage());
             }
-
+            System.out.println("Delete " + actName + " from database");
+            account.remove(accountName.getText());
+            Dashboard.updateTextArea();
             Dashboard.clearHandler();//calls Static method in main
             deleteScene.close();//closes scene
             }
@@ -146,16 +143,15 @@ class Delete {
     private void removeAct(String actName) throws SQLException {
 
         String rmvAct = "SELECT * FROM account WHERE account_name = '" + actName + "' AND user_id = " + Login.currUser.getUserId();
-        
+
         // Query User table for account_id to that matches account name.
         List<Map<String,Object>> results = Login.db.retrieveRecords(rmvAct);
 
-        if (results != null && results.isEmpty()) // Query returned 0 results
+        if (results.isEmpty()) // Query returned 0 results
         {
             verify.noAct();
 
-        } 
-        else if(results != null) {
+        } else {
             int deleteId = (Integer) results.get(0).get("account_id");
 
             //SQL string to delete account account row

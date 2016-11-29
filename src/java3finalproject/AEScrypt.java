@@ -12,13 +12,9 @@ package java3finalproject;
  *
  */
 //Imports
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -30,7 +26,6 @@ public class AEScrypt {
 
     private static SecretKeySpec secretKey;
     private static byte[] key;
-    private static String keyString;
 
     public static void setKey(String myKey) {
         MessageDigest sha = null;
@@ -59,19 +54,11 @@ public class AEScrypt {
             setKey(secret);
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            byte[] key = cipher.doFinal(strToEncrypt.getBytes("UTF-8"));
-            keyString = Base64.getEncoder().encodeToString(key);
-            
-            storeKey(key);
+            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
         } catch (Exception e) {
             System.out.println("Error while encrypting: " + e.toString());
         }
         return null;
-    }
-    
-    public String getKeyString()
-    {
-        return keyString;
     }
 
     /**
@@ -91,14 +78,6 @@ public class AEScrypt {
             System.out.println("Error while decrypting: " + e.toString());
         }
         return null;
-    }
-    
-    public static void storeKey(byte[] key) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException
-    {
-        char[] password = Login.currUser.getKSPass().toCharArray();
-        KeyStore ks = KeyStore.getInstance("JKS");
-        ks.load(null, password);
-        keyStore.load();
     }
 
 } //End Subclass AEScrypt

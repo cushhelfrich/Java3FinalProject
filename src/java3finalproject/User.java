@@ -24,7 +24,6 @@ public class User {
     private String last_name = "";
     private Timestamp created = null;
     private Timestamp updated = null;
-    private String ks_pass = "";
     
     /**
      * Assigns the values retrieved from the database or user to the corresponding
@@ -38,10 +37,9 @@ public class User {
      * @param last_name
      * @param created   YYYY-MM-DD HH:MM:SS, DATETIME
      * @param updated   YYYY-MM-DD HH:MM:SS, TIMESTAMP UTC
-     * @param ks_pass   Base 64 string used to access Keystore
      */
-    public User(int user_id, String email, String username, String password, String salt, 
-            String first_name, String last_name, Timestamp created, Timestamp updated, String ks_pass)
+    public User(int user_id, String email, String username, String password,
+            String salt, String first_name, String last_name, Timestamp created, Timestamp updated)
     {
         this.user_id = user_id;
         this.email = email;
@@ -52,7 +50,6 @@ public class User {
         this.last_name = last_name;
         this.created = created;
         this.updated = updated;
-        this.ks_pass = ks_pass;
     }
     
     /**
@@ -64,9 +61,5 @@ public class User {
         return user_id;
     }    
 
-    public String getKSPass()
-    {
-        return ks_pass;
-    }
     // Additional getter and setter methods will go here
 }
