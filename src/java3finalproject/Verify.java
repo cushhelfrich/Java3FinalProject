@@ -1,9 +1,14 @@
 package java3finalproject;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputControl;
 
 /**
  * @Course: SDEV 450 ~ Enterprise Java Programming
@@ -123,7 +128,7 @@ public class Verify {
     //****************End Wayne Code**********************************
     
     /***********Start Charlotte's Code******************/
-    
+
     /**
      * Extracts entries from username and password fields and sends them to
      * isValidUName and isValidPWEntry methods for regex tests.
@@ -210,6 +215,33 @@ public class Verify {
         }
         
         return isValid;
+    }
+    
+    /**
+     * Uses objects packaged in FieldSet to check user entries and set alert labels accordingly
+     * @param fs        TextInputControl, regex, id string
+     * @return          true if all entries are valid
+     */
+    public boolean isValidEntry (FieldSet fs)
+    {
+       boolean isValid = false;
+       String entry = fs.getField().getText();
+       
+       if(entry.isEmpty())
+       {
+           fs.setAlert("! Enter a " + fs.getID());
+       }
+       else if(!entry.matches(fs.getRegex()))
+       {
+           fs.setAlert("! Invalid " + fs.getID());
+       }
+       else
+       {
+           isValid = true;
+           fs.setAlert("");
+       }
+       
+       return isValid;
     }
     
     /**

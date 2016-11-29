@@ -34,9 +34,6 @@ public class DBConnector {
     private static final String DB_PASSWORD = "Fin8lPr0ject";
     private static final String DB_PATH = "jdbc:mysql://localhost/projectdb";
     
-    // Maintain a count of failed connections, so program can respond dynamically to Exceptions
-    private static int countFailed = 0;
-    
     public DBConnector()
     {
         initConnection();
@@ -50,7 +47,7 @@ public class DBConnector {
      */
     private boolean initConnection()
     {
-        boolean b = true;
+        boolean b = false;
         
         try
         {
@@ -59,32 +56,16 @@ public class DBConnector {
 
             // try to establish the connection
             conn = DriverManager.getConnection(DB_PATH, DB_USER, DB_PASSWORD);
+            b = true;
         }
         
         // Connection failed
         catch(ClassNotFoundException | SQLException ex)
         {
-            /* If countFailed is not greater than 0, display an alert and increment countFailed.
-            If countFailed comes to exceed 0, the calling function will know that the program 
-            should abort.
-            */
-            if(countFailed == 0)
-            {
-                Login.verify.createAlert(Alert.AlertType.WARNING, "Connection error", 
-                "Error connecting to database. Check your Internet connection "
-                + "before proceeding. Error message: " + ex.getMessage());
-            }
-            else
-            {
-                Login.verify.createAlert(Alert.AlertType.ERROR, "Connection error",
-                "The program is still unable to establish a connection to the database."
-                        + " The program will now exit. Error message: " + ex.getMessage());
+            Login.verify.createAlert(Alert.AlertType.ERROR, "Connection error",
+            "The program cannot establish a connection to the database."
+                + " Check your Internet connection. The program will now exit. Error message: " + ex.getMessage());
                 System.exit(1);
-            }
-            
-
-            countFailed++;
-            b = false;
          }
         return b;
     }
@@ -109,14 +90,14 @@ public class DBConnector {
     public List<Map<String, Object>> retrieveRecords(String query) throws SQLException
     {
         List<Map<String, Object>> results = null;
+        
 
        /*If Connection is already established or can be re-established, get the ResultSet
        and populate the List. Otherwise, initConnection will throw an Exception.*/
-       if(conn != null || (conn == null && initConnection()))
+       if((conn != null && !conn.isClosed()) || initConnection())
        {       
             results = new ArrayList<>();
             HashMap<String, Object> row;
-            countFailed = 0;    // Reset
             
             /* try-with-resources closes resources automatically*/
             try (Statement stmt = conn.createStatement();
@@ -138,15 +119,7 @@ public class DBConnector {
        }
        return results;
     }
-    
-    /**
-     * Returns countFailed() to calling function, so that Exception behavior can be handled dynamically.
-     * @return 
-     */
-    public int getCountFailed()
-    {
-        return countFailed;
-    }
+
     
     /**
      * Generic method for creating and executing a PreparedStatement
@@ -160,7 +133,7 @@ public class DBConnector {
     {
        int rowsAffected = 0;
        
-       if(conn != null || (conn == null && initConnection()))
+       if((conn != null && !conn.isClosed()) || initConnection())
        {
             try (PreparedStatement pstmt = conn.prepareStatement(query)) 
             {
@@ -189,7 +162,7 @@ public class DBConnector {
     {
         int rowsAffected = 0;
         
-        if(conn != null || (conn == null && initConnection()))
+        if((conn != null && !conn.isClosed()) || initConnection())
         {
             try(Statement stmt = conn.createStatement())
             {
@@ -213,7 +186,7 @@ public class DBConnector {
         /* get current time, for insertion in created and last_update fields*/
         Timestamp datetime = new Timestamp(new Date().getTime());
         
-        if(conn != null || (conn == null && initConnection()))
+       if((conn != null && !conn.isClosed()) || initConnection())
         {
             try(PreparedStatement prepStmt = conn.prepareStatement(query))
             {            
@@ -260,7 +233,7 @@ public class DBConnector {
     public List<String> retrieveAccts(String query) throws SQLException
     {
        List<String> results = new ArrayList<>();
-       if(conn != null || (conn == null && initConnection()))
+       if((conn != null && !conn.isClosed()) || initConnection())
        {
             try (Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query))

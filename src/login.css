@@ -36,3 +36,27 @@
 #text {
  -fx-fill:  linear-gradient(orange , orangered);
 }
+
+.combo-box .list-cell
+{
+    -fx-font-size: 10px
+}
+
+#sortBy
+{
+    -fx-font-size: 11px;
+    -fx-fill: #d9d9d9;
+    -fx-font-weight: bold
+}
+
+#spacer
+{
+    -fx-font-size: 5px;
+}
+
+.login-alert
+{
+    -fx-font-size: 11px;
+    -fx-padding: 0 0 3 0;
+    -fx-text-fill: red;
+}

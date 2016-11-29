@@ -4,12 +4,17 @@ package java3finalproject;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.control.Alert;
 
 /**
  * @Course: SDEV 250 ~ Java Programming III
- * @Author Name: Bill Tanona
+ * @Contributors: William Tanona, Charlotte Hirschberger
  * @Assignment Name: java3finalproject
  * @Date: Oct 20, 2016
  * @Subclass Account Description:
@@ -23,13 +28,15 @@ import java.util.logging.Logger;
  */
 //Imports
 //Begin Subclass Account
-public class Account {
+public class Account implements Comparable<Account> {
 
     private  String accountName;
     private  String username;
     private  String password;
     private  String website;
     private final int user_id = Login.currUser.getUserId();
+    private Timestamp created;
+    private Timestamp updated;
 
     final String secretKey = "DonaTellaNobody";
 
@@ -43,11 +50,37 @@ public class Account {
     public Account(String name, String uname, String password) {
         this.accountName = name;
         this.username = uname;
-        this.password = AEScrypt.encrypt(password, secretKey);
+        this.password = password; // Base64 string
         //   this.password=password;
         this.website = "na";
+        this.created = null;
+        this.updated = null;
     }
 
+    /****Charlotte's code*****/
+    /**
+     * Constructor used to create Account from existing data (vs. newly inserted)
+     * Existing data includes Timestamps, whereas there are no Timestamps when an Account
+     *      is created before record insertion.
+     * @param name          account name
+     * @param uname
+     * @param password
+     * @param created       Timestamp: date/time of account creation
+     * @param updated       Timestamp: date/time of last account update
+     */
+    public Account(String name, String uname, String password, Timestamp created, Timestamp updated)
+    {
+        this.accountName=name;
+        this.username=uname;
+        this.password = password;
+        this.website="na";
+        this.created = created;
+        this.updated = updated;
+    }
+    /*****End Charlotte's code*****/
+    
+    
+    /*****Bill's code*****/
     /**
      * getAccount uses a prepared statement to query the DB for for account info
      *
@@ -75,6 +108,8 @@ public class Account {
             this.username = rs.getString("username");
             this.password = rs.getString("password");
             this.website = "na";
+            this.created = rs.getTimestamp("created");
+            this.updated = rs.getTimestamp("last_update");
 
             
         } catch (SQLException ex) {
@@ -103,6 +138,38 @@ public class Account {
     public String getWebsite() {
         return website;
     }
+    /*****End Bill's code*****/
+    
+    /*****Charlotte's code*****/
+    public Timestamp getCreated()
+    {
+        return created;
+    }
+    
+    public Timestamp getUpdated()
+    {
+        return updated;
+    }
+    /**
+     * Sets created value; expected to be used following record insertion
+     * @param time
+     */
+    public void setCreated(Timestamp time)
+    {
+        this.created = time;
+    }
+    
+    /**
+     * Sets updated value; expected to be used following record insertion
+     * @param time
+     */
+    public void setUpdated(Timestamp time)
+    {
+        this.updated = time;
+    }
+    /*****End Charlotte's code*****/
+    
+    /*****Bill's code*****/
     // Create an insert method .... 
 
     /**
@@ -119,6 +186,8 @@ public class Account {
         boolean tableInserted = false;
         boolean gotAccount = false;
         ResultSet res = null;
+        
+        AEScrypt.encrypt(pw, secretKey);
         SQLPreparedStatement sqlstmt = new SQLPreparedStatement();
         PreparedStatement prepstmt = null;
         // String query;
@@ -136,12 +205,32 @@ public class Account {
             tableInserted = prepstmt.execute();
             res = prepstmt.getResultSet();
             rowsaffected = prepstmt.getUpdateCount();
+            
+            /*****Charlotte's code****/
+            // Get the Timestamps just created during record insertion
+            List<Map<String, Object>> results = Login.db.retrieveRecords(
+                    "SELECT created, last_update FROM account WHERE user_id=" + user_id + " AND account_name ='" + actName + "'"
+            );
+            
+            if(results != null & !results.isEmpty())
+            {
+                setCreated((Timestamp)results.get(0).get("created"));
+                setUpdated((Timestamp)results.get(0).get("last_update"));
+            }
+            /*****End Charlotte's code*****/
+            
         } catch (SQLException e) {
             System.out.println("Failed to create PreparedStatement");
+            Login.verify.createAlert(Alert.AlertType.ERROR,
+                    "Error adding account",
+                    "There was a problem processing your request, and account credentials may not have been added to the database.");
 
         } finally {
             try {
-                prepstmt.close();    //  Close resources 
+                if(prepstmt != null)
+                {
+                    prepstmt.close();
+                } //  Close resources 
                 sqlstmt.closeDB();
 
             } catch (SQLException ex) {
@@ -152,5 +241,64 @@ public class Account {
 
         return tableInserted;
     }
-
-} //End Subclass Account
+    
+    /*****Charlotte's code*****/
+    
+    /**
+    * Used to sort Accounts by name
+    * @param other      an Account
+    * @return           integer indicating results of comparison
+    */
+    @Override
+    public int compareTo(Account other)
+    {
+        return this.accountName.compareToIgnoreCase(other.getName());
+    }
+    
+    /**
+     * Sort Accounts by created date, using Comparator
+     */
+    public static Comparator<Account> CreatedComp = (Account a1, Account a2) -> {
+        
+        // Convert Timestamps to a number, in order to make comparison
+        long time1 = a1.getCreated().getTime();
+        long time2 = a2.getCreated().getTime();
+        
+        if(time1 > time2) // a1 created more recently
+        {
+            return -1;
+        }
+        else if(time2 > time1) // a2 created more recently
+        {
+            return 1;
+        }
+        else // accounts created at same time
+        {
+            return 0;
+        }
+    };
+    
+     /**
+     * Sort Accounts by date of last update, using Comparator
+     */
+    public static Comparator<Account> UpdatedComp = (Account a1, Account a2) ->
+    {
+        // Convert Timestamps to a number, in order to make comparison
+        long time1 = a1.getUpdated().getTime();
+        long time2 = a2.getUpdated().getTime();
+        
+        if(time1 > time2) // a1 created more recently
+        {
+            return -1;
+        }
+        else if(time2 > time1) // a2 created more recently
+        {
+            return 1;
+        }
+        else // accounts created at same time
+        {
+            return 0;
+        }
+    };
+    /*****End Charlotte's code*****/
+} //End Subclass Account(

@@ -2,7 +2,7 @@ package java3finalproject;
 
 /**
  * @Course: SDEV 450 ~ Java Programming III
- * @Author Name: Wayne Riley
+ * @Contributors: Wayne Riley, Bill Tanona
  * @Assignment Name: java3finalproject
  * @Date: Oct 17, 2016
  * @Subclass Add Description: Content (Account, Username, password) passed from
@@ -40,7 +40,6 @@ public class Add {
      * @param actName
      * @param usrName
      * @param pw
-     * @param ws
      */
     public void insert(String actName, String usrName, String pw) {
 
@@ -119,13 +118,13 @@ public class Add {
             //****************Start Bill Code*********************
             Account newAct = new Account(actName, usrName, pw);
             
+            
          //   try
-            {
-                newAct.insert(actName, usrName, newAct.getPassword());            
+                boolean insertSuccess = newAct.insert(actName, usrName, pw);            
 
                 //newAct.insert(actName, usrName, pw);
                // account.add(accountName.getText());
-            }
+            
          /*/   catch (SQLException ex)
             {
                  Login.verify.createAlert(Alert.AlertType.ERROR, "Processing error",
@@ -136,10 +135,12 @@ public class Add {
   */
             //****************End Bill Code*********************
             
-            System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
-            Dashboard.updateTextArea();//calls method in Dashboard to update view
-            Dashboard.clearHandler();//clears all textfields
-
+            if(insertSuccess == true)            
+            {
+                System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
+                Dashboard.updateAccountSet(newAct); //calls method in Dashboard to update TextArea and Account list
+            }
+            
             Dashboard.clearHandler();//calls Static method in main
         });//end confirm event handler
 
