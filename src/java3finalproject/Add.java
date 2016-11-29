@@ -118,8 +118,9 @@ public class Add {
             //****************Start Bill Code*********************
             Account newAct = new Account(actName, usrName, pw);
             
+            
          //   try
-                boolean insertSuccess = newAct.insert(actName, usrName, newAct.getPassword());            
+                boolean insertSuccess = newAct.insert(actName, usrName, pw);            
 
                 //newAct.insert(actName, usrName, pw);
                // account.add(accountName.getText());

@@ -217,53 +217,33 @@ public class Verify {
         return isValid;
     }
     
-    public boolean isValidUName(TextField userTF, Label uNameAlert)
+    /**
+     * Uses objects packaged in FieldSet to check user entries and set alert labels accordingly
+     * @param fs        TextInputControl, regex, id string
+     * @return          true if all entries are valid
+     */
+    public boolean isValidEntry (FieldSet fs)
     {
-        boolean isValid = false;
-        
-        if(userTF.getText().isEmpty())
-        {
-            userTF.requestFocus();
-            uNameAlert.setVisible(true);
-            uNameAlert.setText("! Enter a username");
-        }
-        else if(!isValidUName(userTF.getText()))
-        {
-            userTF.requestFocus();
-            uNameAlert.setVisible(true);
-            uNameAlert.setText("Invalid username");
-        }
-        else
-        {
-            isValid = true;
-            uNameAlert.setText("");
-        }
-        
-        return isValid;
+       boolean isValid = false;
+       String entry = fs.getField().getText();
+       
+       if(entry.isEmpty())
+       {
+           fs.setAlert("! Enter a " + fs.getID());
+       }
+       else if(!entry.matches(fs.getRegex()))
+       {
+           fs.setAlert("! Invalid " + fs.getID());
+       }
+       else
+       {
+           isValid = true;
+           fs.setAlert("");
+       }
+       
+       return isValid;
     }
     
-    public boolean isValidPwEntry(PasswordField pf, Label pwAlert)
-    {
-        boolean isValid = false;
-        
-        if(pf.getText().isEmpty())
-        {
-            pwAlert.setVisible(true);
-            pwAlert.setText("! Enter a password");
-        }
-        else if(!isValidPwEntry(pf.getText()))
-        {
-            pwAlert.setVisible(true);
-            pwAlert.setText("Invalid password");
-        }
-        else
-        {
-            isValid = true;
-            pwAlert.setText("");
-        }
-        
-        return isValid;
-    }
     /**
      * Accepts an AlertType and multiple strings, in order to efficiently create
      * an alert dialog

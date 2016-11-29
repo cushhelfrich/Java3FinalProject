@@ -50,7 +50,7 @@ public class Account implements Comparable<Account> {
     public Account(String name, String uname, String password) {
         this.accountName = name;
         this.username = uname;
-        this.password = AEScrypt.encrypt(password, secretKey);
+        this.password = password; // Base64 string
         //   this.password=password;
         this.website = "na";
         this.created = null;
@@ -186,6 +186,8 @@ public class Account implements Comparable<Account> {
         boolean tableInserted = false;
         boolean gotAccount = false;
         ResultSet res = null;
+        
+        AEScrypt.encrypt(pw, secretKey);
         SQLPreparedStatement sqlstmt = new SQLPreparedStatement();
         PreparedStatement prepstmt = null;
         // String query;
