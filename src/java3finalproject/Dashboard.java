@@ -237,7 +237,7 @@ public class Dashboard {
                             {
                                 isFound = true;
                                 userName.setText(accountArr.get(i).getUserName());
-                                passWord.setText(AEScrypt.decrypt(accountArr.get(i).getPassword(), "DonaTellaNobody", accountArr.get(i).getName()));
+                                passWord.setText(AEScrypt.decrypt(accountArr.get(i).getPassword(), accountArr.get(i).getName()));
                             }
                             i++;
                         }

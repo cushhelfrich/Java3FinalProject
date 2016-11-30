@@ -38,8 +38,6 @@ public class Account implements Comparable<Account> {
     private Timestamp created;
     private Timestamp updated;
 
-    final String secretKey = "DonaTellaNobody";
-
     // constructor 
     /**
      *
@@ -50,7 +48,7 @@ public class Account implements Comparable<Account> {
     public Account(String name, String uname, String password) {
         this.accountName = name;
         this.username = uname;
-        this.password = AEScrypt.encrypt(password, secretKey, accountName);// Base64 string
+        this.password = AEScrypt.encrypt(password, accountName);// Base64 string
         //   this.password=password;
         this.website = "na";
         this.created = null;
