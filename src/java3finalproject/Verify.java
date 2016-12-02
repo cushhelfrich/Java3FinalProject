@@ -82,6 +82,18 @@ public class Verify {
         blank.setContentText("You must populate Account, Username and Password fields");
         blank.showAndWait();
     }
+    
+       /**
+     * Alert if username and password fields are blank for modify function
+     */
+    public void modifyEmpty() {
+
+        Alert blank = new Alert(Alert.AlertType.WARNING);
+        blank.setTitle("Warning");
+        blank.setHeaderText("Missing Information");
+        blank.setContentText("You must populate Username and/or Password field");
+        blank.showAndWait();
+    }
 
     /**
      * Alert if account only is blank
@@ -117,6 +129,31 @@ public class Verify {
         missing.setHeaderText("Account Does Not Exist");
         missing.setContentText("You must enter a valid account name\nAccount Name must be entered exactly as it "
                 + "was created");
+        missing.showAndWait();
+    }
+    
+     /**
+     * Alert if duplicate account exist
+     */
+    public void sameUserNameEntry() {
+
+        Alert missing = new Alert(Alert.AlertType.WARNING);
+        missing.setTitle("Warning");
+        missing.setHeaderText("Same Username");
+        missing.setContentText("Null out Username field or modify to make it different");
+        missing.showAndWait();
+    }
+    
+    
+      /**
+     * Alert if duplicate account exist
+     */
+    public void samePasswordEntry() {
+
+        Alert missing = new Alert(Alert.AlertType.WARNING);
+        missing.setTitle("Warning");
+        missing.setHeaderText("Same Password");
+        missing.setContentText("Null out Password field or modify to make it different");
         missing.showAndWait();
     }
 
