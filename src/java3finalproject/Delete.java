@@ -71,6 +71,7 @@ class Delete {
 
         //labels        
         Label lblaccountName = new Label("Account Name:");
+        lblaccountName.setFont(Font.font("", FontWeight.BOLD, 12));
         Label lblaccountGetText = new Label(actName);
 
         /* Add panes to appropriate region */
@@ -112,8 +113,7 @@ class Delete {
                 removeAct(accountName.getText());
             } catch (SQLException ex) {
                 Logger.getLogger(Delete.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            System.out.println("Delete " + actName + " from database");
+            }            
             account.remove(accountName.getText());
             Dashboard.updateTextArea();
             Dashboard.clearHandler();//calls Static method in main
@@ -136,7 +136,7 @@ class Delete {
 
     /**
      * Calls retrieveRecords method in DBConnector class to determine account_id
-     * and then calls modifyRecords to delete account informaion in SQL.
+     * and then calls modifyRecords to delete account information in SQL.
      *
      * @throws SQLException
      */

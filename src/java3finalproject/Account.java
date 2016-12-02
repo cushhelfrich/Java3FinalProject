@@ -1,4 +1,3 @@
-
 package java3finalproject;
 
 import java.sql.PreparedStatement;
@@ -25,10 +24,10 @@ import java.util.logging.Logger;
 //Begin Subclass Account
 public class Account {
 
-    private  String accountName;
-    private  String username;
-    private  String password;
-    private  String website;
+    private String accountName;
+    private String username;
+    private String password;
+    private String website;
     private final int user_id = Login.currUser.getUserId();
 
     final String secretKey = "DonaTellaNobody";
@@ -55,7 +54,7 @@ public class Account {
      */
     public Account(String actName) {
        // this.accountName=null;
-        
+
         int rowsaffected = 0;
         boolean tableInserted = false;
         boolean gotAccount = false;
@@ -66,7 +65,7 @@ public class Account {
 
         try {
             prepstmt = sqlstmt.createStatement(query);
-            prepstmt.setString(1,actName);
+            prepstmt.setString(1, actName);
             prepstmt.setInt(2, user_id);
             prepstmt.execute();
             ResultSet rs = prepstmt.getResultSet();
@@ -76,7 +75,6 @@ public class Account {
             this.password = rs.getString("password");
             this.website = "na";
 
-            
         } catch (SQLException ex) {
             Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
 
@@ -93,9 +91,10 @@ public class Account {
         return accountName;
     }
 
-    public String getUserName(){
+    public String getUserName() {
         return username;
     }
+
     public String getPassword() {
         return password;
     }
@@ -125,7 +124,6 @@ public class Account {
         String query = "INSERT INTO account (user_id, username, password,account_name)"
                 + " VALUES (?,?,?,?)";
 
-
         try {
             prepstmt = sqlstmt.createStatement(query);
 
@@ -138,16 +136,17 @@ public class Account {
             rowsaffected = prepstmt.getUpdateCount();
         } catch (SQLException e) {
             System.out.println("Failed to create PreparedStatement");
-
-        } finally {
-            try {
-                prepstmt.close();    //  Close resources 
-                sqlstmt.closeDB();
-
-            } catch (SQLException ex) {
-                Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
+
+//        } finally {
+//            try {
+//                prepstmt.close();    //  Close resources 
+//                sqlstmt.closeDB();
+//
+//            } catch (SQLException ex) {
+//                Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
         tableInserted = rowsaffected > 0;
 
         return tableInserted;

@@ -9,6 +9,8 @@ package java3finalproject;
  * dashboard textfields and inserted into database.
  */
 //Imports
+import static java3finalproject.Dashboard.account;
+import static java3finalproject.Dashboard.accountName;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -62,13 +64,14 @@ public class Add {
 
         //labels        
         Label lblaccountName = new Label("Account Name:");
+        lblaccountName.setFont(Font.font("", FontWeight.BOLD, 12));
         Label lblaccountGetText = new Label(actName);
         Label lblLUserName = new Label("User Name:");
+        lblLUserName.setFont(Font.font("", FontWeight.BOLD, 12));
         Label lbluserNameGetText = new Label(usrName);
         Label lblpassword = new Label("Password:");
-        Label lblpasswordGetText = new Label(pw);
-        //Label lblwebsite = new Label("Website:");
-        //Label lblwebsiteGetText = new Label(ws);        
+        lblpassword.setFont(Font.font("", FontWeight.BOLD, 12));
+        Label lblpasswordGetText = new Label(pw);               
 
         /* Add panes to appropriate region */
         bp.setTop(pane);
@@ -102,11 +105,7 @@ public class Add {
         GridPane.setConstraints(lblpassword, 0, 2, 1, 1);
         gridPane.add(lblpasswordGetText, 1, 2);
         GridPane.setConstraints(lblpasswordGetText, 1, 2, 1, 1);
-        //add website to grid pane
-        //gridPane.add(lblwebsite, 0, 3);
-        //GridPane.setConstraints(lblwebsite, 0, 3, 1, 1);
-        //gridPane.add(lblwebsiteGetText, 1, 3);
-        //GridPane.setConstraints(lblwebsiteGetText, 1, 3, 1, 1);
+
         //add Buttons
         gridPane.add(btnConfirm, 0, 4);
         GridPane.setConstraints(btnConfirm, 0, 4, 1, 1);
@@ -116,37 +115,24 @@ public class Add {
         //lambda expression confirm and Edit
         btnConfirm.setOnAction((ActionEvent e) -> {
             addScene.close();
+
             //****************Start Bill Code*********************
             Account newAct = new Account(actName, usrName, pw);
-            
-         //   try
-            {
-                newAct.insert(actName, usrName, newAct.getPassword());            
 
-                //newAct.insert(actName, usrName, pw);
-               // account.add(accountName.getText());
-            }
-         /*/   catch (SQLException ex)
-            {
-                 Login.verify.createAlert(Alert.AlertType.ERROR, "Processing error",
-                         "An error occured while processing your request. Account"
-                          + " credentials may not have been added to the database."
-                                 + " Error message: " + ex.getMessage());
-            }
-  */
-            //****************End Bill Code*********************
+            newAct.insert(actName, usrName, newAct.getPassword());
+            account.add(accountName.getText());
+            //***************End Bill Code************************
             
-            System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
             Dashboard.updateTextArea();//calls method in Dashboard to update view
             Dashboard.clearHandler();//clears all textfields
-
-            Dashboard.clearHandler();//calls Static method in main
         });//end confirm event handler
 
         //lambda expression Exit Program        
-        btnEdit.setOnAction((ActionEvent e) -> {
-            addScene.close();
-        });//end edit event handler
+        btnEdit.setOnAction(
+                (ActionEvent e) -> {
+                    addScene.close();
+                }
+        );//end edit event handler
 
         //New stage
         Scene scene = new Scene(bp, 275, 180);
@@ -155,5 +141,5 @@ public class Add {
         addScene.setScene(scene);
         addScene.show();
     }
-    //*********End Wayne's Code
+    //*********End Wayne's Code******************
 }//End Subclass Add

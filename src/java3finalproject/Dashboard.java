@@ -11,6 +11,8 @@ package java3finalproject;
 //Imports
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -163,27 +165,43 @@ public class Dashboard {
             }
         }
         );//end Add event handler
+
         viewAccount.setOnAction(
                 (ActionEvent e) -> {
                     if (accountName.getText().matches("")) {
                         verify.deleteEmpty();
+                    } else if (!account.contains(accountName.getText())) {
+                        verify.noAct();
                     } else {
                         Account dispAccount = new Account(accountName.getText());
                         userName.setText(dispAccount.getUserName());
                         passWord.setText(dispAccount.getPassword());
                         passWord.setText(AEScrypt.decrypt(dispAccount.getPassword(), "DonaTellaNobody"));
-
-                       //modify.change(accountName.getText(), userName.getText(), passWord.getText());
                     }
                 }
         );
+
         //Launches modify confirmation scene
         btnModify.setOnAction(
                 (ActionEvent e) -> {
                     if (accountName.getText().matches("")) {
                         verify.deleteEmpty();
+                    } else if (userName.getText().matches("") && passWord.getText().matches("")) {
+                        verify.modifyEmpty();
+                    } else if (!account.contains(accountName.getText())) {
+                        verify.noAct();
                     } else {
-                        modify.change(accountName.getText(), userName.getText(), passWord.getText());
+                        try {
+                            if (userName.getText().equals(modify.getUser(accountName.getText()))) {
+                                verify.sameUserNameEntry();
+                            } else if (passWord.getText().equals(modify.getPassword(accountName.getText()))) {
+                                verify.samePasswordEntry();
+                            } else {
+                                modify.change(accountName.getText(), userName.getText(), passWord.getText());
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
         );//end modify event handler
@@ -193,6 +211,8 @@ public class Dashboard {
                 (ActionEvent e) -> {
                     if (accountName.getText().matches("")) {
                         verify.deleteEmpty();
+                    } else if (!account.contains(accountName.getText())) {
+                        verify.noAct();
                     } else {
                         delete.delete(accountName.getText());
                     }
@@ -226,8 +246,7 @@ public class Dashboard {
      * @throws SQLException
      */
     private void getAct() throws SQLException {
-        if(account != null)
-        {
+        if (account != null) {
             account.clear(); // clears arrayList
         }
         String rtrvAct = "SELECT account_name FROM account WHERE user_id = " + Login.currUser.getUserId();
