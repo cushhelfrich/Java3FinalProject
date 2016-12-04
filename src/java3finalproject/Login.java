@@ -80,9 +80,9 @@ public class Login extends Application {
 
         //CUSH
         Button btnCreateUser = new Button("Create User");
-        Button btnResetPassword = new Button("Reset Password");
-        btnCreateUser.setPrefWidth(120);
-        btnResetPassword.setPrefWidth(120);
+        //Button btnResetPassword = new Button("Reset Password");
+        btnCreateUser.setPrefWidth(100);
+        //btnResetPassword.setPrefWidth(120);
         //END CUSH
 
         //Adding Nodes to GridPane layout
@@ -94,7 +94,7 @@ public class Login extends Application {
         gridPane.add(btnLogin, 2, 1);
         gridPane.add(lblMessage, 1, 2);
         gridPane.add(btnCreateUser, 1, 3); //CUSH
-        gridPane.add(btnResetPassword, 1, 4); //CUSH
+        //gridPane.add(btnResetPassword, 1, 4); //CUSH
         //Reflection for gridPane
         Reflection r = new Reflection();
         r.setFraction(0.7f);
@@ -118,7 +118,7 @@ public class Login extends Application {
         gridPane.setId("root");
         btnLogin.setId("btn");
         btnCreateUser.setId("btnCreateUser"); //CUSH
-        btnResetPassword.setId("btnResetPassword"); //CUSH
+        //btnResetPassword.setId("btnResetPassword"); //CUSH
         text.setId("text");
 
         //[Scott]Add Tooltip to User Name Field
