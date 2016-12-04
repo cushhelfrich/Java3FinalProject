@@ -311,12 +311,33 @@ class EnterHandler implements EventHandler<ActionEvent> {
             
             
 
-            if ((verify.areValidCreds(tfUserName, pfPassword) && checks)) {
+             if (checks != false) {
+                if (!verify.isValidUsername(tfUserName)) {
+                    
+                    tfUserName.clear();
+                    tfUserName.requestFocus();
+                    checks = false;
+                    
+                }
+                
+            }
+            
+            if (checks != false) {
+                if (!verify.isValidPassword(pfPassword)) {
+                    
+                    pfPassword.clear();
+                    pfPassword.requestFocus();
+                    checks = false;
+                }
+            }
+            
+            if (checks) {  //If no data entry errors
                 ConfirmUser confirm = new ConfirmUser(tfUserName, tfEmail,
                         tfFirstName, tfLastName, pfPassword);
 
                 confirm.confirmUser(); //Call method to show confirm user stage
                 createUserStage.close(); //Close the stage
+
 
             }
         }
