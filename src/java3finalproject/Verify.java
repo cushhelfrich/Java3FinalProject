@@ -67,6 +67,49 @@ public class Verify {
         return boolChecks;
 
     } //End isData method
+    
+       public boolean isValidUsername (TextField username) {
+        
+        boolean boolChecks = true;
+        
+        if(!username.getText().matches("(?=[A-Za-z0-9-_.]{6,64}$)" //String has between 6-64 characters
+                + "^[A-Za-z0-9]([-_.]{0,1}[A-Za-z0-9]+)+$")) {   //String starts and ends with alphanumeric data
+
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("ERROR");
+            alert.setHeaderText("Unvalid Username");
+            alert.setContentText("The username must be 6-64 characters in length, must\n"
+                    + "start with a number or letter, and must contain only numbers,\n"
+                    + "letters, dashes, underscores, and periods. ");
+            alert.showAndWait();
+
+            boolChecks = false;
+        }
+        
+        return boolChecks;
+    }
+    
+     public boolean isValidPassword (PasswordField password) {
+        
+        boolean boolChecks = true;
+        
+         if(!password.getText().matches("^.*(?=.{8,255})"// Password must be 8-255 characters
+                + "(?=.*\\d)(?=.*[A-Z])(?=.*\\W).*$")) { // Password must contain 1 digit, 1 capital, 1 symbol
+
+
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("ERROR");
+            alert.setHeaderText("Unvalid password");
+            alert.setContentText("The password must be 8-255 characters in length and\n"
+                    + "contain at least 1 digit, 1 symbol, and 1 uppercase letter.");
+
+            alert.showAndWait();
+
+            boolChecks = false;
+        }
+        
+        return boolChecks;
+    }
 
     //****************End Cush Code**********************************
     
