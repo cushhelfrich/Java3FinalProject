@@ -62,4 +62,16 @@ public class User {
     }    
 
     // Additional getter and setter methods will go here
+    
+    //CUSH
+    /**
+     * Return the current user's username, which was retrieved during login 
+     * @return username
+     */
+    public String getUsername() {
+        
+        return username;
+        
+    }
+    //END CUSH
 }
