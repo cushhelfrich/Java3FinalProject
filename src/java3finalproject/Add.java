@@ -116,7 +116,6 @@ public class Add {
         btnConfirm.setOnAction((ActionEvent e) -> {
             addScene.close();
             //****************Start Bill Code*********************
-            // CH Reminder 11/28: Verify not duplicate first
             Account newAct = new Account(actName, usrName, pw);
             
             

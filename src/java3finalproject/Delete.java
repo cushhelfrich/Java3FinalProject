@@ -9,6 +9,10 @@ package java3finalproject;
  * textfiled to delete account
  */
 //Imports
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -110,15 +114,16 @@ class Delete {
             } else {            
             try {
                 removeAct(accountName.getText());            
-                System.out.println("Delete " + actName + " from database");            
+                System.out.println("Delete " + actName + " from database");
+                AEScrypt.deleteKey(accountName.getText());  // CH: Delete record of encryption key
                 Dashboard.deleteAccount(actName);
-            } catch (SQLException ex) {
+            } 
+            catch (SQLException | KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException ex) {
                 Logger.getLogger(Delete.class.getName()).log(Level.SEVERE, null, ex);
-                Login.verify.createAlert(Alert.AlertType.ERROR, "Error deleting account",
+                Login.verify.createAlert(Alert.AlertType.WARNING, "Error deleting account",
                         "There was a problem processing your request, and account details"
-                                + " may not have been deleted from the database. Error message: " + ex.getMessage());
+                                + " may not have been deleted from the system. Error message: " + ex.getMessage()); 
             }
-
             Dashboard.clearHandler();//calls Static method in main
             deleteScene.close();//closes scene
             }

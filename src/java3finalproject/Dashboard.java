@@ -26,6 +26,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -75,6 +77,11 @@ public class Dashboard {
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(5);
         gridPane.setVgap(5);
+        
+        ImageView copyImg = new ImageView(new Image("images/clipboard.jpg"));
+        // Assign the clipboard image as each button background
+        Button copyUN = new Button();
+        Button copyPW = new Button();
 
         gridPane.add(accountName, 0, 0);
         GridPane.setConstraints(accountName, 0, 0, 1, 1);
@@ -224,22 +231,33 @@ public class Dashboard {
         );//end Add event handler
         viewAccount.setOnAction(
                 (ActionEvent e) -> {
+                    // if field is empty, call Verify method
                     if (accountName.getText().matches("")) {
                         verify.deleteEmpty();
                         System.out.println("Empty good");
                     } 
                     else {
-                        boolean isFound = false;
+                        boolean isFound = false; // Account found?
                         int i = 0;
+                        
+                        // Keep iterating through array as long as account hasn't been found
                         while(isFound == false && i < accountArr.size())
                         {
+                            // if match is found
                             if(accountArr.get(i).getName().equalsIgnoreCase(accountName.getText()))
                             {
                                 isFound = true;
+                                
+                                // Retrieve and display the account username
                                 userName.setText(accountArr.get(i).getUserName());
+                                // Retrieve, decrypt, and display the password 
                                 passWord.setText(AEScrypt.decrypt(accountArr.get(i).getPassword(), accountArr.get(i).getName()));
                             }
                             i++;
+                        }
+                        if(isFound == false)    // Account not found
+                        {
+                            Login.verify.createAlert(Alert.AlertType.INFORMATION, "Not found", "The account you searched for was not found.");
                         }
                     }
                 }
@@ -368,7 +386,7 @@ public class Dashboard {
     }
     
     /**
-     * Uses string provided by user to delete Account from List<Account> and then
+     * Uses string provided by user to delete Account from List of Accounts and then
      *  update TextArea
      * @param acctName
      */
