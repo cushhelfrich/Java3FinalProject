@@ -101,7 +101,7 @@ public class Dashboard {
 
         //Dashboard stage
         Scene scene = new Scene(bp, 370, 200);
-        dbScene.setTitle("Dashboard");
+        dbScene.setTitle("Dashboard - " + Login.currUser.getUsername()); //CUSH added username
         scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
         dbScene.setScene(scene);
         dbScene.show();
