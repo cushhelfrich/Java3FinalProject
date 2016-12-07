@@ -24,6 +24,7 @@ public class User {
     private String last_name = "";
     private Timestamp created = null;
     private Timestamp updated = null;
+    private String ks_pass = "";
     
     /**
      * Assigns the values retrieved from the database or user to the corresponding
@@ -39,7 +40,7 @@ public class User {
      * @param updated   YYYY-MM-DD HH:MM:SS, TIMESTAMP UTC
      */
     public User(int user_id, String email, String username, String password,
-            String salt, String first_name, String last_name, Timestamp created, Timestamp updated)
+            String salt, String first_name, String last_name, Timestamp created, Timestamp updated, String ks_pass)
     {
         this.user_id = user_id;
         this.email = email;
@@ -50,6 +51,7 @@ public class User {
         this.last_name = last_name;
         this.created = created;
         this.updated = updated;
+        this.ks_pass = ks_pass;
     }
     
     /**
@@ -71,5 +73,10 @@ public class User {
     public String getUsername () {
         
         return username;
+    }
+    
+    public String getKSPass()
+    {
+        return ks_pass;
     }
 }

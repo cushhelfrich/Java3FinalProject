@@ -292,6 +292,34 @@ public class Verify {
         return isValid;
     }
     
+    
+    /**
+     * Uses objects packaged in FieldSet to check user entries and set alert labels accordingly
+     * @param fs        TextInputControl, regex, id string
+     * @return          true if all entries are valid
+     */
+    public boolean isValidEntry (FieldSet fs)
+    {
+       boolean isValid = false;
+       String entry = fs.getField().getText();
+       
+       if(entry.isEmpty())
+       {
+           fs.setAlert("! Enter a " + fs.getID());
+       }
+       else if(!entry.matches(fs.getRegex()))
+       {
+           fs.setAlert("! Invalid " + fs.getID());
+       }
+       else
+       {
+           isValid = true;
+           fs.setAlert("");
+       }
+       
+       return isValid;
+    }
+    
     /**
      * Accepts an AlertType and multiple strings, in order to efficiently create
      * an alert dialog
