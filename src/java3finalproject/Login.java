@@ -11,32 +11,31 @@ package java3finalproject;
  *
  * https://www.javacodegeeks.com/2012/06/in-this-tutorial-i-will-design-nice.html
  */
+
 //Imports
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -48,13 +47,13 @@ public class Login extends Application {
 
     //instantiate subclass
     Dashboard dashboard = new Dashboard();
-
+    
     public static Verify verify = new Verify();
     public static DBConnector db;
     private final Encryptor encrypt = new Encryptor();
-    private final Label lblMessage = new Label();
-    private final TextField txtUserName = new TextField();
-    private final PasswordField pf = new PasswordField();
+
+    private FieldSet userSet;       // Package field, alert label, regex pattern together
+    private FieldSet pwSet;
     public static User currUser;
 
     @Override
@@ -71,7 +70,16 @@ public class Login extends Application {
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(20, 20, 20, 20));
         gridPane.setHgap(5);
-        gridPane.setVgap(5);
+        
+        // Instantiate the TextInputControls and pass them to FieldSet
+        TextField txtUserName = new TextField();
+        userSet = new FieldSet(txtUserName, 
+                "(?=[A-Za-z0-9-_.]{6,64}$)^[A-Za-z0-9]([-_.]{0,1}[A-Za-z0-9]+)+$",
+                "username");
+        PasswordField pf = new PasswordField();
+        pwSet = new FieldSet(pf,
+                "^.*(?=.{8,255})(?=.*\\d)(?=.*[A-Z])(?=.*\\W).*$",
+                "password");
 
         //Implementing Nodes for GridPane
         Label lblUserName = new Label("Username");
@@ -80,21 +88,27 @@ public class Login extends Application {
 
         //CUSH
         Button btnCreateUser = new Button("Create User");
-        //Button btnResetPassword = new Button("Reset Password");
-        btnCreateUser.setPrefWidth(100);
-        //btnResetPassword.setPrefWidth(120);
+        Button btnResetPassword = new Button("Reset Password");
+        btnCreateUser.setPrefWidth(120);
+        btnResetPassword.setPrefWidth(120);
         //END CUSH
+        
+        // vertical space between buttons
+        Text spacer = new Text();
+        spacer.setId("spacer");
 
         //Adding Nodes to GridPane layout
         //gridPane.setGridLinesVisible(true); //CUSH
         gridPane.add(lblUserName, 0, 0);
         gridPane.add(txtUserName, 1, 0);
-        gridPane.add(lblPassword, 0, 1);
-        gridPane.add(pf, 1, 1);
-        gridPane.add(btnLogin, 2, 1);
-        gridPane.add(lblMessage, 1, 2);
-        gridPane.add(btnCreateUser, 1, 3); //CUSH
-        //gridPane.add(btnResetPassword, 1, 4); //CUSH
+        gridPane.add(userSet.getAlert(), 1,1);
+        gridPane.add(lblPassword, 0, 2);
+        gridPane.add(pf, 1, 2);
+        gridPane.add(btnLogin, 2, 2);        
+        gridPane.add(pwSet.getAlert(), 1, 3);
+        gridPane.add(btnCreateUser, 1, 4); //CUSH
+        gridPane.add(spacer, 1, 5);
+        gridPane.add(btnResetPassword, 1, 6); //CUSH
         //Reflection for gridPane
         Reflection r = new Reflection();
         r.setFraction(0.7f);
@@ -118,39 +132,37 @@ public class Login extends Application {
         gridPane.setId("root");
         btnLogin.setId("btn");
         btnCreateUser.setId("btnCreateUser"); //CUSH
-        //btnResetPassword.setId("btnResetPassword"); //CUSH
+        btnResetPassword.setId("btnResetPassword"); //CUSH
         text.setId("text");
 
-        //[Scott]Add Tooltip to User Name Field
-        Tooltip userTip = new Tooltip();
-        userTip.setText("Don't have a User Name?\n"
-                + "Select \"Create User\" below.\n");
-        txtUserName.setTooltip(userTip);
-
-        /*[Scott]Add Tooltip to Password Field
-        Tooltip pfTip = new Tooltip();
-        pfTip.setText("Forgot your password?\n"
-                + "Select Reset Password below.\n");
-        pf.setTooltip(pfTip);*/
-
-        //[Scott]Enter Button Handler binding
-        EventHandler<KeyEvent> enterHandler = new EventHandler<KeyEvent>() {
-            public void handle(final KeyEvent keyEvent) {
-                if (keyEvent.getCode() == KeyCode.ENTER) {
-                    if (processLogin(txtUserName, pf)) {
-                        primaryStage.close();
-                    }
+        txtUserName.setOnKeyReleased
+        ((KeyEvent k) -> 
+            {
+                // clear any alert when user starts typing
+                userSet.setAlert("");
+                if(k.getCode() == KeyCode.ENTER)
+                {
+                    btnLogin.fire();
                 }
-            }
-        };
-
-        txtUserName.setOnKeyPressed(enterHandler);
-        pf.setOnKeyPressed(enterHandler);
-
+            } //handle
+        );
+        
+        pf.setOnKeyReleased
+        ((KeyEvent k) -> 
+            {
+                // clear any alert when user starts typing
+                pwSet.setAlert("");
+                if(k.getCode() == KeyCode.ENTER)
+                {
+                    btnLogin.fire();
+                }
+            } //handle
+        );
+        
         //Action for btnLogin
         btnLogin.setOnAction(
                 (ActionEvent e) -> {
-                    if (processLogin(txtUserName, pf)) {
+                    if (processLogin()) {
                         primaryStage.close();
                     }
                 });
@@ -158,7 +170,7 @@ public class Login extends Application {
         //[Cush]Action for btnCreateUser
         btnCreateUser.setOnAction(
                 (ActionEvent e) -> {
-
+                    
                     //Moved here so user can create multiple users before login
                     CreateUser createUser = new CreateUser();
                     createUser.createUser();
@@ -175,93 +187,100 @@ public class Login extends Application {
         scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.show();
-
+        
         /**
-         * Start Charlotte's code This snippet adapted from
-         * https://www.tutorialspoint.com/java/lang/runtime_addshutdownhook.htm
+         * Start Charlotte's code
+         * This snippet adapted from https://www.tutorialspoint.com/java/lang/runtime_addshutdownhook.htm
          */
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
-            public void run() {
+            public void run()
+            {
                 System.out.println("The system is closing");
             }
-        });
+        }); 
     }
-
+    
     /**
-     * Charlotte's code This function is responsible for validating textfield
-     * entries and creating the SQL statement used to query the User table for
-     * the provided username. If a record is found, this function computes the
-     * hash for the provided password and compares it to the retrieved one. If
-     * the user's entry and the hash match, Dashboard is loaded and a User
-     * object is created.
-     *
-     * @param user textfield entry
-     * @param pw textfield entry
-     * @return boolean indicates whether login was successful
+     * Charlotte's code
+     * This function is responsible for validating textfield entries and creating
+     * the SQL statement used to query the User table for the provided username.
+     * If a record is found, this function computes the hash for the provided
+     * password and compares it to the retrieved one. If the user's entry and the
+     * hash match, Dashboard is loaded and a User object is created.
+     * @param user      textfield entry
+     * @param pw        textfield entry
+     * @return          boolean indicates whether login was successful
      */
-    private boolean processLogin(TextField txtUserName, PasswordField pf) {
-        boolean bool = false;
-        lblMessage.setText("");
-        String user = txtUserName.getText();
-        String pw = pf.getText();
-
-        /* If username and password match Regex patterns, proceed with DB retrieval and encryption.
-         Otherwise, Verify displays a detailed alert
-         */
-        if (verify.areValidCreds(txtUserName, pf)) {
-            try {
-                String isUser = "SELECT * FROM user WHERE username = '" + user + "'";
-
-                // Query User table for user, pw, and salt where user = user
-                List<Map<String, Object>> results = db.retrieveRecords(isUser);
-
-                if (results != null && results.isEmpty()) // Query returned 0 results
+    private boolean processLogin()
+    {   
+        boolean success = false;
+        String user = userSet.getField().getText();
+        String pw = pwSet.getField().getText();
+        pwSet.getField().requestFocus();
+        
+        boolean validPW = verify.isValidEntry(pwSet);
+         
+        // proceed if both fields are neither empty nor invalid
+        if(verify.isValidEntry(userSet) && validPW)
+        {
+                try
                 {
-                    lblMessage.setText("No account exists for this user.");
-                    lblMessage.setTextFill(Color.RED);
-                } else if (results != null) // Record returned
-                {
-                    Map<String, Object> aRow = results.get(0);
-                    String salt = (String) aRow.get("salt");
-                    String pw_hash = (String) aRow.get("password");
-
-                    //Determine whether the hash of the provided password matches the stored hash
-                    if (encrypt.isExpectedPassword(pw, pw_hash, salt)) {
-                        // If the passwords match, gather the other record values for User creation
-                        Integer user_id = (Integer) aRow.get("user_id");
-                        String email = (String) aRow.get("email");
-                        String first = (String) aRow.get("first_name");
-                        String last = (String) aRow.get("last_name");
-                        Timestamp created = (Timestamp) aRow.get("created");
-                        Timestamp updated = (Timestamp) aRow.get("last_update");
-
-                        // Store the db values in a User object's attributes
-                        currUser = new User(user_id, email, user, pw_hash, salt, first, last, created, updated);
-
-                        bool = true;                // signal to calling function that stage should be closed
-                        dashboard.mainScreen();     // display the user's dashboard
-                    } else // User's password entry did not match the value in database
+                    String isUser = "SELECT * FROM user WHERE username = '" + user + "'";
+            
+                    // Query User table for user, pw, and salt where user = user
+                    List<Map<String, Object>> results = db.retrieveRecords(isUser);
+            
+                    if(results != null && results.isEmpty()) // Query returned 0 results
                     {
-                        lblMessage.setText("Incorrect user or password");
-                        lblMessage.setTextFill(Color.RED);
+                        userSet.setAlert("! No account exists for this user");
+                        userSet.getField().requestFocus();
+                    }
+                    else if(results != null) // Record returned
+                    {
+                        Map<String, Object> aRow = results.get(0);
+                        String salt = (String) aRow.get("salt");
+                        String pw_hash = (String)aRow.get("password");
+                
+                        //Determine whether the hash of the provided password matches the stored hash
+                        if(encrypt.isExpectedPassword(pw, pw_hash, salt))
+                        {
+                            byte[] byteSalt = Base64.getDecoder().decode(salt);
+                            // use the salt retrieved above to hash the combined username and pw
+                            String ks_pass = encrypt.getHashString(user + pw, byteSalt, "SHA-512");
+                            
+                            // If the passwords match and the 2nd hash is successful, retrieve values for User attributes
+                            Integer user_id = (Integer) aRow.get("user_id");
+                            String email = (String) aRow.get("email");
+                            String first =  (String) aRow.get("first_name");
+                            String last =  (String) aRow.get("last_name");
+                            Timestamp created =  (Timestamp) aRow.get("created");
+                            Timestamp updated =  (Timestamp) aRow.get("last_update");
+                    
+                            // Store the db values in a User object's attributes
+                            currUser = new User(user_id, email, user, pw_hash, salt, first, last, created, updated, ks_pass);
+                    
+                            success = true;                // signal to calling function that stage should be closed
+                            dashboard.mainScreen();     // display the user's dashboard
+                        }
+                        else // User's password entry did not match the value in database
+                        {
+                            pwSet.setAlert("! Password is incorrect");
+                        }
                     }
                 }
-            } /* Catch Exceptions thrown by Encryptor and DBConnector classes and
-             display an Alert describing the Exception*/ catch (SQLException | NoSuchAlgorithmException | UnsupportedEncodingException ex) {
-                verify.createAlert(Alert.AlertType.ERROR, "Failed login",
-                        "An error occurred while processing your credentials. The system "
-                        + "will now exit. Error message: " + ex.getMessage());
-                System.exit(1);
-            }
-        } /* Display a red alert message in the Login screen if one or more entries
-         fail the regex tests in Verify
-         */ else {
-            lblMessage.setText("Fix entries above");
-            lblMessage.setTextFill(Color.RED);
+            
+                /* Catch Exceptions thrown by Encryptor and DBConnector classes and
+                display an Alert describing the Exception*/
+                catch (SQLException | NoSuchAlgorithmException | UnsupportedEncodingException ex)
+                {
+                    verify.createAlert(Alert.AlertType.ERROR, "Failed login", 
+                            "An error occurred while processing your credentials. The system "
+                            + "will now exit. Error message: " + ex.getMessage());
+                    System.exit(1);
+                }
         }
-
-        return bool;
+        
+        return success;
     } // End Charlotte's code
-
 } //End Class Login
