@@ -26,8 +26,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -51,6 +49,7 @@ public class Dashboard {
     private static List<Map<String, Object>> account;
     private static List<Account> accountArr = new ArrayList<>();
     private static ComboBox sortCombo;
+    private static AEScrypt aes;
     static TextField accountName = new TextField();
     static TextField userName = new TextField();
     static TextField passWord = new TextField();
@@ -67,6 +66,7 @@ public class Dashboard {
      * accounts
      */
     public void mainScreen() {
+        aes = new AEScrypt();
 
         //Borderpane to hold Gridpane, HBOX (holds buttons)
         BorderPane bp = new BorderPane();
@@ -78,7 +78,7 @@ public class Dashboard {
         gridPane.setHgap(5);
         gridPane.setVgap(5);
         
-        ImageView copyImg = new ImageView(new Image("images/clipboard.jpg"));
+        //ImageView copyImg = new ImageView(new Image("images/clipboard.jpg"));
         // Assign the clipboard image as each button background
         Button copyUN = new Button();
         Button copyPW = new Button();
@@ -98,7 +98,7 @@ public class Dashboard {
         //gridPane.add(webSite, 0, 4);
         //GridPane.setConstraints(webSite, 0, 4, 1, 1);
         //webSite.setPromptText("Enter/View Website Here");
-
+        
         /* Add panes to appropriate region */
         bp.setRight(gridPane);
         bp.setBottom(gethBox());
@@ -234,7 +234,6 @@ public class Dashboard {
                     // if field is empty, call Verify method
                     if (accountName.getText().matches("")) {
                         verify.deleteEmpty();
-                        System.out.println("Empty good");
                     } 
                     else {
                         boolean isFound = false; // Account found?
@@ -251,7 +250,7 @@ public class Dashboard {
                                 // Retrieve and display the account username
                                 userName.setText(accountArr.get(i).getUserName());
                                 // Retrieve, decrypt, and display the password 
-                                passWord.setText(AEScrypt.decrypt(accountArr.get(i).getPassword(), accountArr.get(i).getName()));
+                                passWord.setText(aes.decrypt(accountArr.get(i).getPassword(), accountArr.get(i).getName()));
                             }
                             i++;
                         }
@@ -349,7 +348,7 @@ public class Dashboard {
      */
     private static void initAccountSet() {
         Map<String, Object> row;
-        if(!account.isEmpty()) // User hasn't added any accounts yet
+        if(!account.isEmpty()) // if user has added some accounts
         {
             for (int i = 0; i < account.size(); i++) 
             {
@@ -367,9 +366,9 @@ public class Dashboard {
                 
                 // Add the newly created Account to an ArrayList
                 accountArr.add(acct);
-            }
-        }
+            }        
         Collections.sort(accountArr);   // Initially sort by name
+        }        
         updateTextArea();               // Fill the TextArea with sorted names
     }
     
@@ -431,6 +430,11 @@ public class Dashboard {
             i++;
         }
         return b;
+    }
+    
+    public static AEScrypt getAES()
+    {
+        return aes;
     }
 } //End Subclass Dashboard
 //*********************End Charlotte's Code******************************
