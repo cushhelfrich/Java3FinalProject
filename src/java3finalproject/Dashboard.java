@@ -341,8 +341,8 @@ public class Dashboard {
      */
     public static void updateTextArea() {
         accountView.setText("ACCOUNT NAME\n-----------------------------\n");
-        for (int i = 0; i < account.size(); i++) {
-            accountView.appendText(account.get(i) + "\n");
+        for (int i = 0; i < accountArr.size(); i++) {
+            accountView.appendText(accountArr.get(i).getName() + "\n");
         }
     }
 
