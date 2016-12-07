@@ -43,7 +43,6 @@ public class Dashboard {
     static TextField accountName = new TextField();
     static TextField userName = new TextField();
     static TextField passWord = new TextField();
-    //static TextField webSite = new TextField();
 
     //instantiate subclass
     Add add = new Add();
@@ -81,9 +80,6 @@ public class Dashboard {
         gridPane.add(passWord, 0, 3);
         GridPane.setConstraints(passWord, 0, 3, 1, 1);
         passWord.setPromptText("Enter/View Password");
-        //gridPane.add(webSite, 0, 4);
-        //GridPane.setConstraints(webSite, 0, 4, 1, 1);
-        //webSite.setPromptText("Enter/View Website Here");
 
         /* Add panes to appropriate region */
         bp.setRight(gridPane);
@@ -126,8 +122,6 @@ public class Dashboard {
         accountView.setPrefRowCount(8);
         accountView.setEditable(false);
         accountView.setWrapText(true);
-        //accountView.setText("ACCOUNT INFORMATION\n-----------------------------\n");
-        //ImageView image = new ImageView(new Image("images/smallLock.jpg"));
 
         vBox.getChildren().addAll(accountView);
 
@@ -272,7 +266,6 @@ public class Dashboard {
         accountName.clear();
         userName.clear();
         passWord.clear();
-        //webSite.clear();
     }
 } //End Subclass Dashboard
 //*********************End Wayne Code******************************
