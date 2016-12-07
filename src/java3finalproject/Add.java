@@ -116,6 +116,7 @@ public class Add {
         btnConfirm.setOnAction((ActionEvent e) -> {
             addScene.close();
             //****************Start Bill Code*********************
+            
             Account newAct = new Account(actName, usrName, pw);
             
             
