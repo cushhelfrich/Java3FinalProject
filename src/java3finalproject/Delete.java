@@ -115,7 +115,7 @@ class Delete {
             try {
                 removeAct(accountName.getText());            
                 System.out.println("Delete " + actName + " from database");
-                AEScrypt.deleteKey(accountName.getText());  // CH: Delete record of encryption key
+                Dashboard.getAES().deleteKey(accountName.getText());  // CH: Delete record of encryption key
                 Dashboard.deleteAccount(actName);
             } 
             catch (SQLException | KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException ex) {
