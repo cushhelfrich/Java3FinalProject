@@ -231,8 +231,15 @@ public class AEScrypt {
     public static void deleteKey(String alias) throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException
     {
         KeyStore ks = KeyStore.getInstance(KS_INSTANCE);
-        ks.load(null, password);
+        try(FileInputStream fis = new FileInputStream(KS_NAME))
+        {
+            ks.load(fis, password);
+        }
         ks.deleteEntry(alias);
+        try(FileOutputStream fos = new FileOutputStream(KS_NAME))
+        {
+            ks.store(fos, password);
+        }
     }
     /*********End Charlotte's*********/
 } //End Subclass AEScrypt
