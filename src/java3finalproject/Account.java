@@ -48,7 +48,7 @@ public class Account implements Comparable<Account> {
     public Account(String name, String uname, String password) {
         this.accountName = name;
         this.username = uname;
-        this.password = AEScrypt.encrypt(password, accountName);// Base64 string
+        this.password = Dashboard.getAES().encrypt(password, accountName);// Base64 string, includes IV bytes
         //   this.password=password;
         this.website = "na";
         this.created = null;
