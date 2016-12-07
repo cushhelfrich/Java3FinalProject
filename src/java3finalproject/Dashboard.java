@@ -2,7 +2,7 @@ package java3finalproject;
 
 /**
  * @Course: SDEV 450 ~ Java Programming III
- * @Contributors: Wayne Riley, Charlotte Hirschberger
+ * @Author Name: Wayne Riley
  * @Assignment Name: java3finalproject
  * @Date: Oct 16, 2016
  * @Subclass Dashboard Description: Dashboard called from Login screen once
@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -53,7 +55,6 @@ public class Dashboard {
     static TextField accountName = new TextField();
     static TextField userName = new TextField();
     static TextField passWord = new TextField();
-    //static TextField webSite = new TextField();
 
     //instantiate subclass
     Add add = new Add();
@@ -64,6 +65,8 @@ public class Dashboard {
     /**
      * Main dashboard - User can view accounts or add, modify and delete
      * accounts
+     *
+     * @throws java.sql.SQLException
      */
     public void mainScreen() {
         aes = new AEScrypt();
@@ -115,7 +118,7 @@ public class Dashboard {
 
         //Dashboard stage
         Scene scene = new Scene(bp, 370, 200);
-        dbScene.setTitle("Dashboard");
+        dbScene.setTitle("Dashboard - " + Login.currUser.getUsername()); //CUSH added username
         scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
         dbScene.setScene(scene);
         dbScene.show();
@@ -137,7 +140,7 @@ public class Dashboard {
 
     /**
      * VBox for textarea
-     * 2 'rows': Row 1- HBox with Text & ComboBox, Row 2- TextArea
+     *
      * @return
      */
     private VBox getvBox() {
@@ -145,8 +148,7 @@ public class Dashboard {
         VBox vBox = new VBox(5);
         vBox.setAlignment(Pos.CENTER_LEFT);
         vBox.setPadding(new Insets(5, 5, 5, 5));
-        
-        
+                
             /****Charlotte's code****/
             // HBox holds Text and ComboBox, side by side
             HBox holdCombo = new HBox();
@@ -184,14 +186,11 @@ public class Dashboard {
         
             holdCombo.getChildren().addAll(sortBy, sortCombo);
             /*****End Charlotte's code*****/
-
         accountView = new TextArea();
         accountView.setPrefColumnCount(13);
         accountView.setPrefRowCount(8);
         accountView.setEditable(false);
         accountView.setWrapText(true);
-        //accountView.setText("ACCOUNT INFORMATION\n-----------------------------\n");
-        //ImageView image = new ImageView(new Image("images/smallLock.jpg"));
 
         vBox.getChildren().addAll(holdCombo, accountView);
 
@@ -229,6 +228,7 @@ public class Dashboard {
             }
         }
         );//end Add event handler
+
         viewAccount.setOnAction(
                 (ActionEvent e) -> {
                     // if field is empty, call Verify method
@@ -261,13 +261,28 @@ public class Dashboard {
                     }
                 }
         );
+
         //Launches modify confirmation scene
         btnModify.setOnAction(
                 (ActionEvent e) -> {
                     if (accountName.getText().matches("")) {
                         verify.deleteEmpty();
+                    } else if (userName.getText().matches("") && passWord.getText().matches("")) {
+                        verify.modifyEmpty();
+                    } else if (!isDuplicate(accountName.getText())) {
+                        verify.noAct();
                     } else {
-                        modify.change(accountName.getText(), userName.getText(), passWord.getText());
+                        try {
+                            if (userName.getText().equals(modify.getUser(accountName.getText()))) {
+                                verify.sameUserNameEntry();
+                            } else if (passWord.getText().equals(modify.getPassword(accountName.getText()))) {
+                                verify.samePasswordEntry();
+                            } else {
+                                modify.change(accountName.getText(), userName.getText(), passWord.getText());
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
         );//end modify event handler
@@ -277,6 +292,8 @@ public class Dashboard {
                 (ActionEvent e) -> {
                     if (accountName.getText().matches("")) {
                         verify.deleteEmpty();
+                    } else if (!isDuplicate(accountName.getText())) {
+                        verify.noAct();
                     } else {
                         delete.delete(accountName.getText());
                     }
@@ -304,32 +321,31 @@ public class Dashboard {
     }
 
     /**
-     * Calls dbConnector for connection and loads this user's account details
-     * into a List of Maps.
-     * 
+     * Calls dbConnector for connection and query returns account name which
+     * loads to ArrayList
+     *
      * @throws SQLException
      */
     private void getAct() throws SQLException {
-        if(account != null && !account.isEmpty())
-        {
+        if (account != null && !account.isEmpty()) {
             account.clear(); // clears arrayList
         }
-        String rtrvAct = "SELECT * FROM account WHERE user_id = " + Login.currUser.getUserId();
+        String rtrvAct = "SELECT account_name FROM account WHERE user_id = " + Login.currUser.getUserId();
 
         //calls account to load accounts in arraylist
         account = Login.db.retrieveRecords(rtrvAct);
     }
-    
+
     /**
      * Read ArrayList and display in text area.
      */
     public static void updateTextArea() {
         accountView.setText("ACCOUNT NAME\n-----------------------------\n");
-        for (int i = 0; i < accountArr.size(); i++) {
-            accountView.appendText(accountArr.get(i).getName() + "\n");
+        for (int i = 0; i < account.size(); i++) {
+            accountView.appendText(account.get(i) + "\n");
         }
     }
-    
+
     /**
      * Method called to clear text fields
      */
@@ -437,4 +453,4 @@ public class Dashboard {
         return aes;
     }
 } //End Subclass Dashboard
-//*********************End Charlotte's Code******************************
+//*********************End Wayne Code******************************

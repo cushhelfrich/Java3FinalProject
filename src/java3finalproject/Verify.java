@@ -1,14 +1,9 @@
 package java3finalproject;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
 
 /**
  * @Course: SDEV 450 ~ Enterprise Java Programming
@@ -72,6 +67,49 @@ public class Verify {
         return boolChecks;
 
     } //End isData method
+    
+       public boolean isValidUsername (TextField username) {
+        
+        boolean boolChecks = true;
+        
+        if(!username.getText().matches("(?=[A-Za-z0-9-_.]{6,64}$)" //String has between 6-64 characters
+                + "^[A-Za-z0-9]([-_.]{0,1}[A-Za-z0-9]+)+$")) {   //String starts and ends with alphanumeric data
+
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("ERROR");
+            alert.setHeaderText("Unvalid Username");
+            alert.setContentText("The username must be 6-64 characters in length, must\n"
+                    + "start with a number or letter, and must contain only numbers,\n"
+                    + "letters, dashes, underscores, and periods. ");
+            alert.showAndWait();
+
+            boolChecks = false;
+        }
+        
+        return boolChecks;
+    }
+    
+     public boolean isValidPassword (PasswordField password) {
+        
+        boolean boolChecks = true;
+        
+         if(!password.getText().matches("^.*(?=.{8,255})"// Password must be 8-255 characters
+                + "(?=.*\\d)(?=.*[A-Z])(?=.*\\W).*$")) { // Password must contain 1 digit, 1 capital, 1 symbol
+
+
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("ERROR");
+            alert.setHeaderText("Unvalid password");
+            alert.setContentText("The password must be 8-255 characters in length and\n"
+                    + "contain at least 1 digit, 1 symbol, and 1 uppercase letter.");
+
+            alert.showAndWait();
+
+            boolChecks = false;
+        }
+        
+        return boolChecks;
+    }
 
     //****************End Cush Code**********************************
     
@@ -85,6 +123,18 @@ public class Verify {
         blank.setTitle("Warning");
         blank.setHeaderText("Missing Information");
         blank.setContentText("You must populate Account, Username and Password fields");
+        blank.showAndWait();
+    }
+    
+       /**
+     * Alert if username and password fields are blank for modify function
+     */
+    public void modifyEmpty() {
+
+        Alert blank = new Alert(Alert.AlertType.WARNING);
+        blank.setTitle("Warning");
+        blank.setHeaderText("Missing Information");
+        blank.setContentText("You must populate Username and/or Password field");
         blank.showAndWait();
     }
 
@@ -124,11 +174,36 @@ public class Verify {
                 + "was created");
         missing.showAndWait();
     }
+    
+     /**
+     * Alert if duplicate account exist
+     */
+    public void sameUserNameEntry() {
+
+        Alert missing = new Alert(Alert.AlertType.WARNING);
+        missing.setTitle("Warning");
+        missing.setHeaderText("Same Username");
+        missing.setContentText("Null out Username field or modify to make it different");
+        missing.showAndWait();
+    }
+    
+    
+      /**
+     * Alert if duplicate account exist
+     */
+    public void samePasswordEntry() {
+
+        Alert missing = new Alert(Alert.AlertType.WARNING);
+        missing.setTitle("Warning");
+        missing.setHeaderText("Same Password");
+        missing.setContentText("Null out Password field or modify to make it different");
+        missing.showAndWait();
+    }
 
     //****************End Wayne Code**********************************
     
     /***********Start Charlotte's Code******************/
-
+    
     /**
      * Extracts entries from username and password fields and sends them to
      * isValidUName and isValidPWEntry methods for regex tests.
@@ -216,6 +291,7 @@ public class Verify {
         
         return isValid;
     }
+    
     
     /**
      * Uses objects packaged in FieldSet to check user entries and set alert labels accordingly

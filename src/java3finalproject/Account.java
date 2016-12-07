@@ -1,4 +1,3 @@
-
 package java3finalproject;
 
 import java.sql.PreparedStatement;
@@ -10,11 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.control.Alert;
 
 /**
  * @Course: SDEV 250 ~ Java Programming III
- * @Contributors: William Tanona, Charlotte Hirschberger
+ * @Author Name: Bill Tanona
  * @Assignment Name: java3finalproject
  * @Date: Oct 20, 2016
  * @Subclass Account Description:
@@ -28,12 +26,12 @@ import javafx.scene.control.Alert;
  */
 //Imports
 //Begin Subclass Account
-public class Account implements Comparable<Account> {
+public class Account implements Comparable<Account>  {
 
-    private  String accountName;
-    private  String username;
-    private  String password;
-    private  String website;
+    private String accountName;
+    private String username;
+    private String password;
+    private String website;
     private final int user_id = Login.currUser.getUserId();
     private Timestamp created;
     private Timestamp updated;
@@ -54,8 +52,8 @@ public class Account implements Comparable<Account> {
         this.created = null;
         this.updated = null;
     }
-
-    /****Charlotte's code*****/
+    
+        /****Charlotte's code*****/
     /**
      * Constructor used to create Account from existing data (vs. newly inserted)
      * Existing data includes Timestamps, whereas there are no Timestamps when an Account
@@ -79,6 +77,7 @@ public class Account implements Comparable<Account> {
     
     
     /*****Bill's code*****/
+
     /**
      * getAccount uses a prepared statement to query the DB for for account info
      *
@@ -86,7 +85,7 @@ public class Account implements Comparable<Account> {
      */
     public Account(String actName) {
        // this.accountName=null;
-        
+
         int rowsaffected = 0;
         boolean tableInserted = false;
         boolean gotAccount = false;
@@ -97,7 +96,7 @@ public class Account implements Comparable<Account> {
 
         try {
             prepstmt = sqlstmt.createStatement(query);
-            prepstmt.setString(1,actName);
+            prepstmt.setString(1, actName);
             prepstmt.setInt(2, user_id);
             prepstmt.execute();
             ResultSet rs = prepstmt.getResultSet();
@@ -109,7 +108,6 @@ public class Account implements Comparable<Account> {
             this.created = rs.getTimestamp("created");
             this.updated = rs.getTimestamp("last_update");
 
-            
         } catch (SQLException ex) {
             Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
 
@@ -126,9 +124,10 @@ public class Account implements Comparable<Account> {
         return accountName;
     }
 
-    public String getUserName(){
+    public String getUserName() {
         return username;
     }
+
     public String getPassword() {
         return password;
     }
@@ -191,7 +190,6 @@ public class Account implements Comparable<Account> {
         String query = "INSERT INTO account (user_id, username, password,account_name)"
                 + " VALUES (?,?,?,?)";
 
-
         try {
             prepstmt = sqlstmt.createStatement(query);
 
@@ -218,22 +216,17 @@ public class Account implements Comparable<Account> {
             
         } catch (SQLException e) {
             System.out.println("Failed to create PreparedStatement");
-            Login.verify.createAlert(Alert.AlertType.ERROR,
-                    "Error adding account",
-                    "There was a problem processing your request, and account credentials may not have been added to the database.");
-
-        } finally {
-            try {
-                if(prepstmt != null)
-                {
-                    prepstmt.close();
-                } //  Close resources 
-                sqlstmt.closeDB();
-
-            } catch (SQLException ex) {
-                Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
+
+//        } finally {
+//            try {
+//                prepstmt.close();    //  Close resources 
+//                sqlstmt.closeDB();
+//
+//            } catch (SQLException ex) {
+//                Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
         tableInserted = rowsaffected > 0;
 
         return tableInserted;
@@ -298,4 +291,5 @@ public class Account implements Comparable<Account> {
         }
     };
     /*****End Charlotte's code*****/
-} //End Subclass Account(
+
+} //End Subclass Account

@@ -2,7 +2,7 @@ package java3finalproject;
 
 /**
  * @Course: SDEV 450 ~ Java Programming III
- * @Contributors: Wayne Riley, Bill Tanona
+ * @Author Name: Wayne Riley
  * @Assignment Name: java3finalproject
  * @Date: Oct 17, 2016
  * @Subclass Add Description: Content (Account, Username, password) passed from
@@ -40,6 +40,7 @@ public class Add {
      * @param actName
      * @param usrName
      * @param pw
+     * @param ws
      */
     public void insert(String actName, String usrName, String pw) {
 
@@ -61,13 +62,14 @@ public class Add {
 
         //labels        
         Label lblaccountName = new Label("Account Name:");
+        lblaccountName.setFont(Font.font("", FontWeight.BOLD, 12));
         Label lblaccountGetText = new Label(actName);
         Label lblLUserName = new Label("User Name:");
+        lblLUserName.setFont(Font.font("", FontWeight.BOLD, 12));
         Label lbluserNameGetText = new Label(usrName);
         Label lblpassword = new Label("Password:");
-        Label lblpasswordGetText = new Label(pw);
-        //Label lblwebsite = new Label("Website:");
-        //Label lblwebsiteGetText = new Label(ws);        
+        lblpassword.setFont(Font.font("", FontWeight.BOLD, 12));
+        Label lblpasswordGetText = new Label(pw);               
 
         /* Add panes to appropriate region */
         bp.setTop(pane);
@@ -101,11 +103,7 @@ public class Add {
         GridPane.setConstraints(lblpassword, 0, 2, 1, 1);
         gridPane.add(lblpasswordGetText, 1, 2);
         GridPane.setConstraints(lblpasswordGetText, 1, 2, 1, 1);
-        //add website to grid pane
-        //gridPane.add(lblwebsite, 0, 3);
-        //GridPane.setConstraints(lblwebsite, 0, 3, 1, 1);
-        //gridPane.add(lblwebsiteGetText, 1, 3);
-        //GridPane.setConstraints(lblwebsiteGetText, 1, 3, 1, 1);
+
         //add Buttons
         gridPane.add(btnConfirm, 0, 4);
         GridPane.setConstraints(btnConfirm, 0, 4, 1, 1);
@@ -115,9 +113,11 @@ public class Add {
         //lambda expression confirm and Edit
         btnConfirm.setOnAction((ActionEvent e) -> {
             addScene.close();
+
             //****************Start Bill Code*********************
             
             Account newAct = new Account(actName, usrName, pw);
+            
             
             
          //   try
@@ -141,14 +141,15 @@ public class Add {
                 System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
                 Dashboard.updateAccountSet(newAct); //calls method in Dashboard to update TextArea and Account list
             }
-            
-            Dashboard.clearHandler();//calls Static method in main
+            Dashboard.clearHandler();//clears all textfields
         });//end confirm event handler
 
         //lambda expression Exit Program        
-        btnEdit.setOnAction((ActionEvent e) -> {
-            addScene.close();
-        });//end edit event handler
+        btnEdit.setOnAction(
+                (ActionEvent e) -> {
+                    addScene.close();
+                }
+        );//end edit event handler
 
         //New stage
         Scene scene = new Scene(bp, 275, 180);
@@ -157,5 +158,5 @@ public class Add {
         addScene.setScene(scene);
         addScene.show();
     }
-    //*********End Wayne's Code
+    //*********End Wayne's Code******************
 }//End Subclass Add

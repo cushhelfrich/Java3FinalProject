@@ -51,6 +51,7 @@ public class Encryptor {
      * Uses an existing salt to hash a user's entry
      * @param unhashed User's password entry during login
      * @param salt Byte array retrieved from User table
+     * @param algorithm
      * @return Hash substring concatenated with Salt substring
      * 
      * Future update: make independent of charset?, store Instance in attribute

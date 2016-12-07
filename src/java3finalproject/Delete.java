@@ -75,6 +75,7 @@ class Delete {
 
         //labels        
         Label lblaccountName = new Label("Account Name:");
+        lblaccountName.setFont(Font.font("", FontWeight.BOLD, 12));
         Label lblaccountGetText = new Label(actName);
 
         /* Add panes to appropriate region */
@@ -114,7 +115,6 @@ class Delete {
             } else {            
             try {
                 removeAct(accountName.getText());            
-                System.out.println("Delete " + actName + " from database");
                 Dashboard.getAES().deleteKey(accountName.getText());  // CH: Delete record of encryption key
                 Dashboard.deleteAccount(actName);
             } 
@@ -144,14 +144,14 @@ class Delete {
 
     /**
      * Calls retrieveRecords method in DBConnector class to determine account_id
-     * and then calls modifyRecords to delete account informaion in SQL.
+     * and then calls modifyRecords to delete account information in SQL.
      *
      * @throws SQLException
      */
     private void removeAct(String actName) throws SQLException {
 
         String rmvAct = "SELECT * FROM account WHERE account_name = '" + actName + "' AND user_id = " + Login.currUser.getUserId();
-        
+
         // Query User table for account_id to that matches account name.
         List<Map<String,Object>> results = Login.db.retrieveRecords(rmvAct);
 
@@ -159,8 +159,7 @@ class Delete {
         {
             verify.noAct();
 
-        } 
-        else if(results != null) {
+        } else {
             int deleteId = (Integer) results.get(0).get("account_id");
 
             //SQL string to delete account account row
