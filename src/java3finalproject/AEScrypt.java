@@ -38,7 +38,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class AEScrypt {
     private static SecretKeySpec sks;
     private static byte[] keyToSave;
-    private static final String KS_NAME = "output.jceks";                 // KeyStore file
+    private static String ks_name;                 // KeyStore file
     private static final String EN_ALGO = "AES";                        // Encryption algorithm
     private static final String CIPHER_INST = "AES/CBC/PKCS5Padding";   // Cipher used
     private static final String KS_INSTANCE = "JCEKS";                    // KeyStore type
@@ -54,6 +54,7 @@ public class AEScrypt {
     public AEScrypt()
     {
         password = Login.currUser.getKSPass().toCharArray();
+        ks_name = "output_" + Login.currUser.getUsername() + ".jceks";
     }
     /*********End Charlotte's*********/
 
@@ -148,7 +149,6 @@ public class AEScrypt {
                     
             byte[] encryptedText = Arrays.copyOfRange(encryptionWithIv, IV_SIZE, encryptionWithIv.length);
             
-            
             Cipher cipher = Cipher.getInstance(CIPHER_INST);
             cipher.init(Cipher.DECRYPT_MODE, sks, ivParam);
             return new String(cipher.doFinal(encryptedText));
@@ -181,7 +181,7 @@ public class AEScrypt {
     private static void storeKey(String alias) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException
     {
         KeyStore ks = KeyStore.getInstance(KS_INSTANCE);
-        File ks_file = new File(KS_NAME);
+        File ks_file = new File(ks_name);
         if(ks_file.exists())
         {
             try (FileInputStream fis = new FileInputStream(ks_file)) {
@@ -211,7 +211,7 @@ public class AEScrypt {
     {
         KeyStore ks = KeyStore.getInstance(KS_INSTANCE);
         
-        try (FileInputStream fis = new FileInputStream(KS_NAME)) {
+        try (FileInputStream fis = new FileInputStream(ks_name)) {
             ks.load(fis, password);
             
             Key key = ks.getKey(alias, password);
@@ -231,12 +231,12 @@ public class AEScrypt {
     public static void deleteKey(String alias) throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException
     {
         KeyStore ks = KeyStore.getInstance(KS_INSTANCE);
-        try(FileInputStream fis = new FileInputStream(KS_NAME))
+        try(FileInputStream fis = new FileInputStream(ks_name))
         {
             ks.load(fis, password);
         }
         ks.deleteEntry(alias);
-        try(FileOutputStream fos = new FileOutputStream(KS_NAME))
+        try(FileOutputStream fos = new FileOutputStream(ks_name))
         {
             ks.store(fos, password);
         }

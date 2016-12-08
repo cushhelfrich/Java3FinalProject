@@ -249,8 +249,9 @@ public class Dashboard {
                                 
                                 // Retrieve and display the account username
                                 userName.setText(accountArr.get(i).getUserName());
-                                // Retrieve, decrypt, and display the password 
+                                // Retrieve, decrypt, and display the password            
                                 passWord.setText(aes.decrypt(accountArr.get(i).getPassword(), accountArr.get(i).getName()));
+
                             }
                             i++;
                         }
@@ -330,7 +331,7 @@ public class Dashboard {
         if (account != null && !account.isEmpty()) {
             account.clear(); // clears arrayList
         }
-        String rtrvAct = "SELECT account_name FROM account WHERE user_id = " + Login.currUser.getUserId();
+        String rtrvAct = "SELECT * FROM account WHERE user_id = " + Login.currUser.getUserId();
 
         //calls account to load accounts in arraylist
         account = Login.db.retrieveRecords(rtrvAct);
