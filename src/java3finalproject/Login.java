@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -29,6 +30,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
@@ -88,9 +90,7 @@ public class Login extends Application {
 
         //CUSH
         Button btnCreateUser = new Button("Create User");
-        Button btnResetPassword = new Button("Reset Password");
         btnCreateUser.setPrefWidth(120);
-        btnResetPassword.setPrefWidth(120);
         //END CUSH
         
         // vertical space between buttons
@@ -107,8 +107,6 @@ public class Login extends Application {
         gridPane.add(btnLogin, 2, 2);        
         gridPane.add(pwSet.getAlert(), 1, 3);
         gridPane.add(btnCreateUser, 1, 4); //CUSH
-        gridPane.add(spacer, 1, 5);
-        gridPane.add(btnResetPassword, 1, 6); //CUSH
         //Reflection for gridPane
         Reflection r = new Reflection();
         r.setFraction(0.7f);
@@ -132,32 +130,36 @@ public class Login extends Application {
         gridPane.setId("root");
         btnLogin.setId("btn");
         btnCreateUser.setId("btnCreateUser"); //CUSH
-        btnResetPassword.setId("btnResetPassword"); //CUSH
         text.setId("text");
-
-        txtUserName.setOnKeyReleased
-        ((KeyEvent k) -> 
-            {
-                // clear any alert when user starts typing
-                userSet.setAlert("");
-                if(k.getCode() == KeyCode.ENTER)
-                {
-                    btnLogin.fire();
-                }
-            } //handle
-        );
         
-        pf.setOnKeyReleased
-        ((KeyEvent k) -> 
-            {
-                // clear any alert when user starts typing
-                pwSet.setAlert("");
-                if(k.getCode() == KeyCode.ENTER)
-                {
-                    btnLogin.fire();
+                //[Scott]Add Tooltip to User Name Field
+        Tooltip userTip = new Tooltip();
+        userTip.setText("Don't have a User Name?\n"
+                + "Select \"Create User\" below.\n");
+        txtUserName.setTooltip(userTip);
+        
+        //[Scott]Enter Button Handler binding
+        EventHandler<KeyEvent> enterHandler = new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(final KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.ENTER) {
+                    if (processLogin()) {
+                        primaryStage.close();
+                    }
                 }
-            } //handle
-        );
+                else if(keyEvent.getSource() == txtUserName)
+                {
+                    userSet.setAlert("");
+                }
+                else
+                {
+                    pwSet.setAlert("");
+                }
+            }
+        };
+
+        txtUserName.setOnKeyPressed(enterHandler);
+        pf.setOnKeyPressed(enterHandler);
         
         //Action for btnLogin
         btnLogin.setOnAction(
