@@ -327,7 +327,7 @@ public class Dashboard {
      *
      * @throws SQLException
      */
-    private void getAct() throws SQLException {
+    public static void getAct() throws SQLException {
         if (account != null && !account.isEmpty()) {
             account.clear(); // clears arrayList
         }
@@ -363,7 +363,8 @@ public class Dashboard {
      * Uses contents of List<Map<>> to create a series of Accounts and load them
      * into an ArrayList for sorting
      */
-    private static void initAccountSet() {
+    public static void initAccountSet() {
+        accountArr.clear();
         Map<String, Object> row;
         if(!account.isEmpty()) // if user has added some accounts
         {
