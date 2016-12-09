@@ -69,7 +69,7 @@ public class Add {
         Label lbluserNameGetText = new Label(usrName);
         Label lblpassword = new Label("Password:");
         lblpassword.setFont(Font.font("", FontWeight.BOLD, 12));
-        Label lblpasswordGetText = new Label(pw);               
+        Label lblpasswordGetText = new Label(pw);
 
         /* Add panes to appropriate region */
         bp.setTop(pane);
@@ -115,30 +115,12 @@ public class Add {
             addScene.close();
 
             //****************Start Bill Code*********************
-            
             Account newAct = new Account(actName, usrName, pw);
-            
-            
-            
-         //   try
-                boolean insertSuccess = newAct.insert(actName, usrName, newAct.getPassword());            
 
-                //newAct.insert(actName, usrName, pw);
-               // account.add(accountName.getText());
-            
-         /*/   catch (SQLException ex)
-            {
-                 Login.verify.createAlert(Alert.AlertType.ERROR, "Processing error",
-                         "An error occured while processing your request. Account"
-                          + " credentials may not have been added to the database."
-                                 + " Error message: " + ex.getMessage());
-            }
-  */
+            boolean insertSuccess = newAct.insert(actName, usrName, newAct.getPassword());
+
             //****************End Bill Code*********************
-            
-            if(insertSuccess == true)            
-            {
-                System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
+            if (insertSuccess == true) {
                 Dashboard.updateAccountSet(newAct); //calls method in Dashboard to update TextArea and Account list
             }
             Dashboard.clearHandler();//clears all textfields

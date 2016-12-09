@@ -105,8 +105,8 @@ public class Account implements Comparable<Account>  {
             this.username = rs.getString("username");
             this.password = rs.getString("password");
             this.website = "na";
-            this.created = rs.getTimestamp("created");
-            this.updated = rs.getTimestamp("last_update");
+            //this.created = rs.getTimestamp("created");
+            //this.updated = rs.getTimestamp("last_update");
 
         } catch (SQLException ex) {
             Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
