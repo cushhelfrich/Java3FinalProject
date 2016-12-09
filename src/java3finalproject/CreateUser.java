@@ -31,23 +31,20 @@ import javafx.stage.Stage;
  * @Author Name: Cush Helfrich
  * @Assignment Name: java3finalproject
  * @Date: Oct 18, 2016
- * @Subclass CreateUser Description: This class will be used to create a scene
- * for users to enter information in order to create their user account. It will
- * confirm the user entered all required fields, and they entered valid entries
- * for the email, username, and password. It then creates and instance of
- * ConfirmUser
+ * @Subclass CreateUser Description:
  */
 //Imports
 //Begin Subclass CreateUser
 public class CreateUser {
 
-    Verify verify = new Verify(); //Create instance to use for verification
+    Verify verify = new Verify();
 
-    Stage createUserStage = new Stage(); //Create a stage
+    //ConfirmUser confUser = new ConfirmUser();  //Create instance
+    Stage createUserStage = new Stage();
+    //The main BorderPane
+    BorderPane bpCreateUser = new BorderPane();
 
-    BorderPane bpCreateUser = new BorderPane(); //The main BorderPane
-
-    //Labels
+    //Labels to show user
     Label lblUserName = new Label("Username");
     Label lblEmail = new Label("Email");
     Label lblFirstName = new Label("First Name");
@@ -61,28 +58,16 @@ public class CreateUser {
     TextField tfFirstName = new TextField();
     TextField tfLastName = new TextField();
 
-    //Password
     PasswordField pfPassword = new PasswordField();//Password
 
     Button btnEnterUser = new Button("Enter");
 
-    /**
-     * Default constructor
-     */
+    //Default constructor
     public CreateUser() {
 
-    } //End default constructor
+    }
 
-    /**
-     * Constructor: Takes arguments Text fields and a PasswordField. Used for
-     * user that would like to edit there entries from ConfirmUser class
-     *
-     * @param txtUserName
-     * @param txtEmail
-     * @param txtFirstName
-     * @param txtLastName
-     * @param txtPassword
-     */
+    //Constructor with arguments
     public CreateUser(Text txtUserName, Text txtEmail, Text txtFirstName,
             Text txtLastName, Text txtPassword) {
 
@@ -91,29 +76,23 @@ public class CreateUser {
         this.tfFirstName.setText(String.valueOf(txtFirstName.getText()));
         this.tfLastName.setText(String.valueOf(txtLastName.getText()));
         this.pfPassword.setText(String.valueOf(txtPassword.getText()));
+    }
 
-    } //End Constructor
-
-    /**
-     * creatUser method: Main method used for constructing the scene
-     */
     public void createUser() {
 
         bpCreateUser.setTop(vbText());//Add vbTop to bpMain top by calling method
         bpCreateUser.setCenter(gpCenter());//Add GridPane to center
-        bpCreateUser.setBottom(hbButtons()); //Add BorderPane to bottom
+        bpCreateUser.setBottom(hbButtons());
 
-        //Set action to call PressEnter class when hitting enter instead of clicking enter
         tfUserName.setOnKeyPressed(new PressEnter());
         tfEmail.setOnKeyPressed(new PressEnter());
         tfFirstName.setOnKeyPressed(new PressEnter());
         tfLastName.setOnKeyPressed(new PressEnter());
         pfPassword.setOnKeyPressed(new PressEnter());
 
-        bpCreateUser.setPadding(new Insets(10, 50, 50, 50)); //Padding
+        bpCreateUser.setPadding(new Insets(10, 50, 50, 50));
 
-        bpCreateUser.setId("bp"); //Set id for CSS
-
+        bpCreateUser.setId("bp");
         //Create Scene and add mainBorder to it
         Scene myScene = new Scene(bpCreateUser, 400, 300);
 
@@ -124,19 +103,15 @@ public class CreateUser {
 
         createUserStage.show(); //Show Stage
 
-    } //End createUser method
+    }
 
-    /**
-     * vBox method:  Used for top of scene
-     * @return vbTop
-     */
     public VBox vbText() {
 
         VBox vbTop = new VBox(); //VBox for text at the top
 
         vbTop.setAlignment(Pos.CENTER); //Align to center
 
-        vbTop.setPadding(new Insets(1, 1, 15, 1)); //Padd it
+        vbTop.setPadding(new Insets(1, 1, 15, 1));
 
         //Create the text for the BorderPane top
         Text mainText1 = new Text("User creation");
@@ -156,10 +131,6 @@ public class CreateUser {
 
     } //End vbText method
 
-    /**
-     * gpCenter method: used for the user entry fields
-     * @return gpEntries
-     */
     public GridPane gpCenter() {
 
         //Used to see lines for GridPane rows/colums for troubleshooting
@@ -219,11 +190,11 @@ public class CreateUser {
 
         return gpEntries;
 
-    } //End gpCenter method
+    }
 
     /**
-     * hbButtons Method: This will create a HBox to hold the buttons at the
-     * bottom of the bpCreateUser
+     * hbButtons Method: this will create a HBox to hold the buttons at the
+     * bottom of the bpMain
      *
      * @return hbBottom
      */
@@ -240,24 +211,19 @@ public class CreateUser {
         //Add buttons to the bottom HBox
         hbBottom.getChildren().addAll(btnEnterUser);
 
-        btnEnterUser.setOnAction(new EnterHandler()); //Handler for click enter
+        //Handlers
+        btnEnterUser.setOnAction(new EnterHandler()); //Handler for edit
 
         return hbBottom;
 
     } //End hbButtons
 
-    /**
-     * EnterHandler class:  handles the verification and calling of CreateUser
-     * when the enter button is clicked
-     */
-    class EnterHandler implements EventHandler<ActionEvent> {
+class EnterHandler implements EventHandler<ActionEvent> {
 
         @Override
         public void handle(ActionEvent e) {
 
             boolean checks = true;
-            
-            //Use List to store results from call to DBConnector
             List<Map<String, Object>> results = new ArrayList();
 
             //Check if username is populated
@@ -268,7 +234,6 @@ public class CreateUser {
                 checks = false;
 
             }
-            
             //Check if email is populated
             if (checks != false) {
                 if (!verify.isData(tfEmail, lblEmail)) {
@@ -278,9 +243,7 @@ public class CreateUser {
                     checks = false;
 
                 }
-            
             }
-            
             //Check if first name is populated
             if (checks != false) {
                 if (!verify.isData(tfFirstName, lblFirstName)) {
@@ -290,9 +253,7 @@ public class CreateUser {
                     checks = false;
 
                 }
-            
             }
-            
             //Check if last name is populated
             if (checks != false) {
                 if (!verify.isData(tfLastName, lblLastName)) {
@@ -302,9 +263,7 @@ public class CreateUser {
                     checks = false;
 
                 }
-                
             }
-            
             //Check if password name is populated
             if (checks != false) {
                 if (!verify.isData(pfPassword, lblPassword)) {
@@ -326,7 +285,6 @@ public class CreateUser {
                 }
 
             }
-            
             //Check if username is already used
             if (checks != false) {
                 String query = "SELECT * FROM user WHERE username = '"
@@ -349,50 +307,42 @@ public class CreateUser {
                     tfUserName.requestFocus();
                     checks = false;
                 }
-                
             }
+            
+            
 
-            //Check if username meets the criteria
-            if (checks != false) {
+             if (checks != false) {
                 if (!verify.isValidUsername(tfUserName)) {
-
+                    
                     tfUserName.clear();
                     tfUserName.requestFocus();
                     checks = false;
-
+                    
                 }
-
+                
             }
-
-            //Check if password meets the criteria
+            
             if (checks != false) {
                 if (!verify.isValidPassword(pfPassword)) {
-
+                    
                     pfPassword.clear();
                     pfPassword.requestFocus();
                     checks = false;
                 }
             }
-
+            
             if (checks) {  //If no data entry errors
-                
-                //Call ConfirmUser and pass fields
                 ConfirmUser confirm = new ConfirmUser(tfUserName, tfEmail,
                         tfFirstName, tfLastName, pfPassword);
 
                 confirm.confirmUser(); //Call method to show confirm user stage
-                createUserStage.close(); //Close this stage
+                createUserStage.close(); //Close the stage
+
 
             }
         }
-        
-    } //End EnterHadles class
+    }
 
-    /**
-     * PressEnter class: handles firing the action btnEnterUser when the enter
-     * key is clicked rather than the btnEnterUser being clicked.  This in turn
-     * calls the EnterHandler
-     */
     class PressEnter implements EventHandler<KeyEvent> {
 
         @Override
@@ -404,7 +354,5 @@ public class CreateUser {
             }
 
         }
-        
-    } //End PressEnter class
-    
+    }
 } //End Subclass CreateUser
