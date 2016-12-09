@@ -166,6 +166,12 @@ class Modify {
                 }
             }
 
+            try {
+                Dashboard.getAct();
+            } catch (SQLException ex) {
+                Logger.getLogger(Modify.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Dashboard.initAccountSet();
             Dashboard.clearHandler();//calls Static method in main          
         });//end confirm event handler
 
@@ -265,7 +271,7 @@ class Modify {
 
         Account dispAccount = new Account(an);//call account class and load account name
 
-        decPW = AEScrypt.decrypt(dispAccount.getPassword(), "DonaTellaNobody");//decrypt password
+        decPW = AEScrypt.decrypt(dispAccount.getPassword(), an);//decrypt password
 
         return decPW;//return to gridpane
 
@@ -290,7 +296,7 @@ class Modify {
         } else {
             ModifyId = (Integer) results.get(0).get("account_id");//gets account_id
 
-            String encpw = AEScrypt.encrypt(pw, "DonaTellaNobody");
+            String encpw = AEScrypt.encrypt(pw, name);
 
             String modify = "UPDATE account SET password = '" + encpw + "' WHERE account_id= '" + ModifyId + "'";
 

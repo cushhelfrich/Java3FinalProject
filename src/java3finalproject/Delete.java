@@ -109,23 +109,22 @@ class Delete {
 
         //lambda expression confirm and Edit
         btnConfirm.setOnAction((ActionEvent e) -> {
-            
+
             if (!Dashboard.isDuplicate(accountName.getText())) {
                 verify.noAct();
-            } else {            
-            try {
-                removeAct(accountName.getText());            
-                Dashboard.getAES().deleteKey(accountName.getText());  // CH: Delete record of encryption key
-                Dashboard.deleteAccount(actName);
-            } 
-            catch (SQLException | KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException ex) {
-                Logger.getLogger(Delete.class.getName()).log(Level.SEVERE, null, ex);
-                Login.verify.createAlert(Alert.AlertType.WARNING, "Error deleting account",
-                        "There was a problem processing your request, and account details"
-                                + " may not have been deleted from the system. Error message: " + ex.getMessage()); 
-            }
-            Dashboard.clearHandler();//calls Static method in main
-            deleteScene.close();//closes scene
+            } else {
+                try {
+                    removeAct(accountName.getText());
+                    Dashboard.getAES().deleteKey(accountName.getText());  // CH: Delete record of encryption key
+                    Dashboard.deleteAccount(actName);
+                } catch (SQLException | KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException ex) {
+                    Logger.getLogger(Delete.class.getName()).log(Level.SEVERE, null, ex);
+                    Login.verify.createAlert(Alert.AlertType.WARNING, "Error deleting account",
+                            "There was a problem processing your request, and account details"
+                            + " may not have been deleted from the system. Error message: " + ex.getMessage());
+                }
+                Dashboard.clearHandler();//calls Static method in main
+                deleteScene.close();//closes scene
             }
         });//end confirm event handler
 
@@ -153,7 +152,7 @@ class Delete {
         String rmvAct = "SELECT * FROM account WHERE account_name = '" + actName + "' AND user_id = " + Login.currUser.getUserId();
 
         // Query User table for account_id to that matches account name.
-        List<Map<String,Object>> results = Login.db.retrieveRecords(rmvAct);
+        List<Map<String, Object>> results = Login.db.retrieveRecords(rmvAct);
 
         if (results != null && results.isEmpty()) // Query returned 0 results
         {
