@@ -92,7 +92,7 @@ public class Account implements Comparable<Account>  {
         ResultSet res = null;
         SQLPreparedStatement sqlstmt = new SQLPreparedStatement();
         PreparedStatement prepstmt;
-        String query = "SELECT username,password FROM account WHERE account_name = ? AND user_id = ?";
+        String query = "SELECT * FROM account WHERE account_name = ? AND user_id = ?";
 
         try {
             prepstmt = sqlstmt.createStatement(query);
@@ -103,7 +103,10 @@ public class Account implements Comparable<Account>  {
             rs.next();
             this.accountName = actName;
             this.username = rs.getString("username");
-            this.password = rs.getString("password");                    
+            this.password = rs.getString("password"); 
+            this.website = "na";
+            this.created = rs.getTimestamp("created");
+            this.updated = rs.getTimestamp("last_update");
 
         } catch (SQLException ex) {
             Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);

@@ -170,7 +170,7 @@ public class Verify {
         Alert missing = new Alert(Alert.AlertType.WARNING);
         missing.setTitle("Warning");
         missing.setHeaderText("Account Does Not Exist");
-        missing.setContentText("You must enter a valid account name\nAccount Name must be entered exactly as it "
+        missing.setContentText("You must enter a valid account name"
                 + "was created");
         missing.showAndWait();
     }
