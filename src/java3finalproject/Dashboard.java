@@ -10,20 +10,29 @@ package java3finalproject;
  */
 //Imports
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 //************Start Wayne Code*********************
@@ -39,11 +48,13 @@ public class Dashboard {
     Button btnClear;
     Button btnExit;
     static TextArea accountView;
-    static List<String> account = null;
+    private static List<Map<String, Object>> account;
+    private static List<Account> accountArr = new ArrayList<>();
+    private static ComboBox sortCombo;
+    private static AEScrypt aes;
     static TextField accountName = new TextField();
     static TextField userName = new TextField();
     static TextField passWord = new TextField();
-    //static TextField webSite = new TextField();
 
     //instantiate subclass
     Add add = new Add();
@@ -57,7 +68,8 @@ public class Dashboard {
      *
      * @throws java.sql.SQLException
      */
-    public void mainScreen() throws SQLException {
+    public void mainScreen() {
+        aes = new AEScrypt();
 
         //Borderpane to hold Gridpane, HBOX (holds buttons)
         BorderPane bp = new BorderPane();
@@ -68,6 +80,11 @@ public class Dashboard {
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(5);
         gridPane.setVgap(5);
+        
+        //ImageView copyImg = new ImageView(new Image("images/clipboard.jpg"));
+        // Assign the clipboard image as each button background
+        Button copyUN = new Button();
+        Button copyPW = new Button();
 
         gridPane.add(accountName, 0, 0);
         GridPane.setConstraints(accountName, 0, 0, 1, 1);
@@ -84,7 +101,7 @@ public class Dashboard {
         //gridPane.add(webSite, 0, 4);
         //GridPane.setConstraints(webSite, 0, 4, 1, 1);
         //webSite.setPromptText("Enter/View Website Here");
-
+        
         /* Add panes to appropriate region */
         bp.setRight(gridPane);
         bp.setBottom(gethBox());
@@ -101,13 +118,24 @@ public class Dashboard {
 
         //Dashboard stage
         Scene scene = new Scene(bp, 370, 200);
-        dbScene.setTitle("Dashboard");
+        dbScene.setTitle("Dashboard - " + Login.currUser.getUsername()); //CUSH added username
         scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
         dbScene.setScene(scene);
         dbScene.show();
 
-        getAct();//calls account method to load ArrayList from database
-        updateTextArea();//calls viewAccount method to display account name in display
+        try
+        {
+            getAct();           //calls method to load List<Map<>> with account details from database        
+            initAccountSet();
+        }
+        catch(SQLException ex)
+        {
+            System.out.println("Error message: " + ex.getMessage());
+            verify.createAlert(Alert.AlertType.ERROR, "Error loading accounts", 
+                    "There was a problem loading your account details, and the system will now exit. "
+                    + "Error message: " + ex.getMessage());
+            System.exit(1);
+        }
     }
 
     /**
@@ -120,16 +148,51 @@ public class Dashboard {
         VBox vBox = new VBox(5);
         vBox.setAlignment(Pos.CENTER_LEFT);
         vBox.setPadding(new Insets(5, 5, 5, 5));
-
+                
+            /****Charlotte's code****/
+            // HBox holds Text and ComboBox, side by side
+            HBox holdCombo = new HBox();
+                holdCombo.setAlignment(Pos.BASELINE_LEFT);
+            
+                Text sortBy = new Text("Sort by: ");
+                sortBy.setId("sortBy");
+        
+                // Create and populate the ComboBox
+                sortCombo = new ComboBox();
+                sortCombo.getItems().addAll("Name", "Newest", "Last Updated");
+                sortCombo.setValue("Name");
+        
+            // Determine when a ComboBox cell has been clicked and change the sort order in response
+            sortCombo.valueProperty().addListener(new ChangeListener<String>()
+            {
+                @Override
+                public void changed(ObservableValue ov, String s1, String s2)
+                {
+                    switch (s2) {
+                        case "Name":
+                            Collections.sort(accountArr);
+                            break;
+                        case "Newest":
+                            Collections.sort(accountArr, Account.CreatedComp);
+                            break;
+                        // Last Updated
+                        default:
+                            Collections.sort(accountArr, Account.UpdatedComp);
+                            break;
+                    }
+                updateTextArea();
+                }
+            });
+        
+            holdCombo.getChildren().addAll(sortBy, sortCombo);
+            /*****End Charlotte's code*****/
         accountView = new TextArea();
         accountView.setPrefColumnCount(13);
         accountView.setPrefRowCount(8);
         accountView.setEditable(false);
         accountView.setWrapText(true);
-        //accountView.setText("ACCOUNT INFORMATION\n-----------------------------\n");
-        //ImageView image = new ImageView(new Image("images/smallLock.jpg"));
 
-        vBox.getChildren().addAll(accountView);
+        vBox.getChildren().addAll(holdCombo, accountView);
 
         return vBox;
     }
@@ -156,7 +219,7 @@ public class Dashboard {
 
             boolean blank = accountName.getText().matches("") || userName.getText().matches("")
                     || passWord.getText().matches("");
-            if (account.contains(accountName.getText())) {
+            if (isDuplicate(accountName.getText())) {
                 verify.duplicate();
             } else if (blank == true) {
                 verify.empty();
@@ -168,15 +231,34 @@ public class Dashboard {
 
         viewAccount.setOnAction(
                 (ActionEvent e) -> {
+                    // if field is empty, call Verify method
                     if (accountName.getText().matches("")) {
                         verify.deleteEmpty();
-                    } else if (!account.contains(accountName.getText())) {
-                        verify.noAct();
-                    } else {
-                        Account dispAccount = new Account(accountName.getText());
-                        userName.setText(dispAccount.getUserName());
-                        passWord.setText(dispAccount.getPassword());
-                        passWord.setText(AEScrypt.decrypt(dispAccount.getPassword(), "DonaTellaNobody"));
+                    } 
+                    else {
+                        boolean isFound = false; // Account found?
+                        int i = 0;
+                        
+                        // Keep iterating through array as long as account hasn't been found
+                        while(isFound == false && i < accountArr.size())
+                        {
+                            // if match is found
+                            if(accountArr.get(i).getName().equalsIgnoreCase(accountName.getText()))
+                            {
+                                isFound = true;
+                                
+                                // Retrieve and display the account username
+                                userName.setText(accountArr.get(i).getUserName());
+                                // Retrieve, decrypt, and display the password            
+                                passWord.setText(aes.decrypt(accountArr.get(i).getPassword(), accountArr.get(i).getName()));
+
+                            }
+                            i++;
+                        }
+                        if(isFound == false)    // Account not found
+                        {
+                            Login.verify.createAlert(Alert.AlertType.INFORMATION, "Not found", "The account you searched for was not found.");
+                        }
                     }
                 }
         );
@@ -188,7 +270,7 @@ public class Dashboard {
                         verify.deleteEmpty();
                     } else if (userName.getText().matches("") && passWord.getText().matches("")) {
                         verify.modifyEmpty();
-                    } else if (!account.contains(accountName.getText())) {
+                    } else if (!isDuplicate(accountName.getText())) {
                         verify.noAct();
                     } else {
                         try {
@@ -211,7 +293,7 @@ public class Dashboard {
                 (ActionEvent e) -> {
                     if (accountName.getText().matches("")) {
                         verify.deleteEmpty();
-                    } else if (!account.contains(accountName.getText())) {
+                    } else if (!isDuplicate(accountName.getText())) {
                         verify.noAct();
                     } else {
                         delete.delete(accountName.getText());
@@ -246,13 +328,13 @@ public class Dashboard {
      * @throws SQLException
      */
     private void getAct() throws SQLException {
-        if (account != null) {
+        if (account != null && !account.isEmpty()) {
             account.clear(); // clears arrayList
         }
-        String rtrvAct = "SELECT account_name FROM account WHERE user_id = " + Login.currUser.getUserId();
+        String rtrvAct = "SELECT * FROM account WHERE user_id = " + Login.currUser.getUserId();
 
         //calls account to load accounts in arraylist
-        account = Login.db.retrieveAccts(rtrvAct);
+        account = Login.db.retrieveRecords(rtrvAct);
     }
 
     /**
@@ -260,8 +342,8 @@ public class Dashboard {
      */
     public static void updateTextArea() {
         accountView.setText("ACCOUNT NAME\n-----------------------------\n");
-        for (int i = 0; i < account.size(); i++) {
-            accountView.appendText(account.get(i) + "\n");
+        for (int i = 0; i < accountArr.size(); i++) {
+            accountView.appendText(accountArr.get(i).getName() + "\n");
         }
     }
 
@@ -273,6 +355,103 @@ public class Dashboard {
         userName.clear();
         passWord.clear();
         //webSite.clear();
+    }
+/*********************End Wayne's Code******************************/
+
+/*********************Start Charlotte's Code************************/
+    /** 
+     * Uses contents of List<Map<>> to create a series of Accounts and load them
+     * into an ArrayList for sorting
+     */
+    private static void initAccountSet() {
+        Map<String, Object> row;
+        if(!account.isEmpty()) // if user has added some accounts
+        {
+            for (int i = 0; i < account.size(); i++) 
+            {
+                // Get the column names and data in the current Map/row
+                row = account.get(i);
+                
+                // Construct an Account with the current Map's data
+                Account acct = new Account(
+                    (String)row.get("account_name"), 
+                    (String)row.get("username"), 
+                    (String)row.get("password"),
+                    (Timestamp)row.get("created"),
+                    (Timestamp)row.get("last_update")
+                );
+                
+                // Add the newly created Account to an ArrayList
+                accountArr.add(acct);
+            }        
+        Collections.sort(accountArr);   // Initially sort by name
+        }        
+        updateTextArea();               // Fill the TextArea with sorted names
+    }
+    
+    /**
+     * Adds a new Account to the end of the ArrayList, sorts by Newest,
+     *  and updates the TextArea and ComboBox value
+     * @param newAcct   Account that was just added with Add.java
+     */
+    public static void updateAccountSet(Account newAcct) {
+        accountArr.add(newAcct);
+        Collections.sort(accountArr, Account.CreatedComp); // Sort by Newest
+        updateTextArea();
+        sortCombo.setValue("Newest");
+    }
+    
+    /**
+     * Uses string provided by user to delete Account from List of Accounts and then
+     *  update TextArea
+     * @param acctName
+     */
+    public static void deleteAccount(String acctName)
+    {
+        boolean contSearch = true;
+        int i = 0;
+        
+        /* Keep searching the List until an Account is removed*/
+        while(contSearch == true && i < accountArr.size())
+        {
+            if(accountArr.get(i).getName().equalsIgnoreCase(acctName))
+            {
+                accountArr.remove(i);
+                contSearch = false;
+            }
+            i++;
+        }
+        Collections.sort(accountArr); // Sort by Name
+        updateTextArea();
+    }
+
+
+    /**
+     * Used to verify that an Account doesn't exist when using Add and
+     *  used to verify that an Account DOES exist when using Delete
+     * @param acctName
+     * @return 
+     */
+    public static boolean isDuplicate(String acctName)
+    {
+        boolean b = false;
+        int i = 0;
+        
+        /* Keep searching as long as acctName isn't found in the List*/
+        while(b == false && i < accountArr.size())
+        {
+            if(accountArr.get(i).getName().equalsIgnoreCase(acctName))
+            {
+                b = true;
+            }
+            i++;
+        }
+        return b;
+    }
+    
+    public static AEScrypt getAES()
+    {
+        return aes;
     }
 } //End Subclass Dashboard
 //*********************End Wayne Code******************************

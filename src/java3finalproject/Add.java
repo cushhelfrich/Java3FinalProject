@@ -9,8 +9,6 @@ package java3finalproject;
  * dashboard textfields and inserted into database.
  */
 //Imports
-import static java3finalproject.Dashboard.account;
-import static java3finalproject.Dashboard.accountName;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -117,13 +115,32 @@ public class Add {
             addScene.close();
 
             //****************Start Bill Code*********************
-            Account newAct = new Account(actName, usrName, pw);
-
-            newAct.insert(actName, usrName, newAct.getPassword());
-            account.add(accountName.getText());
-            //***************End Bill Code************************
             
-            Dashboard.updateTextArea();//calls method in Dashboard to update view
+            Account newAct = new Account(actName, usrName, pw);
+            
+            
+            
+         //   try
+                boolean insertSuccess = newAct.insert(actName, usrName, newAct.getPassword());            
+
+                //newAct.insert(actName, usrName, pw);
+               // account.add(accountName.getText());
+            
+         /*/   catch (SQLException ex)
+            {
+                 Login.verify.createAlert(Alert.AlertType.ERROR, "Processing error",
+                         "An error occured while processing your request. Account"
+                          + " credentials may not have been added to the database."
+                                 + " Error message: " + ex.getMessage());
+            }
+  */
+            //****************End Bill Code*********************
+            
+            if(insertSuccess == true)            
+            {
+                System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
+                Dashboard.updateAccountSet(newAct); //calls method in Dashboard to update TextArea and Account list
+            }
             Dashboard.clearHandler();//clears all textfields
         });//end confirm event handler
 

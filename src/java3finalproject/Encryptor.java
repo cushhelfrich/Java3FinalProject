@@ -42,7 +42,7 @@ public class Encryptor {
         String saltString = Base64.getEncoder().encodeToString(salt);
         
         // Concatenate the hash and salt
-        String hashed = getHashString(unhashed, salt) + saltString;
+        String hashed = getHashString(unhashed, salt, "SHA-256") + saltString;
         
         return hashed;
     }
@@ -51,17 +51,18 @@ public class Encryptor {
      * Uses an existing salt to hash a user's entry
      * @param unhashed User's password entry during login
      * @param salt Byte array retrieved from User table
+     * @param algorithm
      * @return Hash substring concatenated with Salt substring
      * 
      * Future update: make independent of charset?, store Instance in attribute
      * @throws java.security.NoSuchAlgorithmException
      * @throws java.io.UnsupportedEncodingException
      */
-    public String getHashString(String unhashed, byte[] salt) throws NoSuchAlgorithmException, UnsupportedEncodingException
+    public String getHashString(String unhashed, byte[] salt, String algorithm) throws NoSuchAlgorithmException, UnsupportedEncodingException
     {
         String hashed = "";
         
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            MessageDigest md = MessageDigest.getInstance(algorithm);
             md.reset();         // empty the digest buffer
             md.update(salt);    // put the salt array in the buffer
             
@@ -105,7 +106,7 @@ public class Encryptor {
         
         /*Hash the password entry and then use substring() to separate the hash
         from the salt in the returned string*/
-        String currHash = getHashString(pwEntry, byteSalt);
+        String currHash = getHashString(pwEntry, byteSalt, "SHA-256");
         
         if(currHash.equals(pwHash))
         {

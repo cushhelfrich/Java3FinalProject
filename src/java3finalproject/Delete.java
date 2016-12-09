@@ -9,17 +9,21 @@ package java3finalproject;
  * textfiled to delete account
  */
 //Imports
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static java3finalproject.Dashboard.account;
 import static java3finalproject.Dashboard.accountName;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -106,16 +110,20 @@ class Delete {
         //lambda expression confirm and Edit
         btnConfirm.setOnAction((ActionEvent e) -> {
             
-            if (!account.contains(accountName.getText())) {
+            if (!Dashboard.isDuplicate(accountName.getText())) {
                 verify.noAct();
             } else {            
             try {
-                removeAct(accountName.getText());
-            } catch (SQLException ex) {
+                removeAct(accountName.getText());            
+                Dashboard.getAES().deleteKey(accountName.getText());  // CH: Delete record of encryption key
+                Dashboard.deleteAccount(actName);
+            } 
+            catch (SQLException | KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException ex) {
                 Logger.getLogger(Delete.class.getName()).log(Level.SEVERE, null, ex);
-            }            
-            account.remove(accountName.getText());
-            Dashboard.updateTextArea();
+                Login.verify.createAlert(Alert.AlertType.WARNING, "Error deleting account",
+                        "There was a problem processing your request, and account details"
+                                + " may not have been deleted from the system. Error message: " + ex.getMessage()); 
+            }
             Dashboard.clearHandler();//calls Static method in main
             deleteScene.close();//closes scene
             }
@@ -147,7 +155,7 @@ class Delete {
         // Query User table for account_id to that matches account name.
         List<Map<String,Object>> results = Login.db.retrieveRecords(rmvAct);
 
-        if (results.isEmpty()) // Query returned 0 results
+        if (results != null && results.isEmpty()) // Query returned 0 results
         {
             verify.noAct();
 

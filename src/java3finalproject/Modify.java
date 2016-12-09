@@ -33,10 +33,6 @@ import javafx.stage.Stage;
 //Begin Subclass Modify
 class Modify {
 
-//instiantiate class
-    DBConnector db = new DBConnector();
-    Verify verify = new Verify();
-
 //declarations
     Stage modifyScene = new Stage();
     int ModifyId;
@@ -231,11 +227,11 @@ class Modify {
         String findAct = "SELECT * FROM account WHERE account_name = '" + name + "' AND user_id = " + Login.currUser.getUserId();
 
         // Query User table for account_id to that matches account name.
-        List<Map<String, Object>> results = db.retrieveRecords(findAct);
+        List<Map<String, Object>> results = Login.db.retrieveRecords(findAct);
 
         if (results.isEmpty()) // Query returned 0 results
         {
-            verify.noAct();
+            Login.verify.noAct();
         } else {
             ModifyId = (Integer) results.get(0).get("account_id");//gets account_id
             userName = (String) results.get(0).get("username");//gets username
@@ -253,7 +249,7 @@ class Modify {
         String modify = "UPDATE account SET username = '" + un + "' WHERE account_id= '" + ModifyId + "'";
 
         try {
-            db.modifyRecords(modify);
+            Login.db.modifyRecords(modify);
         } catch (SQLException ex) {
             System.out.println("Error while attempting to modify records: " + ex.toString());
         }
@@ -285,11 +281,11 @@ class Modify {
         String findAct = "SELECT * FROM account WHERE account_name = '" + name + "' AND user_id = " + Login.currUser.getUserId();
 
         // Query User table for account_id to that matches account name.
-        List<Map<String, Object>> results = db.retrieveRecords(findAct);
+        List<Map<String, Object>> results = Login.db.retrieveRecords(findAct);
 
         if (results.isEmpty()) // Query returned 0 results
         {
-            verify.noAct();
+            Login.verify.noAct();
 
         } else {
             ModifyId = (Integer) results.get(0).get("account_id");//gets account_id
@@ -299,7 +295,7 @@ class Modify {
             String modify = "UPDATE account SET password = '" + encpw + "' WHERE account_id= '" + ModifyId + "'";
 
             try {
-                db.modifyRecords(modify);
+                Login.db.modifyRecords(modify);
             } catch (SQLException ex) {
                 System.out.println("Error while attempting to modify records: " + ex.toString());
             }
