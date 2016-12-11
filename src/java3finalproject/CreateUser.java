@@ -37,7 +37,7 @@ import javafx.stage.Stage;
  * for the email, username, and password. It then creates and instance of
  * ConfirmUser
  */
-//Imports
+
 //Begin Subclass CreateUser
 public class CreateUser {
 
@@ -74,8 +74,8 @@ public class CreateUser {
     } //End default constructor
 
     /**
-     * Constructor: Takes arguments Text fields and a PasswordField. Used for
-     * user that would like to edit there entries from ConfirmUser class
+     * Constructor: Takes arguments Text fields. Used for
+     * user that would like to edit their entries from ConfirmUser class
      *
      * @param txtUserName
      * @param txtEmail
@@ -99,9 +99,9 @@ public class CreateUser {
      */
     public void createUser() {
 
-        bpCreateUser.setTop(vbText());//Add vbTop to bpMain top by calling method
+        bpCreateUser.setTop(vbText());//Add VBox to top
         bpCreateUser.setCenter(gpCenter());//Add GridPane to center
-        bpCreateUser.setBottom(hbButtons()); //Add BorderPane to bottom
+        bpCreateUser.setBottom(hbButtons()); //Add HBox to bottom
 
         //Set action to call PressEnter class when hitting enter instead of clicking enter
         tfUserName.setOnKeyPressed(new PressEnter());
@@ -386,7 +386,7 @@ public class CreateUser {
             }
         }
         
-    } //End EnterHadles class
+    } //End EnterHadler class
 
     /**
      * PressEnter class: handles firing the action btnEnterUser when the enter
