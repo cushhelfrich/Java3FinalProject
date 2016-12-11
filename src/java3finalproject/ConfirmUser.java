@@ -28,38 +28,52 @@ import javafx.stage.Stage;
  * @Date: Oct 27, 2016
  * @Subclass ConfirmUser Description:
  */
-//Imports
 //Begin Subclass ConfirmUser
 public class ConfirmUser {
-    Encryptor encrypt = new Encryptor();
-    CreateUser createUser = new CreateUser();
 
-    Stage confirmUserStage = new Stage();
-    //The main BorderPane
+    Encryptor encrypt = new Encryptor(); //Encryptor instance used later
+    CreateUser createUser = new CreateUser();  //CreateUser instance used later
+
+    Stage confirmUserStage = new Stage(); //Create a stage
+
+//The main BorderPane
     BorderPane bpConfirmUser = new BorderPane();
 
-    //Labels to show user
+    //Labels
     Label lblUserName = new Label("Username");
     Label lblEmail = new Label("Email");
     Label lblFirstName = new Label("First Name");
     Label lblLastName = new Label("Last Name");
     Label lblPassword = new Label("Password");
 
+    //Text 
     Text txtUserName = new Text();
     Text txtEmail = new Text();
     Text txtFirstName = new Text();
     Text txtLastName = new Text();
     Text txtPassword = new Text();
 
+    //Buttons
     Button btnConfirm = new Button("Confirm");
     Button btnEdit = new Button("Edit");
 
-    //Default Constructor
+    /**
+     * Default constructor
+     */
     public ConfirmUser() {
 
     }
 
-    //Constructor with arguments
+    /**
+     * Constructor: Used to take TextField and PasswordField from CreateUser
+     * class
+     *
+     * @param tfUserName
+     * @param tfEmail
+     * @param tfFirstName
+     * @param tfLastName
+     * @param pfPassword
+     */
     public ConfirmUser(TextField tfUserName, TextField tfEmail,
             TextField tfFirstName, TextField tfLastName, PasswordField pfPassword) {
 
@@ -68,17 +82,20 @@ public class ConfirmUser {
         this.txtFirstName.setText(String.valueOf(tfFirstName.getText()));
         this.txtLastName.setText(String.valueOf(tfLastName.getText()));
         this.txtPassword.setText(String.valueOf(pfPassword.getText()));
-    }
+    } //End Constructor
 
+    /**
+     * confirmUser method: Main method used for constructing the scene
+     */
     public void confirmUser() {
 
-        bpConfirmUser.setTop(vbText());//Add vbTop to bpMain top by calling method
+        bpConfirmUser.setTop(vbText());//Add VBox to top
         bpConfirmUser.setCenter(gpCenter());//Add GridPane to center
-        bpConfirmUser.setBottom(hbButtons());
+        bpConfirmUser.setBottom(hbButtons()); //Add Hbox to bottom
 
-        bpConfirmUser.setPadding(new Insets(10, 50, 50, 50));
+        bpConfirmUser.setPadding(new Insets(10, 50, 50, 50)); //Padding
 
-        bpConfirmUser.setId("bp");
+        bpConfirmUser.setId("bp"); //SetID
         //Create Scene and add mainBorder to it
         Scene myScene = new Scene(bpConfirmUser, 400, 300);
 
@@ -89,15 +106,20 @@ public class ConfirmUser {
 
         confirmUserStage.show(); //Show Stage
 
-    }
+    } //End confirmUser method
 
+    /**
+     * vBox method: Used for top of scene
+     *
+     * @return vbTop
+     */
     public VBox vbText() {
 
         VBox vbTop = new VBox(); //VBox for text at the top
 
         vbTop.setAlignment(Pos.CENTER); //Align to center
 
-        vbTop.setPadding(new Insets(1, 1, 15, 1));
+        vbTop.setPadding(new Insets(1, 1, 15, 1)); //Padding
 
         //Create the text for the BorderPane top
         Text mainText1 = new Text("User Confirmation");
@@ -117,6 +139,11 @@ public class ConfirmUser {
 
     } //End vbText method
 
+    /**
+     * gpCenter method: used for the user entry fields
+     *
+     * @return gpEntries
+     */
     public GridPane gpCenter() {
 
         //Used to see lines for GridPane rows/colums for troubleshooting
@@ -173,11 +200,11 @@ public class ConfirmUser {
 
         return gpEntries;
 
-    }
+    } //End gpCenter method
 
     /**
      * hbButtons Method: this will create a HBox to hold the buttons at the
-     * bottom of the bpMain
+     * bottom of the bpConfirmUser
      *
      * @return hbBottom
      */
@@ -197,12 +224,15 @@ public class ConfirmUser {
 
         //Handlers
         btnConfirm.setOnAction(new ConfirmHandler()); //Handler for confirm
-        btnEdit.setOnAction(new EditHandler()); //Handler for confirm
+        btnEdit.setOnAction(new EditHandler()); //Handler for edit
 
         return hbBottom;
 
     } //End hbButtons
 
+    /**
+     * ConfirmHandler class: calls imputDatabase and sends it the users password
+     */
     class ConfirmHandler implements EventHandler<ActionEvent> {
 
         @Override
@@ -214,9 +244,15 @@ public class ConfirmUser {
                 confirmUserStage.close();
 
             }
+            
         }
-    }
+        
+    } //End ConfirmHandler class
 
+    /**
+     * EditHandler class: Creates a new instance of CreatUser, passing it the 
+     * information.  Closes this stage.
+     */
     class EditHandler implements EventHandler<ActionEvent> {
 
         @Override
@@ -230,13 +266,23 @@ public class ConfirmUser {
             confirmUserStage.close(); //Close the confirm stage
 
         }
-    }
+        
+    } //End EditHandler class
 
+    /**
+     * inputDatabase method: Takes the password and checks calls the EnCryptor
+     * class passing the password to it to get the salt and hash.  Then sends
+     * the user info to the DBConnector to add the user to the database.  If 
+     * wasUpdated is greater than zero checks is set to true, confirming database
+     * was updated and returning that to ConfirmHandler.
+     * @param password
+     * @return 
+     */
     private boolean inputDatabase(String password) {
 
         boolean checks = false;
         int wasUpdated = 0;
-        
+
         String hashSalt = "";
 
         try {
@@ -274,11 +320,13 @@ public class ConfirmUser {
                         + "Error Message: " + ex.getMessage());
             }
         }
-
+        
+        //Update successful
         if (wasUpdated > 0) {
             checks = true;
         }
+        
         return checks;
-    }
+    } //End inputDatabase method
 
 } //End Subclass ConfirmUser
