@@ -52,7 +52,7 @@ public class Login extends Application {
     
     public static Verify verify = new Verify();
     public static DBConnector db;
-    private final Encryptor encrypt = new Encryptor();
+    private final CryptoHash encrypt = new CryptoHash();
 
     private FieldSet userSet;       // Package field, alert label, regex pattern together
     private FieldSet pwSet;
@@ -272,7 +272,7 @@ public class Login extends Application {
                     }
                 }
             
-                /* Catch Exceptions thrown by Encryptor and DBConnector classes and
+                /* Catch Exceptions thrown by CryptoHash and DBConnector classes and
                 display an Alert describing the Exception*/
                 catch (SQLException | NoSuchAlgorithmException | UnsupportedEncodingException ex)
                 {

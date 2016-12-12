@@ -31,7 +31,7 @@ import javafx.stage.Stage;
 //Imports
 //Begin Subclass ConfirmUser
 public class ConfirmUser {
-    Encryptor encrypt = new Encryptor();
+    CryptoHash encrypt = new CryptoHash();
     CreateUser createUser = new CreateUser();
 
     Stage confirmUserStage = new Stage();
