@@ -1,5 +1,11 @@
 package java3finalproject;
 
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  * @Course: SDEV 250 ~ Java Programming III
@@ -43,7 +52,10 @@ public class Account implements Comparable<Account>  {
      * @param uname
      * @param password
      */
-    public Account(String name, String uname, String password) {
+    public Account(String name, String uname, String password) 
+            throws NoSuchAlgorithmException, KeyStoreException, IOException, NoSuchPaddingException, InvalidKeyException, 
+            CertificateException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException 
+    {
         this.accountName = name;
         this.username = uname;
         this.password = Dashboard.getAES().encrypt(password, accountName);// Base64 string, includes IV bytes
@@ -92,7 +104,7 @@ public class Account implements Comparable<Account>  {
         ResultSet res = null;
         SQLPreparedStatement sqlstmt = new SQLPreparedStatement();
         PreparedStatement prepstmt;
-        String query = "SELECT username,password FROM account WHERE account_name = ? AND user_id = ?";
+        String query = "SELECT * FROM account WHERE account_name = ? AND user_id = ?";
 
         try {
             prepstmt = sqlstmt.createStatement(query);
@@ -177,7 +189,7 @@ public class Account implements Comparable<Account>  {
      * @param pw
      * @return true on success
      */
-    public boolean insert(String actName, String usrName, String pw) {
+    public boolean insert(String actName, String usrName, String pw) throws SQLException {
 
         int rowsaffected = 0;
         boolean tableInserted = false;
@@ -185,14 +197,11 @@ public class Account implements Comparable<Account>  {
         ResultSet res = null;
         
         SQLPreparedStatement sqlstmt = new SQLPreparedStatement();
-        PreparedStatement prepstmt = null;
-        // String query;
         String query = "INSERT INTO account (user_id, username, password,account_name)"
                 + " VALUES (?,?,?,?)";
-
-        try {
-            prepstmt = sqlstmt.createStatement(query);
-
+        
+        try(PreparedStatement prepstmt = sqlstmt.createStatement(query))
+        {
             prepstmt.setInt(1, user_id);
             prepstmt.setString(2, usrName);
             prepstmt.setString(3, pw);
@@ -214,19 +223,8 @@ public class Account implements Comparable<Account>  {
             }
             /*****End Charlotte's code*****/
             
-        } catch (SQLException e) {
-            System.out.println("Failed to create PreparedStatement");
         }
-
-//        } finally {
-//            try {
-//                prepstmt.close();    //  Close resources 
-//                sqlstmt.closeDB();
-//
-//            } catch (SQLException ex) {
-//                Logger.getLogger(Account.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
+        
         tableInserted = rowsaffected > 0;
 
         return tableInserted;
@@ -242,7 +240,7 @@ public class Account implements Comparable<Account>  {
     @Override
     public int compareTo(Account other)
     {
-        return this.accountName.compareToIgnoreCase(other.getName());
+        return this.accountName.compareTo(other.getName());
     }
     
     /**
