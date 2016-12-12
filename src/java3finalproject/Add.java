@@ -9,10 +9,18 @@ package java3finalproject;
  * dashboard textfields and inserted into database.
  */
 //Imports
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.sql.SQLException;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -23,6 +31,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 //Begin Subclass Add
 //***************Start Wayne Code***************************
@@ -113,15 +124,56 @@ public class Add {
         //lambda expression confirm and Edit
         btnConfirm.setOnAction((ActionEvent e) -> {
             addScene.close();
+            String errorMsg = "An error occurred, and the account could not be added to records. "
+                    + "Contact an administrator if the problem persists. Error message: ";
 
             //****************Start Bill Code*********************
-            
-            Account newAct = new Account(actName, usrName, pw);
-            
-            
-            
+            /* Try creating an Account object with the encrypted password and then try inserting
+            the credentials in the database
+            */
+            try
+            {
+                // try encrypting the password during Account creation
+                Account newAct = new Account(actName, usrName, pw);
+                
+                // try inserting the new credentials in database table Account
+                boolean insertSuccess = newAct.insert(actName, usrName, newAct.getPassword());
+                
+                // if database insert is successful
+                if(insertSuccess == true)            
+                {
+                    System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
+                    Dashboard.updateAccountSet(newAct); //calls method in Dashboard to update TextArea and Account list
+                }
+            }
+            // catch error generated during exception or key storage
+            catch(NoSuchAlgorithmException | KeyStoreException | IOException | NoSuchPaddingException | 
+                    InvalidKeyException | CertificateException | InvalidAlgorithmParameterException | 
+                    IllegalBlockSizeException | BadPaddingException ex)
+            {
+                Login.verify.createAlert(Alert.AlertType.WARNING, "Encryption error",
+                        errorMsg + ex.getMessage());
+            }
+            // catch error generated while trying to add a database record
+            catch (SQLException ex) 
+            {
+                // try to undo the addition of the account key to the KeyStore
+                try 
+                {
+                    Dashboard.getAES().deleteKey(actName);
+                    Login.verify.createAlert(Alert.AlertType.WARNING, "Database error",
+                        errorMsg + ex.getMessage());
+                } 
+                // catch error generated during key deletion
+                catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException ex1) {
+                    Login.verify.createAlert(Alert.AlertType.WARNING, "Error adding acount",
+                        "A series of errors occurred, which may result in data corruption. "
+                                + "The system will now exit. Error message:  " + ex.getMessage());
+                    System.exit(1);
+                }
+            }
          //   try
-                boolean insertSuccess = newAct.insert(actName, usrName, newAct.getPassword());            
+         
 
                 //newAct.insert(actName, usrName, pw);
                // account.add(accountName.getText());
@@ -136,11 +188,6 @@ public class Add {
   */
             //****************End Bill Code*********************
             
-            if(insertSuccess == true)            
-            {
-                System.out.println("Insert " + actName + " " + usrName + " " + pw + " " + " into database");
-                Dashboard.updateAccountSet(newAct); //calls method in Dashboard to update TextArea and Account list
-            }
             Dashboard.clearHandler();//clears all textfields
         });//end confirm event handler
 
