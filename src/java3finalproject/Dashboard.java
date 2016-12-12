@@ -28,8 +28,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -82,13 +86,34 @@ public class Dashboard {
         gridPane.setHgap(5);
         gridPane.setVgap(5);
         
-        ImageView copyImg = new ImageView(new Image("images/clipboard.png"));
+        Image copyImg = new Image("images/clipboard.png");
+        ImageView copyIcon1 = new ImageView(copyImg);
+        ImageView copyIcon2 = new ImageView(copyImg);
         // Assign the clipboard image as each button background
         Button copyUN = new Button();
         Button copyPW = new Button();
-        copyUN.setGraphic(copyImg);
-        copyPW.setGraphic(copyImg);
-
+            copyUN.setGraphic(copyIcon1);
+            copyPW.setGraphic(copyIcon2);
+            Tooltip usertip = new Tooltip("Copy to clipboard");
+            copyUN.setTooltip(usertip);
+            copyPW.setTooltip(usertip);
+            
+            copyUN.setOnMouseReleased
+            (
+                    (MouseEvent e) ->
+                    {
+                        copyHandler(userName.getText());
+                    }
+            );
+            
+            copyPW.setOnMouseReleased
+            (
+                    (MouseEvent e) ->
+                    {
+                        copyHandler(passWord.getText());
+                    }
+            );
+            
         gridPane.add(accountName, 0, 0, 2, 1);
         accountName.setPromptText("Enter Account Name");
         gridPane.add(viewAccount, 0, 1, 2, 1);
@@ -120,21 +145,24 @@ public class Dashboard {
         btnExit.setId("btn");
 
         //Dashboard stage
-        Scene scene = new Scene(bp, 370, 200);
+        Scene scene = new Scene(bp, 420, 200);
         dbScene.setTitle("Dashboard - " + Login.currUser.getUsername()); //CUSH added username
         scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
         dbScene.setScene(scene);
         dbScene.show();
+        
+        copyIcon1.setPreserveRatio(true);
+        copyIcon1.fitHeightProperty().bind(accountName.heightProperty());
+        copyIcon2.setPreserveRatio(true);
+        copyIcon2.fitHeightProperty().bind(accountName.heightProperty());
 
-        try
-        {
+        try {
             getAct();           //calls method to load List<Map<>> with account details from database        
             initAccountSet();
-        }
-        catch(SQLException ex)
-        {
+        } 
+        catch (SQLException ex) {
             System.out.println("Error message: " + ex.getMessage());
-            verify.createAlert(Alert.AlertType.ERROR, "Error loading accounts", 
+            verify.createAlert(Alert.AlertType.ERROR, "Error loading accounts",
                     "There was a problem loading your account details, and the system will now exit. "
                     + "Error message: " + ex.getMessage());
             System.exit(1);
@@ -151,44 +179,46 @@ public class Dashboard {
         VBox vBox = new VBox(5);
         vBox.setAlignment(Pos.CENTER_LEFT);
         vBox.setPadding(new Insets(5, 5, 5, 5));
-                
-            /****Charlotte's code****/
-            // HBox holds Text and ComboBox, side by side
-            HBox holdCombo = new HBox();
-                holdCombo.setAlignment(Pos.BASELINE_LEFT);
-            
-                Text sortBy = new Text("Sort by: ");
-                sortBy.setId("sortBy");
-        
-                // Create and populate the ComboBox
-                sortCombo = new ComboBox();
-                sortCombo.getItems().addAll("Name", "Newest", "Last Updated");
-                sortCombo.setValue("Name");
-        
-            // Determine when a ComboBox cell has been clicked and change the sort order in response
-            sortCombo.valueProperty().addListener(new ChangeListener<String>()
+
+        /*****Charlotte's code*****/
+        // HBox holds Text and ComboBox, side by side
+        HBox holdCombo = new HBox();
+        holdCombo.setAlignment(Pos.BASELINE_LEFT);
+
+        Text sortBy = new Text("Sort by: ");
+        sortBy.setId("sortBy");
+
+        // Create and populate the ComboBox
+        sortCombo = new ComboBox();
+        sortCombo.getItems().addAll("Name", "Newest", "Last Updated");
+        sortCombo.setValue("Name");
+
+        // Determine when a ComboBox cell has been clicked and change the sort order in response
+        sortCombo.valueProperty().addListener(new ChangeListener<String>() 
+        {
+            @Override
+            public void changed(ObservableValue ov, String s1, String s2) 
             {
-                @Override
-                public void changed(ObservableValue ov, String s1, String s2)
+                switch (s2) 
                 {
-                    switch (s2) {
-                        case "Name":
-                            Collections.sort(accountArr);
-                            break;
-                        case "Newest":
-                            Collections.sort(accountArr, Account.CreatedComp);
-                            break;
-                        // Last Updated
-                        default:
-                            Collections.sort(accountArr, Account.UpdatedComp);
-                            break;
-                    }
-                updateTextArea();
+                    case "Name":
+                        Collections.sort(accountArr);
+                        break;
+                    case "Newest":
+                        Collections.sort(accountArr, Account.CreatedComp);
+                        break;
+                    // Last Updated
+                    default:
+                        Collections.sort(accountArr, Account.UpdatedComp);
+                        break;
                 }
-            });
+                updateTextArea();
+            }
+        });
+
+        holdCombo.getChildren().addAll(sortBy, sortCombo);
+        /*****End Charlotte's code*****/
         
-            holdCombo.getChildren().addAll(sortBy, sortCombo);
-            /*****End Charlotte's code*****/
         accountView = new TextArea();
         accountView.setPrefColumnCount(13);
         accountView.setPrefRowCount(8);
@@ -237,17 +267,14 @@ public class Dashboard {
                     // if field is empty, call Verify method
                     if (accountName.getText().matches("")) {
                         verify.deleteEmpty();
-                    } 
-                    else {
+                    } else {
                         boolean isFound = false; // Account found?
                         int i = 0;
-                        
+
                         // Keep iterating through array as long as account hasn't been found
-                        while(isFound == false && i < accountArr.size())
-                        {
+                        while (isFound == false && i < accountArr.size()) {
                             // if match is found
-                            if(accountArr.get(i).getName().equalsIgnoreCase(accountName.getText()))
-                            {
+                            if (accountArr.get(i).getName().equalsIgnoreCase(accountName.getText())) {
                                 isFound = true;
                                 
                                 try
@@ -268,7 +295,7 @@ public class Dashboard {
                             }
                             i++;
                         }
-                        if(isFound == false)    // Account not found
+                        if (isFound == false) // Account not found
                         {
                             Login.verify.createAlert(Alert.AlertType.INFORMATION, "Not found", "The account you searched for was not found.");
                         }
@@ -367,68 +394,82 @@ public class Dashboard {
         accountName.clear();
         userName.clear();
         passWord.clear();
-        //webSite.clear();
     }
-/*********************End Wayne's Code******************************/
 
-/*********************Start Charlotte's Code************************/
-    /** 
+    /**
+     * *******************End Wayne's Code*****************************
+     */
+
+    /********************Start Charlotte's Code***********************/
+    
+    public void copyHandler(String fieldText) 
+    {
+        final Clipboard cb = Clipboard.getSystemClipboard();
+        final ClipboardContent cont = new ClipboardContent();
+        
+        cont.putString(fieldText);
+        cb.setContent(cont);
+    }
+    /**
      * Uses contents of List<Map<>> to create a series of Accounts and load them
      * into an ArrayList for sorting
      */
     public static void initAccountSet() {
         accountArr.clear();
         Map<String, Object> row;
-        if(!account.isEmpty()) // if user has added some accounts
+        if (!account.isEmpty()) // if user has added some accounts
         {
             for (int i = 0; i < account.size(); i++) 
             {
                 // Get the column names and data in the current Map/row
                 row = account.get(i);
-                
+
                 // Construct an Account with the current Map's data
                 Account acct = new Account(
-                    (String)row.get("account_name"), 
-                    (String)row.get("username"), 
-                    (String)row.get("password"),
-                    (Timestamp)row.get("created"),
-                    (Timestamp)row.get("last_update")
+                        (String) row.get("account_name"),
+                        (String) row.get("username"),
+                        (String) row.get("password"),
+                        (Timestamp) row.get("created"),
+                        (Timestamp) row.get("last_update")
                 );
-                
+
                 // Add the newly created Account to an ArrayList
                 accountArr.add(acct);
-            }        
-        Collections.sort(accountArr);   // Initially sort by name
-        }        
+            }
+            Collections.sort(accountArr);   // Initially sort by name
+        }
         updateTextArea();               // Fill the TextArea with sorted names
     }
-    
+
     /**
-     * Adds a new Account to the end of the ArrayList, sorts by Newest,
-     *  and updates the TextArea and ComboBox value
-     * @param newAcct   Account that was just added with Add.java
+     * Adds a new Account to the end of the ArrayList, sorts by Newest, and
+     * updates the TextArea and ComboBox value
+     *
+     * @param newAcct Account that was just added with Add.java
      */
-    public static void updateAccountSet(Account newAcct) {
+    public static void updateAccountSet(Account newAcct) 
+    {
         accountArr.add(newAcct);
         Collections.sort(accountArr, Account.CreatedComp); // Sort by Newest
         updateTextArea();
         sortCombo.setValue("Newest");
     }
-    
+
     /**
-     * Uses string provided by user to delete Account from List of Accounts and then
-     *  update TextArea
+     * Uses string provided by user to delete Account from List of Accounts and
+     * then update TextArea
+     *
      * @param acctName
      */
-    public static void deleteAccount(String acctName)
+    public static void deleteAccount(String acctName) 
     {
         boolean contSearch = true;
         int i = 0;
-        
+
         /* Keep searching the List until an Account is removed*/
-        while(contSearch == true && i < accountArr.size())
+        while (contSearch == true && i < accountArr.size()) 
         {
-            if(accountArr.get(i).getName().equalsIgnoreCase(acctName))
+            if (accountArr.get(i).getName().equalsIgnoreCase(acctName)) 
             {
                 accountArr.remove(i);
                 contSearch = false;
@@ -439,22 +480,22 @@ public class Dashboard {
         updateTextArea();
     }
 
-
     /**
-     * Used to verify that an Account doesn't exist when using Add and
-     *  used to verify that an Account DOES exist when using Delete
+     * Used to verify that an Account doesn't exist when using Add and used to
+     * verify that an Account DOES exist when using Delete
+     *
      * @param acctName
-     * @return 
+     * @return
      */
-    public static boolean isDuplicate(String acctName)
+    public static boolean isDuplicate(String acctName) 
     {
         boolean b = false;
         int i = 0;
-        
+
         /* Keep searching as long as acctName isn't found in the List*/
-        while(b == false && i < accountArr.size())
+        while (b == false && i < accountArr.size()) 
         {
-            if(accountArr.get(i).getName().equalsIgnoreCase(acctName))
+            if (accountArr.get(i).getName().equalsIgnoreCase(acctName)) 
             {
                 b = true;
             }
@@ -462,10 +503,10 @@ public class Dashboard {
         }
         return b;
     }
-    
-    public static AEScrypt getAES()
-    {
+
+    public static AEScrypt getAES() {
         return aes;
     }
+    //End Charlotte Code
 } //End Subclass Dashboard
 //*********************End Wayne Code******************************

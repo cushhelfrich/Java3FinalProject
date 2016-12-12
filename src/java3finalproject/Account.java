@@ -115,7 +115,7 @@ public class Account implements Comparable<Account>  {
             rs.next();
             this.accountName = actName;
             this.username = rs.getString("username");
-            this.password = rs.getString("password");
+            this.password = rs.getString("password"); 
             this.website = "na";
             this.created = rs.getTimestamp("created");
             this.updated = rs.getTimestamp("last_update");

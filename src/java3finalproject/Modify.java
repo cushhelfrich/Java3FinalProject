@@ -266,6 +266,7 @@ class Modify {
 
         try {
             Login.db.modifyRecords(modify);
+            Login.verify.createAlert(Alert.AlertType.INFORMATION, "Success", "The username was successfully modified.");
         } catch (SQLException ex) {
             System.out.println("Error while attempting to modify records: " + ex.toString());
         }
@@ -319,6 +320,7 @@ class Modify {
                 String encpw = Dashboard.getAES().encrypt(pw, name);
                 String modify = "UPDATE account SET password = '" + encpw + "' WHERE account_id= '" + ModifyId + "'";
                 Login.db.modifyRecords(modify);
+                Login.verify.createAlert(Alert.AlertType.INFORMATION, "Success", "The password was successfully modified.");
             } catch (SQLException ex) {
                 System.out.println("Error while attempting to modify records: " + ex.toString());
             }

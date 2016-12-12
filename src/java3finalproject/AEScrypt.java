@@ -49,16 +49,14 @@ public class AEScrypt {
     private static final int KEY_SIZE = 128;
     
     /**
-     * Charlotte's code
-     * Gather the hash created during Login and stored in User attribute (for
-     * use as KeyStore password)
+     * Charlotte's code 
+     * Gather the hash created during Login and stored in User attribute (for use as KeyStore password)
      */
-    public AEScrypt()
-    {
+    public AEScrypt() {
         password = Login.currUser.getKSPass().toCharArray();
         ks_name = "output_" + Login.currUser.getUsername() + ".jceks";
     }
-    /*********End Charlotte's*********/
+    /*******End Charlotte's********/
 
     /*********Start Bill's*********/
     /**
@@ -77,8 +75,8 @@ public class AEScrypt {
         }
         return sks;
         /*catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }*/
+         e.printStackTrace();
+         }*/
     }
 
     /**
@@ -107,26 +105,24 @@ public class AEScrypt {
                         
              // Generate an initialisation vector, so repeated text doesn't produce identical encryptions           
             byte[] iv = generateIv();
-            
+
             IvParameterSpec ivParam = new IvParameterSpec(iv);
 
             Cipher cipher = Cipher.getInstance(CIPHER_INST);
             cipher.init(Cipher.ENCRYPT_MODE, sks, ivParam);
-            
+
             // Encrypt a String after converting it to bytes
             byte[] encrypted = cipher.doFinal(strToEncrypt.getBytes("UTF-8"));
 
             // Prepare byte array for holding encrypted text & IV bytes
             byte[] encryptionWithIv = new byte[IV_SIZE + encrypted.length];
-            
-            
+
             // Fill encryptionWithIv indices 0-16 exclusive with content from iv, starting at index 0
             System.arraycopy(iv, 0, encryptionWithIv, 0, IV_SIZE);
-            
+
             // Fill encryptionWithIv indices 16-32 exclusive with content from encrypted, starting at index 0
             System.arraycopy(encrypted, 0, encryptionWithIv, IV_SIZE, encrypted.length);
- 
-            
+
             // change encryptionWithIV to base 64
             return Base64.getEncoder().encodeToString(encryptionWithIv);
     }
@@ -178,10 +174,10 @@ public class AEScrypt {
         byte[] iv = new byte[IV_SIZE];  // create the byte array that holds the IV
         SecureRandom random = new SecureRandom();
         random.nextBytes(iv);           // load the array with random bytes
-        
+
         return iv;
     }
-    
+
     /**
      * Load the key store and set the key in an entry identified by the alias/account name
      * @param alias                 // Account name used to find correct KeyEntry
@@ -189,20 +185,17 @@ public class AEScrypt {
      * @throws KeyStoreException
      * @throws IOException
      * @throws CertificateException
-     * @throws NoSuchAlgorithmException 
+     * @throws NoSuchAlgorithmException
      */
     public void storeKey(String alias, Key key) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException
     {
         KeyStore ks = KeyStore.getInstance(KS_INSTANCE);
         File ks_file = new File(ks_name);
-        if(ks_file.exists())
-        {
+        if (ks_file.exists()) {
             try (FileInputStream fis = new FileInputStream(ks_file)) {
                 ks.load(fis, password);
             }
-        }
-        else
-        {
+        } else {
             ks.load(null, password);
         }
         ks.setKeyEntry(alias.toLowerCase(), key, password, null);
@@ -210,22 +203,23 @@ public class AEScrypt {
             ks.store(fos, password);
         }
     }
-    
+
     /**
      * Load the KeyStore and retrieve the Key from the entry with the provided alias
+     *
      * @param alias
      * @return 
      * @throws KeyStoreException
      * @throws IOException
      * @throws NoSuchAlgorithmException
      * @throws CertificateException
-     * @throws UnrecoverableKeyException 
+     * @throws UnrecoverableKeyException
      */
     public Key loadKey(String alias) throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException
     {
         Key key = null;
         KeyStore ks = KeyStore.getInstance(KS_INSTANCE);
-        
+
         try (FileInputStream fis = new FileInputStream(ks_name)) {
             ks.load(fis, password);
             
@@ -235,18 +229,18 @@ public class AEScrypt {
     }
 
     /**
-     * Load the KeyStore and delete the KeyEntry identified by the provided alias 
+     * Load the KeyStore and delete the KeyEntry identified by the provided alias
+     *
      * @param alias
      * @throws KeyStoreException
      * @throws IOException
      * @throws NoSuchAlgorithmException
-     * @throws CertificateException 
+     * @throws CertificateException
      */
     public void deleteKey(String alias) throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException
     {
         KeyStore ks = KeyStore.getInstance(KS_INSTANCE);
-        try(FileInputStream fis = new FileInputStream(ks_name))
-        {
+        try (FileInputStream fis = new FileInputStream(ks_name)) {
             ks.load(fis, password);
         }
         ks.deleteEntry(alias.toLowerCase());

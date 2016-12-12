@@ -127,9 +127,11 @@ class Delete {
                     // try to delete the key
                     Dashboard.getAES().deleteKey(actName);
                  }
-                    // try removing the account from the database, even if it wasn't in the KeyStore
-                    removeAct(actName);
-                    Dashboard.deleteAccount(actName);   // update the display
+                 
+                // try removing the account from the database, even if it wasn't in the KeyStore
+                removeAct(actName);
+                Dashboard.deleteAccount(actName);   // update the display
+                Login.verify.createAlert(Alert.AlertType.INFORMATION, "Success", "The account was deleted successfully.");
             }
             // fetching or deleting the Key failed
             catch(KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException ex)
@@ -183,7 +185,7 @@ class Delete {
         String rmvAct = "SELECT * FROM account WHERE account_name = '" + actName + "' AND user_id = " + Login.currUser.getUserId();
 
         // Query User table for account_id to that matches account name.
-        List<Map<String,Object>> results = Login.db.retrieveRecords(rmvAct);
+        List<Map<String, Object>> results = Login.db.retrieveRecords(rmvAct);
 
         if (results != null && results.isEmpty()) // Query returned 0 results
         {
