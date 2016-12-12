@@ -2,7 +2,7 @@ package java3finalproject;
 
 /**
  * @Course: SDEV 450 ~ Java Programming III
- * @Author Name: Wayne Riley
+ * @Contributors: Wayne Riley, Charlotte Hirschberger
  * @Assignment Name: java3finalproject
  * @Date: Oct 16, 2016
  * @Subclass Dashboard Description: Dashboard called from Login screen once
@@ -28,6 +28,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -66,7 +68,6 @@ public class Dashboard {
      * Main dashboard - User can view accounts or add, modify and delete
      * accounts
      *
-     * @throws java.sql.SQLException
      */
     public void mainScreen() {
         aes = new AEScrypt();
@@ -81,16 +82,16 @@ public class Dashboard {
         gridPane.setHgap(5);
         gridPane.setVgap(5);
         
-        //ImageView copyImg = new ImageView(new Image("images/clipboard.jpg"));
+        ImageView copyImg = new ImageView(new Image("images/clipboard.png"));
         // Assign the clipboard image as each button background
         Button copyUN = new Button();
         Button copyPW = new Button();
+        copyUN.setGraphic(copyImg);
+        copyPW.setGraphic(copyImg);
 
-        gridPane.add(accountName, 0, 0);
-        GridPane.setConstraints(accountName, 0, 0, 1, 1);
+        gridPane.add(accountName, 0, 0, 2, 1);
         accountName.setPromptText("Enter Account Name");
-        gridPane.add(viewAccount, 0, 1);
-        GridPane.setConstraints(viewAccount, 0, 1, 1, 1);
+        gridPane.add(viewAccount, 0, 1, 2, 1);
         viewAccount.setMaxWidth(Double.MAX_VALUE);
         gridPane.add(userName, 0, 2);
         GridPane.setConstraints(userName, 0, 2, 1, 1);
@@ -98,6 +99,8 @@ public class Dashboard {
         gridPane.add(passWord, 0, 3);
         GridPane.setConstraints(passWord, 0, 3, 1, 1);
         passWord.setPromptText("Enter/View Password");
+        gridPane.add(copyUN, 1, 2);
+        gridPane.add(copyPW, 1, 3);
         //gridPane.add(webSite, 0, 4);
         //GridPane.setConstraints(webSite, 0, 4, 1, 1);
         //webSite.setPromptText("Enter/View Website Here");
@@ -247,11 +250,21 @@ public class Dashboard {
                             {
                                 isFound = true;
                                 
-                                // Retrieve and display the account username
-                                userName.setText(accountArr.get(i).getUserName());
-                                // Retrieve, decrypt, and display the password            
-                                passWord.setText(aes.decrypt(accountArr.get(i).getPassword(), accountArr.get(i).getName()));
-
+                                try
+                                {
+                                    // Retrieve, decrypt, and display the password
+                                    passWord.setText(aes.decrypt(accountArr.get(i).getPassword(), accountArr.get(i).getName()));
+                                                                    
+                                    // Retrieve and display the account username
+                                    userName.setText(accountArr.get(i).getUserName());
+                                    
+                                } 
+                                catch (Exception ex) {
+                                    Login.verify.createAlert(Alert.AlertType.ERROR, "Error retrieving credentials", 
+                                            "There was an error processing your request, and account credentials "
+                                             + "could not be displayed. If the problem persists, contact the administrator. "
+                                             + "Error message: " + ex.getMessage());
+                                }
                             }
                             i++;
                         }
