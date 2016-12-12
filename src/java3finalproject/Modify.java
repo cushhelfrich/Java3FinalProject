@@ -9,6 +9,12 @@ package java3finalproject;
  * password.
  */
 //Imports
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +24,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -29,6 +36,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 //Begin Subclass Modify
 class Modify {
@@ -235,10 +245,10 @@ class Modify {
         // Query User table for account_id to that matches account name.
         List<Map<String, Object>> results = Login.db.retrieveRecords(findAct);
 
-        if (results.isEmpty()) // Query returned 0 results
+        if (results != null && results.isEmpty()) // Query returned 0 results
         {
             Login.verify.noAct();
-        } else {
+        } else if (results != null) {
             ModifyId = (Integer) results.get(0).get("account_id");//gets account_id
             userName = (String) results.get(0).get("username");//gets username
         }
@@ -271,7 +281,14 @@ class Modify {
 
         Account dispAccount = new Account(an);//call account class and load account name
 
-        decPW = AEScrypt.decrypt(dispAccount.getPassword(), an);//decrypt password
+        try
+        {        
+            decPW = Dashboard.getAES().decrypt(dispAccount.getPassword(), an);//decrypt password
+        } 
+        catch (Exception ex) {
+            Logger.getLogger(Modify.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
 
         return decPW;//return to gridpane
 
@@ -282,29 +299,36 @@ class Modify {
      *
      * @param an
      */
-    private void modifyPassword(String pw, String name) throws SQLException {
+    private void modifyPassword(String pw, String name) throws SQLException
+    {
 
         String findAct = "SELECT * FROM account WHERE account_name = '" + name + "' AND user_id = " + Login.currUser.getUserId();
 
         // Query User table for account_id to that matches account name.
         List<Map<String, Object>> results = Login.db.retrieveRecords(findAct);
 
-        if (results.isEmpty()) // Query returned 0 results
+        if (results != null && results.isEmpty()) // Query returned 0 results
         {
             Login.verify.noAct();
 
-        } else {
+        } else if (results != null){
             ModifyId = (Integer) results.get(0).get("account_id");//gets account_id
 
-            String encpw = AEScrypt.encrypt(pw, name);
-
-            String modify = "UPDATE account SET password = '" + encpw + "' WHERE account_id= '" + ModifyId + "'";
-
-            try {
+            try
+            {
+                String encpw = Dashboard.getAES().encrypt(pw, name);
+                String modify = "UPDATE account SET password = '" + encpw + "' WHERE account_id= '" + ModifyId + "'";
                 Login.db.modifyRecords(modify);
             } catch (SQLException ex) {
                 System.out.println("Error while attempting to modify records: " + ex.toString());
             }
-        }
+            catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IOException | 
+                    InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException | 
+                    KeyStoreException | CertificateException ex) {
+                Login.verify.createAlert(Alert.AlertType.ERROR, "Error modifying account", 
+                        "There was a problem processing your request, and the password wasn't modified. "
+                            + "If this problem persists, contact the administrator. Error message: " + ex.getMessage());
+            }
+        }        
     }
 } //End Subclass Modify
