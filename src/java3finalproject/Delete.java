@@ -10,15 +10,14 @@ package java3finalproject;
  */
 //Imports
 import java.io.IOException;
+import java.security.Key;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import static java3finalproject.Dashboard.accountName;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -109,22 +108,56 @@ class Delete {
 
         //lambda expression confirm and Edit
         btnConfirm.setOnAction((ActionEvent e) -> {
-
-            if (!Dashboard.isDuplicate(accountName.getText())) {
+            String errorMsg = "There was a problem processing your request, and account details "
+                    + "were not deleted from the system. Error message: ";
+            
+            if (!Dashboard.isDuplicate(actName)) {
                 verify.noAct();
-            } else {
-                try {
-                    removeAct(accountName.getText());
-                    Dashboard.getAES().deleteKey(accountName.getText());  // CH: Delete record of encryption key
-                    Dashboard.deleteAccount(actName);
-                } catch (SQLException | KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException ex) {
-                    Logger.getLogger(Delete.class.getName()).log(Level.SEVERE, null, ex);
-                    Login.verify.createAlert(Alert.AlertType.WARNING, "Error deleting account",
-                            "There was a problem processing your request, and account details"
-                            + " may not have been deleted from the system. Error message: " + ex.getMessage());
+            } 
+            else {
+                Key key = null;
+            try 
+            {
+                // store the existing key in case record erasure fails later
+                 key = Dashboard.getAES().loadKey(actName);
+                 
+                 // if a non-null Key was successfully retrieved
+                 if(key != null)
+                 {
+                    // try to delete the key
+                    Dashboard.getAES().deleteKey(actName);
+                 }
+                 
+                // try removing the account from the database, even if it wasn't in the KeyStore
+                removeAct(actName);
+                Dashboard.deleteAccount(actName);   // update the display
+                Login.verify.createAlert(Alert.AlertType.INFORMATION, "Success", "The account was deleted successfully.");
+            }
+            // fetching or deleting the Key failed
+            catch(KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException ex)
+            {
+                Login.verify.createAlert(Alert.AlertType.WARNING, "Error deleting account", errorMsg + ex.getMessage()); 
+            }
+            // deleting the record failed
+            catch (SQLException ex) 
+            {
+                Login.verify.createAlert(Alert.AlertType.WARNING, "Error deleting account", errorMsg + ex.getMessage());
+                
+                // try to reverse the deletion
+                try
+                {
+                    Dashboard.getAES().storeKey(actName, key);
+                } 
+                catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException exDelete) 
+                {
+                    Login.verify.createAlert(Alert.AlertType.WARNING, "Error deleting acount",
+                        "A series of errors occurred, which may result in data corruption. "
+                                + "The system will now exit. Error message:  " + ex.getMessage());
+                    System.exit(1);
                 }
-                Dashboard.clearHandler();//calls Static method in main
-                deleteScene.close();//closes scene
+            }
+            Dashboard.clearHandler();//calls Static method in main
+            deleteScene.close();//closes scene
             }
         });//end confirm event handler
 
@@ -158,7 +191,9 @@ class Delete {
         {
             verify.noAct();
 
-        } else {
+        } 
+        else if (results != null)
+        {
             int deleteId = (Integer) results.get(0).get("account_id");
 
             //SQL string to delete account account row
@@ -167,6 +202,8 @@ class Delete {
             //Calls modifyRecords in DBConnector to execute SQL string and delete account
             Login.db.modifyRecords(dltAct);
         }
+        
+        // else an exception occured and results are null
     }
 } //End Subclass Delete
 //****************************End Wayne Code***************************

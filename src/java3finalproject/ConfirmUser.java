@@ -30,9 +30,8 @@ import javafx.stage.Stage;
  */
 //Begin Subclass ConfirmUser
 public class ConfirmUser {
-
-    Encryptor encrypt = new Encryptor(); //Encryptor instance used later
-    CreateUser createUser = new CreateUser();  //CreateUser instance used later
+    CryptoHash encrypt = new CryptoHash();
+    CreateUser createUser = new CreateUser();
 
     Stage confirmUserStage = new Stage(); //Create a stage
 

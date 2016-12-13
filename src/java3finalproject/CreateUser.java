@@ -386,7 +386,7 @@ public class CreateUser {
             }
         }
         
-    } //End EnterHadler class
+    } //End EnterHandler class
 
     /**
      * PressEnter class: handles firing the action btnEnterUser when the enter

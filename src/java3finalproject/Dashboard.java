@@ -2,7 +2,7 @@ package java3finalproject;
 
 /**
  * @Course: SDEV 450 ~ Java Programming III
- * @Author Name: Wayne Riley
+ * @Contributors: Wayne Riley, Charlotte Hirschberger
  * @Assignment Name: java3finalproject
  * @Date: Oct 16, 2016
  * @Subclass Dashboard Description: Dashboard called from Login screen once
@@ -28,6 +28,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -66,7 +72,6 @@ public class Dashboard {
      * Main dashboard - User can view accounts or add, modify and delete
      * accounts
      *
-     * @throws java.sql.SQLException
      */
     public void mainScreen() {
         aes = new AEScrypt();
@@ -80,17 +85,38 @@ public class Dashboard {
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(5);
         gridPane.setVgap(5);
-
-        //ImageView copyImg = new ImageView(new Image("images/clipboard.jpg"));
+        
+        Image copyImg = new Image("images/clipboard.png");
+        ImageView copyIcon1 = new ImageView(copyImg);
+        ImageView copyIcon2 = new ImageView(copyImg);
         // Assign the clipboard image as each button background
         Button copyUN = new Button();
         Button copyPW = new Button();
-
-        gridPane.add(accountName, 0, 0);
-        GridPane.setConstraints(accountName, 0, 0, 1, 1);
+            copyUN.setGraphic(copyIcon1);
+            copyPW.setGraphic(copyIcon2);
+            Tooltip usertip = new Tooltip("Copy to clipboard");
+            copyUN.setTooltip(usertip);
+            copyPW.setTooltip(usertip);
+            
+            copyUN.setOnMouseReleased
+            (
+                    (MouseEvent e) ->
+                    {
+                        copyHandler(userName.getText());
+                    }
+            );
+            
+            copyPW.setOnMouseReleased
+            (
+                    (MouseEvent e) ->
+                    {
+                        copyHandler(passWord.getText());
+                    }
+            );
+            
+        gridPane.add(accountName, 0, 0, 2, 1);
         accountName.setPromptText("Enter Account Name");
-        gridPane.add(viewAccount, 0, 1);
-        GridPane.setConstraints(viewAccount, 0, 1, 1, 1);
+        gridPane.add(viewAccount, 0, 1, 2, 1);
         viewAccount.setMaxWidth(Double.MAX_VALUE);
         gridPane.add(userName, 0, 2);
         GridPane.setConstraints(userName, 0, 2, 1, 1);
@@ -98,7 +124,12 @@ public class Dashboard {
         gridPane.add(passWord, 0, 3);
         GridPane.setConstraints(passWord, 0, 3, 1, 1);
         passWord.setPromptText("Enter/View Password");
-
+        gridPane.add(copyUN, 1, 2);
+        gridPane.add(copyPW, 1, 3);
+        //gridPane.add(webSite, 0, 4);
+        //GridPane.setConstraints(webSite, 0, 4, 1, 1);
+        //webSite.setPromptText("Enter/View Website Here");
+        
         /* Add panes to appropriate region */
         bp.setRight(gridPane);
         bp.setBottom(gethBox());
@@ -114,16 +145,22 @@ public class Dashboard {
         btnExit.setId("btn");
 
         //Dashboard stage
-        Scene scene = new Scene(bp, 370, 200);
+        Scene scene = new Scene(bp, 420, 200);
         dbScene.setTitle("Dashboard - " + Login.currUser.getUsername()); //CUSH added username
         scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
         dbScene.setScene(scene);
         dbScene.show();
+        
+        copyIcon1.setPreserveRatio(true);
+        copyIcon1.fitHeightProperty().bind(accountName.heightProperty());
+        copyIcon2.setPreserveRatio(true);
+        copyIcon2.fitHeightProperty().bind(accountName.heightProperty());
 
         try {
             getAct();           //calls method to load List<Map<>> with account details from database        
             initAccountSet();
-        } catch (SQLException ex) {
+        } 
+        catch (SQLException ex) {
             System.out.println("Error message: " + ex.getMessage());
             verify.createAlert(Alert.AlertType.ERROR, "Error loading accounts",
                     "There was a problem loading your account details, and the system will now exit. "
@@ -143,9 +180,7 @@ public class Dashboard {
         vBox.setAlignment(Pos.CENTER_LEFT);
         vBox.setPadding(new Insets(5, 5, 5, 5));
 
-        /**
-         * **Charlotte's code***
-         */
+        /*****Charlotte's code*****/
         // HBox holds Text and ComboBox, side by side
         HBox holdCombo = new HBox();
         holdCombo.setAlignment(Pos.BASELINE_LEFT);
@@ -159,10 +194,13 @@ public class Dashboard {
         sortCombo.setValue("Name");
 
         // Determine when a ComboBox cell has been clicked and change the sort order in response
-        sortCombo.valueProperty().addListener(new ChangeListener<String>() {
+        sortCombo.valueProperty().addListener(new ChangeListener<String>() 
+        {
             @Override
-            public void changed(ObservableValue ov, String s1, String s2) {
-                switch (s2) {
+            public void changed(ObservableValue ov, String s1, String s2) 
+            {
+                switch (s2) 
+                {
                     case "Name":
                         Collections.sort(accountArr);
                         break;
@@ -179,9 +217,8 @@ public class Dashboard {
         });
 
         holdCombo.getChildren().addAll(sortBy, sortCombo);
-        /**
-         * ***End Charlotte's code****
-         */
+        /*****End Charlotte's code*****/
+        
         accountView = new TextArea();
         accountView.setPrefColumnCount(13);
         accountView.setPrefRowCount(8);
@@ -239,12 +276,22 @@ public class Dashboard {
                             // if match is found
                             if (accountArr.get(i).getName().equalsIgnoreCase(accountName.getText())) {
                                 isFound = true;
-
-                                // Retrieve and display the account username
-                                userName.setText(accountArr.get(i).getUserName());
-                                // Retrieve, decrypt, and display the password            
-                                passWord.setText(aes.decrypt(accountArr.get(i).getPassword(), accountArr.get(i).getName()));
-
+                                
+                                try
+                                {
+                                    // Retrieve, decrypt, and display the password
+                                    passWord.setText(aes.decrypt(accountArr.get(i).getPassword(), accountArr.get(i).getName()));
+                                                                    
+                                    // Retrieve and display the account username
+                                    userName.setText(accountArr.get(i).getUserName());
+                                    
+                                } 
+                                catch (Exception ex) {
+                                    Login.verify.createAlert(Alert.AlertType.ERROR, "Error retrieving credentials", 
+                                            "There was an error processing your request, and account credentials "
+                                             + "could not be displayed. If the problem persists, contact the administrator. "
+                                             + "Error message: " + ex.getMessage());
+                                }
                             }
                             i++;
                         }
@@ -353,9 +400,16 @@ public class Dashboard {
      * *******************End Wayne's Code*****************************
      */
 
-    /**
-     * *******************Start Charlotte's Code***********************
-     */
+    /********************Start Charlotte's Code***********************/
+    
+    public void copyHandler(String fieldText) 
+    {
+        final Clipboard cb = Clipboard.getSystemClipboard();
+        final ClipboardContent cont = new ClipboardContent();
+        
+        cont.putString(fieldText);
+        cb.setContent(cont);
+    }
     /**
      * Uses contents of List<Map<>> to create a series of Accounts and load them
      * into an ArrayList for sorting
@@ -365,7 +419,8 @@ public class Dashboard {
         Map<String, Object> row;
         if (!account.isEmpty()) // if user has added some accounts
         {
-            for (int i = 0; i < account.size(); i++) {
+            for (int i = 0; i < account.size(); i++) 
+            {
                 // Get the column names and data in the current Map/row
                 row = account.get(i);
 
@@ -392,7 +447,8 @@ public class Dashboard {
      *
      * @param newAcct Account that was just added with Add.java
      */
-    public static void updateAccountSet(Account newAcct) {
+    public static void updateAccountSet(Account newAcct) 
+    {
         accountArr.add(newAcct);
         Collections.sort(accountArr, Account.CreatedComp); // Sort by Newest
         updateTextArea();
@@ -405,13 +461,16 @@ public class Dashboard {
      *
      * @param acctName
      */
-    public static void deleteAccount(String acctName) {
+    public static void deleteAccount(String acctName) 
+    {
         boolean contSearch = true;
         int i = 0;
 
         /* Keep searching the List until an Account is removed*/
-        while (contSearch == true && i < accountArr.size()) {
-            if (accountArr.get(i).getName().equalsIgnoreCase(acctName)) {
+        while (contSearch == true && i < accountArr.size()) 
+        {
+            if (accountArr.get(i).getName().equalsIgnoreCase(acctName)) 
+            {
                 accountArr.remove(i);
                 contSearch = false;
             }
@@ -428,13 +487,16 @@ public class Dashboard {
      * @param acctName
      * @return
      */
-    public static boolean isDuplicate(String acctName) {
+    public static boolean isDuplicate(String acctName) 
+    {
         boolean b = false;
         int i = 0;
 
         /* Keep searching as long as acctName isn't found in the List*/
-        while (b == false && i < accountArr.size()) {
-            if (accountArr.get(i).getName().equalsIgnoreCase(acctName)) {
+        while (b == false && i < accountArr.size()) 
+        {
+            if (accountArr.get(i).getName().equalsIgnoreCase(acctName)) 
+            {
                 b = true;
             }
             i++;
