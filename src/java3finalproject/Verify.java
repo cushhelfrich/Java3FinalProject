@@ -104,8 +104,8 @@ public class Verify {
         
         boolean boolChecks = true;
         
-         if(!password.getText().matches("^.*(?=.{8,255})"// Password must be 8-255 characters
-                + "(?=.*\\d)(?=.*[A-Z])(?=.*\\W).*$")) { // Password must contain 1 digit, 1 capital, 1 symbol
+        //Between 8-255, 1 digit, 1 capital, 1 symbol
+         if(!password.getText().matches("(?=.*\\d)(?=.*[A-Z])(?=.*\\W).{8,255}")) { 
 
 
             Alert alert = new Alert(Alert.AlertType.WARNING);
