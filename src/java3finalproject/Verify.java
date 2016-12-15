@@ -68,7 +68,12 @@ public class Verify {
 
     } //End isData method
     
-       public boolean isValidUsername (TextField username) {
+    /**
+     * isValidUsername method: Checks for valid username
+     * @param username
+     * @return boolChecks
+     */
+    public boolean isValidUsername (TextField username) {
         
         boolean boolChecks = true;
         
@@ -77,7 +82,7 @@ public class Verify {
 
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("ERROR");
-            alert.setHeaderText("Unvalid Username");
+            alert.setHeaderText("Invalid Username");
             alert.setContentText("The username must be 6-64 characters in length, must\n"
                     + "start with a number or letter, and must contain only numbers,\n"
                     + "letters, dashes, underscores, and periods. ");
@@ -87,9 +92,15 @@ public class Verify {
         }
         
         return boolChecks;
-    }
+        
+    } //End isValidUsername method
     
-     public boolean isValidPassword (PasswordField password) {
+    /**
+     * isValidPassword method: Check for valid password
+     * @param password
+     * @return boolChecks
+     */
+    public boolean isValidPassword (PasswordField password) {
         
         boolean boolChecks = true;
         
@@ -99,7 +110,7 @@ public class Verify {
 
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("ERROR");
-            alert.setHeaderText("Unvalid password");
+            alert.setHeaderText("Invalid password");
             alert.setContentText("The password must be 8-255 characters in length and\n"
                     + "contain at least 1 digit, 1 symbol, and 1 uppercase letter.");
 
@@ -109,7 +120,8 @@ public class Verify {
         }
         
         return boolChecks;
-    }
+        
+    } //End isValidPassword
 
     //****************End Cush Code**********************************
     
