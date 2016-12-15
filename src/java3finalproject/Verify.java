@@ -294,8 +294,7 @@ public class Verify {
     {
         boolean isValid = true;
         
-        if(!pw.matches("^.*(?=.{8,255})"                // Password must be 8-255 characters
-                + "(?=.*\\d)(?=.*[A-Z])(?=.*\\W).*$"))  // Password must contain 1 digit, 1 capital, 1 symbol
+        if(!pw.matches("(?=.*\\d)(?=.*[A-Z])(?=.*\\W).{8,255}"))  // Password must contain 1 digit, 1 capital, 1 symbol
         {
             isValid = false;
         }

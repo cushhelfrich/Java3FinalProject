@@ -80,7 +80,7 @@ public class Login extends Application {
                 "username");
         PasswordField pf = new PasswordField();
         pwSet = new FieldSet(pf,
-                "^.*(?=.{8,255})(?=.*\\d)(?=.*[A-Z])(?=.*\\W).*$",
+                "(?=.*\\d)(?=.*[A-Z])(?=.*\\W).{8,255}",
                 "password");
 
         //Implementing Nodes for GridPane
