@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -70,13 +71,33 @@ public class AEScrypt {
             kg.init(KEY_SIZE);
             Key key = kg.generateKey();
             sks = new SecretKeySpec(key.getEncoded(), EN_ALGO);
-        } catch (NoSuchAlgorithmException e) {
+        } 
+        catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         return sks;
         /*catch (UnsupportedEncodingException e) {
          e.printStackTrace();
          }*/
+    }
+    
+    public String encrypt(String strToEncrypt, Key key) 
+            throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException, 
+            IllegalBlockSizeException, InvalidAlgorithmParameterException, BadPaddingException, KeyStoreException
+    {
+        SecretKeySpec sks = new SecretKeySpec(key.getEncoded(), EN_ALGO);
+        String encryption = encrypt(strToEncrypt, sks);
+        return encryption;
+    }
+    
+    public String encrypt(String strToEncrypt, String alias)
+            throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException, 
+            IllegalBlockSizeException, InvalidAlgorithmParameterException, BadPaddingException, KeyStoreException, CertificateException
+    {
+        SecretKeySpec sks = setKey();
+        storeKey(alias, sks);
+        String encryption = encrypt(strToEncrypt, sks);
+        return encryption;
     }
 
     /**
@@ -95,15 +116,11 @@ public class AEScrypt {
      * @throws java.security.KeyStoreException
      * @throws java.security.cert.CertificateException
      */
-    public String encrypt(String strToEncrypt, String alias) 
-            throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException,
-            InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, KeyStoreException,
-            CertificateException
-    {
-            SecretKeySpec sks = setKey();
-            storeKey(alias, sks);
-                        
-             // Generate an initialisation vector, so repeated text doesn't produce identical encryptions           
+    private String encrypt(String strToEncrypt, SecretKeySpec sks) 
+            throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, 
+            IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException
+    {                        
+            // Generate an initialisation vector, so repeated text doesn't produce identical encryptions           
             byte[] iv = generateIv();
 
             IvParameterSpec ivParam = new IvParameterSpec(iv);
