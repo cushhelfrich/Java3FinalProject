@@ -187,12 +187,7 @@ class Delete {
         // Query User table for account_id to that matches account name.
         List<Map<String, Object>> results = Login.db.retrieveRecords(rmvAct);
 
-        if (results != null && results.isEmpty()) // Query returned 0 results
-        {
-            verify.noAct();
-
-        } 
-        else if (results != null)
+        if (results != null)
         {
             int deleteId = (Integer) results.get(0).get("account_id");
 
