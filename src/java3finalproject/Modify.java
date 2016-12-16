@@ -12,8 +12,10 @@ package java3finalproject;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.sql.SQLException;
 import java.util.List;
@@ -107,7 +109,7 @@ class Modify {
 
         //Add hbox for account name 
         gridPane.add(getAccountHBox(actName), 0, 0, 4, 1);
-        //Add User Name to grid pane
+        // if the user has typed a User Name, show it in the grid pane beside the existing username
         if (!"".matches(usrName)) {
             gridPane.add(lblLUserName, 0, 1);
             GridPane.setConstraints(lblLUserName, 0, 1, 1, 1);
@@ -119,7 +121,7 @@ class Modify {
             gridPane.add(lblNewUserNameGetText, 3, 1);
             GridPane.setConstraints(lblNewUserNameGetText, 3, 1, 1, 1);
         }
-        //Display old password to grid pane
+        // if the user has typed a password, show it in the grid pane beside the existing password
         if (!"".matches(pw)) {
             gridPane.add(lblpassword, 0, 2);
             GridPane.setConstraints(lblpassword, 0, 2, 1, 1);
@@ -131,7 +133,7 @@ class Modify {
             gridPane.add(lblNewPasswordGetText, 3, 2);
             GridPane.setConstraints(lblNewPasswordGetText, 3, 2, 1, 1);
         }
-        //add Buttons
+        //add Buttons & transfer the account name, username, and password entries for processing
         gridPane.add(getBtnBox(usrName, pw, actName), 0, 4, 4, 1);
 
         //New stage
@@ -165,10 +167,10 @@ class Modify {
         //lambda expression confirm and Edit
         btnConfirm.setOnAction((ActionEvent e) -> {
             modifyScene.close();
-            if (!"".matches(un)) {
+            if (!"".matches(un)) {  // if username is not empty
                 modifyUser(un);
             }
-            if (!"".matches(pw)) {
+            if (!"".matches(pw)) {  // if password is not empty
                 try {
                     modifyPassword(pw, an);
                 } catch (SQLException ex) {
@@ -258,7 +260,7 @@ class Modify {
     /**
      * Passes Username and password to be modified by calling DBConnector class
      *
-     * @param un
+     * @param un        entry in username field
      */
     private void modifyUser(String un) {
 
@@ -312,25 +314,27 @@ class Modify {
         {
             Login.verify.noAct();
 
-        } else if (results != null){
+        } 
+        else if (results != null){
             ModifyId = (Integer) results.get(0).get("account_id");//gets account_id
 
             try
             {
-                String encpw = Dashboard.getAES().encrypt(pw, name);
+                Key key = Dashboard.getAES().loadKey(name);
+                String encpw = Dashboard.getAES().encrypt(pw, key);
                 String modify = "UPDATE account SET password = '" + encpw + "' WHERE account_id= '" + ModifyId + "'";
                 Login.db.modifyRecords(modify);
                 Login.verify.createAlert(Alert.AlertType.INFORMATION, "Success", "The password was successfully modified.");
-            } catch (SQLException ex) {
-                System.out.println("Error while attempting to modify records: " + ex.toString());
-            }
-            catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IOException | 
+            } 
+            catch (SQLException | NoSuchAlgorithmException | InvalidKeyException | IOException | 
                     InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException | 
-                    KeyStoreException | CertificateException ex) {
+                    KeyStoreException | CertificateException | UnrecoverableKeyException | NoSuchPaddingException ex) 
+            {
+                System.out.println("Error while attempting to modify records: " + ex.toString());
                 Login.verify.createAlert(Alert.AlertType.ERROR, "Error modifying account", 
                         "There was a problem processing your request, and the password wasn't modified. "
                             + "If this problem persists, contact the administrator. Error message: " + ex.getMessage());
             }
-        }        
+        }
     }
 } //End Subclass Modify
