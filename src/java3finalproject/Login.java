@@ -75,10 +75,13 @@ public class Login extends Application {
         
         // Instantiate the TextInputControls and pass them to FieldSet
         TextField txtUserName = new TextField();
+        // username regex: 6-64 char, starts and ends with letter or digit, only contains numbers, letters, dashes, underscores, periods
         userSet = new FieldSet(txtUserName, 
                 "(?=[A-Za-z0-9-_.]{6,64}$)^[A-Za-z0-9]([-_.]{0,1}[A-Za-z0-9]+)+$",
                 "username");
         PasswordField pf = new PasswordField();
+        
+        // pw regex: 8-255 char, contains 1+ digit, 1+ uppercase letter, 1+ non-word char
         pwSet = new FieldSet(pf,
                 "(?=.*\\d)(?=.*[A-Z])(?=.*\\W).{8,255}",
                 "password");
@@ -149,6 +152,7 @@ public class Login extends Application {
                 }
                 else if(keyEvent.getSource() == txtUserName)
                 {
+                    // reset the alert to empty
                     userSet.setAlert("");
                 }
                 else
@@ -165,7 +169,7 @@ public class Login extends Application {
         btnLogin.setOnAction(
                 (ActionEvent e) -> {
                     if (processLogin()) {
-                        primaryStage.close();
+                        primaryStage.close();   // close the Login stage if login suceeds
                     }
                 });
 

@@ -24,7 +24,6 @@ import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
@@ -44,8 +43,8 @@ public class AEScrypt {
     private final String ks_name;                 // KeyStore file
     private static final String EN_ALGO = "AES";                        // Encryption algorithm
     private static final String CIPHER_INST = "AES/CBC/PKCS5Padding";   // Cipher used
-    private static final String KS_INSTANCE = "JCEKS";                    // KeyStore type
-    private final char[] password;
+    private static final String KS_INSTANCE = "JCEKS";                  // KeyStore type
+    private final char[] password;                                      // KeyStore password
     private static final int IV_SIZE = 16;
     private static final int KEY_SIZE = 128;
     
@@ -58,13 +57,12 @@ public class AEScrypt {
         ks_name = "output_" + Login.currUser.getUsername() + ".jceks";
     }
     /*******End Charlotte's********/
-
-    /*********Start Bill's*********/
+   
     /**
-     * Generates an encryption key using SecureRandom
+     * Bill's code
+     * Generates a random key and returns it as a platform-independent SecretKeySpec
      */
     private SecretKeySpec setKey() {
-        MessageDigest sha;
         SecretKeySpec sks = null;
         try {
             KeyGenerator kg = KeyGenerator.getInstance(EN_ALGO);
@@ -81,6 +79,21 @@ public class AEScrypt {
          }*/
     }
     
+    /**
+     * Charlotte's code
+     * Initialize encryption with a key that has already been stored in KeyStore
+     * @param strToEncrypt
+     * @param key                previously created & retrieved from KeyStore
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidKeyException
+     * @throws IOException
+     * @throws IllegalBlockSizeException
+     * @throws InvalidAlgorithmParameterException
+     * @throws BadPaddingException
+     * @throws KeyStoreException 
+     */
     public String encrypt(String strToEncrypt, Key key) 
             throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException, 
             IllegalBlockSizeException, InvalidAlgorithmParameterException, BadPaddingException, KeyStoreException
@@ -90,6 +103,23 @@ public class AEScrypt {
         return encryption;
     }
     
+    /**
+     * Charlotte's code
+     * Initialize encryption with a brand new key. Store the key in a KeyStore with
+     * the account name/alias as an identifier
+     * @param strToEncrypt
+     * @param alias             account name for accessing key entry
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidKeyException
+     * @throws IOException
+     * @throws IllegalBlockSizeException
+     * @throws InvalidAlgorithmParameterException
+     * @throws BadPaddingException
+     * @throws KeyStoreException
+     * @throws CertificateException 
+     */
     public String encrypt(String strToEncrypt, String alias)
             throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException, 
             IllegalBlockSizeException, InvalidAlgorithmParameterException, BadPaddingException, KeyStoreException, CertificateException
@@ -101,8 +131,10 @@ public class AEScrypt {
     }
 
     /**
+     * Bill & Charlotte's code
      * encrypt method:
-     *
+     * Sets the encryption mode and executes the encryption using an initialization vector
+     * of random bytes
      * @param strToEncrypt
      * @param alias
      * @return
@@ -145,11 +177,22 @@ public class AEScrypt {
     }
 
     /**
+     * Bill & Charlotte's code
      * decrypt method:
      *
      * @param strToDecrypt
      * @param alias
      * @return
+     * @throws java.security.NoSuchAlgorithmException
+     * @throws javax.crypto.NoSuchPaddingException
+     * @throws java.security.InvalidKeyException
+     * @throws java.io.IOException
+     * @throws java.security.InvalidAlgorithmParameterException
+     * @throws javax.crypto.IllegalBlockSizeException
+     * @throws javax.crypto.BadPaddingException
+     * @throws java.security.KeyStoreException
+     * @throws java.security.cert.CertificateException
+     * @throws java.security.UnrecoverableKeyException
      */
     public String decrypt(String strToDecrypt, String alias) 
         throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException,
@@ -182,10 +225,12 @@ public class AEScrypt {
                 throw new NullPointerException("KeyStore did not find an entry with this account name.");
             }
     }
-    /*********End Bill's*********/
     
     /*********Start Charlotte's*********/
-    
+    /**
+     * Create a random array of bytes to append to the beginning of the plain text
+     * @return 
+     */
     private byte[] generateIv()
     {
         byte[] iv = new byte[IV_SIZE];  // create the byte array that holds the IV
@@ -208,14 +253,18 @@ public class AEScrypt {
     {
         KeyStore ks = KeyStore.getInstance(KS_INSTANCE);
         File ks_file = new File(ks_name);
+        // if the file exists already, load its contents into the KeyStore
         if (ks_file.exists()) {
             try (FileInputStream fis = new FileInputStream(ks_file)) {
                 ks.load(fis, password);
             }
-        } else {
+        } 
+        // file doesn't exist, so create empty KeyStore
+        else {
             ks.load(null, password);
         }
         ks.setKeyEntry(alias.toLowerCase(), key, password, null);
+        // Persist the contents of the updated KeyStore in a file
         try (FileOutputStream fos = new FileOutputStream(ks_file)) {
             ks.store(fos, password);
         }
@@ -237,9 +286,11 @@ public class AEScrypt {
         Key key = null;
         KeyStore ks = KeyStore.getInstance(KS_INSTANCE);
 
+        // load the key entries from the output file
         try (FileInputStream fis = new FileInputStream(ks_name)) {
             ks.load(fis, password);
             
+            // get the key paired with this alias
             key = ks.getKey(alias.toLowerCase(), password);
         }
         return key;
@@ -257,10 +308,13 @@ public class AEScrypt {
     public void deleteKey(String alias) throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException
     {
         KeyStore ks = KeyStore.getInstance(KS_INSTANCE);
+        // Retrieve the key entries from the file
         try (FileInputStream fis = new FileInputStream(ks_name)) {
             ks.load(fis, password);
         }
+        // delete the entry identified by the provided alias
         ks.deleteEntry(alias.toLowerCase());
+        // write the changes to a file
         try(FileOutputStream fos = new FileOutputStream(ks_name))
         {
             ks.store(fos, password);

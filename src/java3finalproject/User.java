@@ -38,6 +38,7 @@ public class User {
      * @param last_name
      * @param created   YYYY-MM-DD HH:MM:SS, DATETIME
      * @param updated   YYYY-MM-DD HH:MM:SS, TIMESTAMP UTC
+     * @param ks_pass   Base 64 string created during login to serve as KeyStore password
      */
     public User(int user_id, String email, String username, String password,
             String salt, String first_name, String last_name, Timestamp created, Timestamp updated, String ks_pass)
@@ -76,6 +77,11 @@ public class User {
     } //End method getUsername
     //END CUSH
     
+    // Charlotte
+    /**
+     * Return the digest string to be used as a KeyStore password
+     * @return 
+     */
     public String getKSPass()
     {
         return ks_pass;

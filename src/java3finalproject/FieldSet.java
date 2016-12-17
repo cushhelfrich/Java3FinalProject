@@ -38,11 +38,13 @@ public class FieldSet {
         alert.getStyleClass().add(CSS_CLASS);
     }
     
+    // Get the label that holds a message for this FieldSet's field
     public Label getAlert()
     {
         return alert;
     }
     
+    // Set the message in this object's label
     public void setAlert(String msg)
     {
         alert.setText(msg);

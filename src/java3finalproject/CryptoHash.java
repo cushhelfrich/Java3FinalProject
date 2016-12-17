@@ -10,9 +10,8 @@ import java.util.Random;
  * @Course: SDEV 450 ~ Enterprise Java Programming
  * @Contributors: Charlotte Hirschberger
  * @Created Date: October 16, 2016
- * @Description: This class will be called by the main JavaFX class. It will contain methods for hashing, 
- *      AES encryption, and so on. Currently contains overloaded getHashString methods, getSalt,
- *      getHashLength, and isExpectedPassword
+ * @Description: This class is called by the main JavaFX class and contains methods for hashing,
+ * which is used to secure the user's database and KeyStore passwords.
  */
 
 public class CryptoHash {
@@ -28,7 +27,7 @@ public class CryptoHash {
     }
     
     /**
-     * Creates a new salt and uses it to call hashString(String unhashed, byte[] salt)
+     * Creates a new salt and uses it to call hashString(String unhashed, byte[] salt, String algorithm)
      * @param unhashed user's choice of password during account creation
      * @return 
      * @throws java.security.NoSuchAlgorithmException 
@@ -51,7 +50,7 @@ public class CryptoHash {
      * Uses an existing salt to hash a user's entry
      * @param unhashed User's password entry during login
      * @param salt Byte array retrieved from User table
-     * @param algorithm
+     * @param algorithm The algorithm to use for this hash
      * @return Hash substring concatenated with Salt substring
      * 
      * Future update: make independent of charset?, store Instance in attribute

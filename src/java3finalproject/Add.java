@@ -147,7 +147,7 @@ public class Add {
                     Login.verify.createAlert(Alert.AlertType.INFORMATION, "Success", "Account was successfully created.");
                 }
             }
-            // catch error generated during exception or key storage
+            // catch error generated during encryption or key storage
             catch(NoSuchAlgorithmException | KeyStoreException | IOException | NoSuchPaddingException | 
                     InvalidKeyException | CertificateException | InvalidAlgorithmParameterException | 
                     IllegalBlockSizeException | BadPaddingException ex)

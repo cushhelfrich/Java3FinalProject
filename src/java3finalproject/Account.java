@@ -28,7 +28,7 @@ import javax.crypto.NoSuchPaddingException;
  *
  * The Account class will represent a single account with:
  *
- * private members accountName username password account type
+ * private members accountName username password, website, created, updated
  *
  *
  *
@@ -61,8 +61,8 @@ public class Account implements Comparable<Account>  {
         this.password = Dashboard.getAES().encrypt(password, accountName);// Base64 string, includes IV bytes
         //   this.password=password;
         this.website = "na";
-        this.created = null;
-        this.updated = null;
+        this.created = null;    // date/time of account creation
+        this.updated = null;    // date/time of most recent update
     }
     
         /****Charlotte's code*****/

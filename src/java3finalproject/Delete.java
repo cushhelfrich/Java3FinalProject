@@ -111,6 +111,7 @@ class Delete {
             String errorMsg = "There was a problem processing your request, and account details "
                     + "were not deleted from the system. Error message: ";
             
+            // If the entered account name is not in the List<Account>, alert the user
             if (!Dashboard.isDuplicate(actName)) {
                 verify.noAct();
             } 

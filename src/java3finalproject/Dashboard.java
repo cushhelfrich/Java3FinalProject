@@ -6,7 +6,8 @@ package java3finalproject;
  * @Assignment Name: java3finalproject
  * @Date: Oct 16, 2016
  * @Subclass Dashboard Description: Dashboard called from Login screen once
- * proper UID/PID is accepted
+ * proper UID/PID is accepted. Initiates calls to Add, Modify, and Delete classes,
+ * as well as handler for clearing textfields.
  */
 //Imports
 import java.sql.SQLException;
@@ -54,9 +55,9 @@ public class Dashboard {
     Button btnClear;
     Button btnExit;
     static TextArea accountView;
-    private static List<Map<String, Object>> account;
+    private static List<Map<String, Object>> account;   // database records in List form
     private static List<Account> accountArr = new ArrayList<>();
-    private static ComboBox sortCombo;
+    private static ComboBox sortCombo;      // sorting options
     private static AEScrypt aes;
     static TextField accountName = new TextField();
     static TextField userName = new TextField();
@@ -86,6 +87,7 @@ public class Dashboard {
         gridPane.setHgap(5);
         gridPane.setVgap(5);
         
+        // get the Copy image to se for buttons
         Image copyImg = new Image("images/clipboard.png");
         ImageView copyIcon1 = new ImageView(copyImg);
         ImageView copyIcon2 = new ImageView(copyImg);
@@ -98,6 +100,7 @@ public class Dashboard {
             copyUN.setTooltip(usertip);
             copyPW.setTooltip(usertip);
             
+            // call copyHandler when the button is released
             copyUN.setOnMouseReleased
             (
                     (MouseEvent e) ->
@@ -151,6 +154,7 @@ public class Dashboard {
         dbScene.setScene(scene);
         dbScene.show();
         
+        // Copy button styling
         copyIcon1.setPreserveRatio(true);
         copyIcon1.fitHeightProperty().bind(accountName.heightProperty());
         copyIcon2.setPreserveRatio(true);
@@ -158,7 +162,7 @@ public class Dashboard {
 
         try {
             getAct();           //calls method to load List<Map<>> with account details from database        
-            initAccountSet();
+            initAccountSet();   // if retrieval from database succeeds, transfer the details to Account objects
         } 
         catch (SQLException ex) {
             System.out.println("Error message: " + ex.getMessage());
@@ -401,7 +405,10 @@ public class Dashboard {
      */
 
     /********************Start Charlotte's Code***********************/
-    
+    /**
+     * Copy the text from a field to the system clipboard so it can be pasted
+     * @param fieldText 
+     */
     public void copyHandler(String fieldText) 
     {
         final Clipboard cb = Clipboard.getSystemClipboard();
